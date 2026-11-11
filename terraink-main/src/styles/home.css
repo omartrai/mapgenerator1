@@ -107,7 +107,7 @@
   content: "";
   position: absolute;
   inset: 0;
-  background: linear-gradient(90deg, rgba(252, 243, 232, 0.62) 0%, rgba(252, 243, 232, 0.28) 30%, rgba(252, 243, 232, 0) 48%);
+  background: linear-gradient(90deg, rgba(252, 243, 232, 0.72) 0%, rgba(252, 243, 232, 0.4) 30%, rgba(252, 243, 232, 0) 50%);
   pointer-events: none;
 }
 
@@ -440,28 +440,45 @@
 }
 
 @media (max-width: 760px) {
+  /* Phones: text on a cream band, the photo (with its poster) underneath. */
   .photo-hero {
-    min-height: 560px;
-  }
-
-  .photo-hero__slide {
-    object-position: 28% center;
+    display: flex;
+    flex-direction: column;
+    min-height: 0;
+    background: #f8efe4;
   }
 
   .photo-hero::after {
-    background: linear-gradient(180deg, rgba(252, 243, 232, 0.78) 0%, rgba(252, 243, 232, 0.45) 45%, rgba(252, 243, 232, 0) 70%);
+    display: none;
   }
 
   .photo-hero__copy {
-    top: 36px;
-    left: 20px;
-    right: 20px;
+    position: static;
+    order: -1;
     width: auto;
+    padding: 30px 20px 24px;
     transform: none;
+  }
+
+  .photo-hero__slides {
+    position: relative;
+    height: 400px;
+  }
+
+  .photo-hero__slide {
+    object-position: 80% center;
   }
 
   .photo-hero__title {
     font-size: 2.6rem !important;
+  }
+
+  .photo-hero__lede {
+    margin-bottom: 20px;
+  }
+
+  .photo-hero__dots {
+    margin-top: 22px;
   }
 
   .home-styles {
