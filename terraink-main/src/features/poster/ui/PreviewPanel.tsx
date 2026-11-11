@@ -83,7 +83,8 @@ export default function PreviewPanel({ sidePanel, belowPoster }: PreviewPanelPro
 
   const frameRef = useRef<HTMLDivElement | null>(null);
   const ghostCanvasRef = useRef<HTMLCanvasElement | null>(null);
-  const [isEditing, setIsEditing] = useState(false);
+  // The map is editable (pan/zoom) from the start; users can still lock it.
+  const [isEditing, setIsEditing] = useState(true);
   const [mapBearing, setMapBearing] = useState(0);
   const [isRotationEnabled, setIsRotationEnabled] = useState(false);
   const [isMobileViewport, setIsMobileViewport] = useState(false);
@@ -186,11 +187,10 @@ export default function PreviewPanel({ sidePanel, belowPoster }: PreviewPanelPro
   }, [mapRef]);
 
   useEffect(() => {
-    if (!isMarkerEditorActive) {
-      return;
-    }
-    setIsEditing(false);
-    setIsRotationEnabled(false);
+    // Markers take over the pointer while their editor is open; the map
+    // becomes editable again as soon as it closes.
+    setIsEditing(!isMarkerEditorActive);
+    if (isMarkerEditorActive) setIsRotationEnabled(false);
   }, [isMarkerEditorActive]);
 
   const widthCm = Number(form.width) || DEFAULT_POSTER_WIDTH_CM;
