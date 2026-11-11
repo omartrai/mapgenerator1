@@ -57,6 +57,7 @@ export default function ThemeCard({
       onClick={onClick}
       aria-pressed={isSelected}
       aria-label={themeOption.name}
+      title={themeOption.name}
     >
       <div
         className={[

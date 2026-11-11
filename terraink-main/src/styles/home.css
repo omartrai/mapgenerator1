@@ -1200,3 +1200,73 @@
     height: 23px;
   }
 }
+
+/* ── Studio: colour themes easy to browse ──
+   Compact three-up palette cards, the selected theme pinned at the top of the
+   panel while scrolling, and a visible slim scrollbar so the list reads as
+   scrollable. */
+@media (min-width: 769px) and (hover: hover) and (pointer: fine) {
+  .app-shell[data-store-studio] .desktop-settings-slide {
+    scrollbar-width: thin !important;
+    scrollbar-color: rgba(31, 59, 51, 0.35) transparent;
+    scroll-behavior: smooth;
+    overscroll-behavior: contain;
+  }
+
+  .app-shell[data-store-studio] .desktop-settings-slide::-webkit-scrollbar {
+    display: block !important;
+    width: 8px !important;
+  }
+
+  .app-shell[data-store-studio] .desktop-settings-slide::-webkit-scrollbar-thumb {
+    border: 2px solid transparent;
+    border-radius: 8px;
+    background: rgba(31, 59, 51, 0.35) padding-box;
+  }
+
+  .app-shell[data-store-studio] .theme-summary-head {
+    position: sticky;
+    top: 0;
+    z-index: 3;
+    margin-inline: -6px;
+    padding: 10px 6px 10px !important;
+    background: var(--s-bg, #faf6ef);
+    box-shadow: 0 8px 12px -10px rgba(60, 40, 20, 0.25);
+  }
+
+  .app-shell[data-store-studio] .theme-card-list.card-scroll-list {
+    grid-template-columns: repeat(3, minmax(0, 1fr));
+    gap: 8px !important;
+    padding-top: 8px;
+  }
+
+  .app-shell[data-store-studio] .card-scroll-list .theme-card {
+    padding: 4px !important;
+    border-radius: 10px !important;
+  }
+
+  .app-shell[data-store-studio] .card-scroll-list .theme-card .theme-card-palette,
+  .app-shell[data-store-studio] .card-scroll-list .theme-card .theme-card-swatch {
+    min-height: 34px !important;
+    height: 34px !important;
+  }
+
+  .app-shell[data-store-studio] .card-scroll-list .theme-card .theme-card-palette {
+    border-radius: 7px;
+  }
+
+  .app-shell[data-store-studio] .card-scroll-list .theme-card .theme-card-name {
+    padding: 5px 2px 1px !important;
+    font-size: 0.72rem !important;
+    white-space: nowrap;
+    text-overflow: ellipsis;
+  }
+
+  .app-shell[data-store-studio] .card-scroll-list .theme-card.is-selected::after {
+    top: -6px;
+    inset-inline-end: -6px;
+    width: 18px;
+    height: 18px;
+    background-size: 11px, auto;
+  }
+}
