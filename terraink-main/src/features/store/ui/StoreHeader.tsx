@@ -1,4 +1,5 @@
-import { LuShoppingBag } from "react-icons/lu";
+import { useState, type FormEvent } from "react";
+import { LuSearch, LuShoppingBag } from "react-icons/lu";
 import { Link, useRouter } from "@/core/router/router";
 import { useStore } from "./StoreContext";
 
@@ -6,9 +7,23 @@ interface StoreHeaderProps {
   variant?: "site" | "studio" | "checkout";
 }
 
+const NAV = [
+  { to: "/", label: "Home" },
+  { to: "/#designs", label: "Designs" },
+  { to: "/#pricing", label: "Sizes" },
+  { to: "/#faq", label: "FAQ" },
+];
+
 export default function StoreHeader({ variant = "site" }: StoreHeaderProps) {
   const { cartCount } = useStore();
-  const { path } = useRouter();
+  const { path, navigate } = useRouter();
+  const [query, setQuery] = useState("");
+
+  const onSearch = (event: FormEvent) => {
+    event.preventDefault();
+    const place = query.trim();
+    navigate(place ? `/create?place=${encodeURIComponent(place)}` : "/create");
+  };
 
   return (
     <header
@@ -22,10 +37,15 @@ export default function StoreHeader({ variant = "site" }: StoreHeaderProps) {
 
         {variant === "site" ? (
           <nav className="store-nav" aria-label="Main">
-            <Link to="/#designs" className="store-nav__link">Designs</Link>
-            <Link to="/#how-it-works" className="store-nav__link">How it works</Link>
-            <Link to="/#pricing" className="store-nav__link">Sizes &amp; prices</Link>
-            <Link to="/#faq" className="store-nav__link">FAQ</Link>
+            {NAV.map((item) => (
+              <Link
+                key={item.to}
+                to={item.to}
+                className={`store-nav__link${item.to === "/" && path === "/" ? " is-active" : ""}`}
+              >
+                {item.label}
+              </Link>
+            ))}
           </nav>
         ) : variant === "studio" ? (
           <p className="store-header__context">Poster studio</p>
@@ -37,9 +57,18 @@ export default function StoreHeader({ variant = "site" }: StoreHeaderProps) {
 
         <div className="store-header__actions">
           {variant === "site" ? (
-            <Link to="/create" className="store-btn store-btn--primary store-btn--sm store-header__cta">
-              Create your map
-            </Link>
+            <form className="store-search" role="search" onSubmit={onSearch}>
+              <input
+                type="search"
+                value={query}
+                onChange={(event) => setQuery(event.target.value)}
+                placeholder="Search a city…"
+                aria-label="Search a city to map"
+              />
+              <button type="submit" aria-label="Search">
+                <LuSearch aria-hidden="true" />
+              </button>
+            </form>
           ) : null}
           {variant !== "checkout" ? (
             <Link
@@ -48,7 +77,6 @@ export default function StoreHeader({ variant = "site" }: StoreHeaderProps) {
               aria-label={`Cart, ${cartCount} item${cartCount === 1 ? "" : "s"}`}
             >
               <LuShoppingBag aria-hidden="true" />
-              <span className="store-cart-btn__label">Cart</span>
               {cartCount > 0 ? <span className="store-cart-btn__count">{cartCount}</span> : null}
             </Link>
           ) : null}

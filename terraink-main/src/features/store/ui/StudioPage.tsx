@@ -1,10 +1,10 @@
 import { useEffect, useState } from "react";
 import AppShell from "@/shared/ui/AppShell";
 import { useRouter } from "@/core/router/router";
-import { adminApi } from "@/core/services";
+import { adminApi, geocodeLocation } from "@/core/services";
 import { useDesignSnapshot } from "../application/useDesignSnapshot";
 import { useProductSync } from "../application/useProductSync";
-import { getPreset } from "../domain/presets";
+import { DESIGN_PRESETS, getPreset } from "../domain/presets";
 import AddedToCartDialog from "./AddedToCartDialog";
 import AdminExportPanel from "./AdminExportPanel";
 import PurchasePanel from "./PurchasePanel";
@@ -19,7 +19,8 @@ import { useStore } from "./StoreContext";
  * product options, a live framed preview and the buy box.
  *
  * URL options: ?preset=<id> starts from a featured design, ?edit=<cartItemId>
- * reopens a cart item, ?order=<number>&item=<id> loads an order for admins.
+ * reopens a cart item, ?place=<query> starts on a searched place,
+ * ?order=<number>&item=<id> loads an order for admins.
  */
 export default function StudioPage() {
   const store = useStore();
@@ -29,7 +30,11 @@ export default function StudioPage() {
   // The map must mount with the final design already in state; otherwise its
   // first "moveend" at the old position overwrites the loaded coordinates.
   const [isReady, setIsReady] = useState(
-    () => !search.get("preset") && !search.get("edit") && !search.get("order"),
+    () =>
+      !search.get("preset") &&
+      !search.get("edit") &&
+      !search.get("order") &&
+      !search.get("place"),
   );
   useProductSync(store.product);
 
@@ -39,7 +44,8 @@ export default function StudioPage() {
       !store.hasStartedDesign &&
       !search.get("preset") &&
       !search.get("edit") &&
-      !search.get("order"),
+      !search.get("order") &&
+      !search.get("place"),
   );
 
   useEffect(() => {
@@ -52,6 +58,33 @@ export default function StudioPage() {
     const editId = search.get("edit");
     const orderNumber = search.get("order");
     const itemId = search.get("item");
+    const place = search.get("place")?.trim();
+
+    if (place) {
+      let cancelled = false;
+      geocodeLocation(place)
+        .then((found) => {
+          if (cancelled) return;
+          applyPreset({
+            ...DESIGN_PRESETS[0],
+            location: found.label,
+            lat: found.lat,
+            lon: found.lon,
+            city: found.city || place,
+            country: found.country || "",
+            product: store.product,
+          });
+        })
+        .catch(() => undefined)
+        .finally(() => {
+          if (cancelled) return;
+          setIsReady(true);
+          navigate("/create", { replace: true });
+        });
+      return () => {
+        cancelled = true;
+      };
+    }
 
     if (presetId) {
       const preset = getPreset(presetId);

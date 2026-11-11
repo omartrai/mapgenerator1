@@ -9,9 +9,9 @@ const STEPS: { tab: MobileTab; title: string; hint: string }[] = [
 ];
 
 const EXTRAS: Partial<Record<MobileTab, { title: string; hint: string }>> = {
-  layers: { title: "Map details", hint: "Optional — show or hide buildings, parks, water and road types." },
-  markers: { title: "Add a marker", hint: "Optional — pin your home, a first date or a favourite café." },
-  routes: { title: "Add a route", hint: "Optional — upload a GPX file of a run, ride or road trip." },
+  layers: { title: "Map details", hint: "Optional. Show or hide buildings, parks, water and road types." },
+  markers: { title: "Add a marker", hint: "Optional. Pin your home, a first date or a favourite café." },
+  routes: { title: "Add a route", hint: "Optional. Upload a GPX file of a run, ride or road trip." },
 };
 
 interface StudioStepHeaderProps {

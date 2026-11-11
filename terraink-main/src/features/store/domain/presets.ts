@@ -28,6 +28,8 @@ export const DESIGN_PRESETS: DesignPreset[] = [
   p({ id: "tokyo", city: "Tokyo", country: "Japan", location: "Tokyo, Japan", lat: 35.6762, lon: 139.7003, distance: 4800, theme: "japanese_ink", themeLabel: "Japanese Ink", fontFamily: "Noto Sans JP", product: { sizeId: "30x40", orientation: "portrait", frameId: "white" } }),
   p({ id: "lisbon", city: "Lisbon", country: "Portugal", location: "Lisbon, Portugal", lat: 38.7139, lon: -9.1394, distance: 3400, theme: "ocean", themeLabel: "Ocean", fontFamily: "Raleway", product: { sizeId: "a4", orientation: "portrait", frameId: "oak" } }),
   p({ id: "amsterdam", city: "Amsterdam", country: "Netherlands", location: "Amsterdam, Netherlands", lat: 52.3728, lon: 4.8936, distance: 3000, theme: "sage", themeLabel: "Sage", fontFamily: "Lato", product: { sizeId: "50x70", orientation: "portrait", frameId: "black" } }),
+  p({ id: "london", city: "London", country: "United Kingdom", location: "London, United Kingdom", lat: 51.5072, lon: -0.1276, distance: 5000, theme: "noir", themeLabel: "Noir", fontFamily: "", product: { sizeId: "30x40", orientation: "portrait", frameId: "oak" } }),
+  p({ id: "barcelona", city: "Barcelona", country: "Spain", location: "Barcelona, Spain", lat: 41.3874, lon: 2.1686, distance: 3600, theme: "blush", themeLabel: "Blush", fontFamily: "Playfair Display", product: { sizeId: "a3", orientation: "portrait", frameId: "white" } }),
 ];
 
 export function getPreset(id: string | null | undefined): DesignPreset | null {

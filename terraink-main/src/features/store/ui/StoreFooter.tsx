@@ -7,20 +7,20 @@ export default function StoreFooter() {
       <div className="store-footer__inner">
         <div className="store-footer__brand">
           <span className="store-brand__name">Maploom</span>
-          <p>Personalised map posters, designed by you and printed to last.</p>
+          <p>Map posters of the places you care about, printed and framed to order.</p>
         </div>
         <nav className="store-footer__links" aria-label="Footer">
           <div>
             <h3>Shop</h3>
-            <Link to="/create">Create your map</Link>
-            <Link to="/#designs">Featured designs</Link>
+            <Link to="/create">Design a poster</Link>
+            <Link to="/#designs">Popular designs</Link>
             <Link to="/#pricing">Sizes &amp; prices</Link>
           </div>
           <div>
             <h3>Help</h3>
-            <Link to="/#how-it-works">How it works</Link>
-            <Link to="/#faq">Shipping &amp; returns</Link>
-            <Link to="/cart">Your cart</Link>
+            <Link to="/#faq">Delivery &amp; payment</Link>
+            <Link to="/#faq">FAQ</Link>
+            <Link to="/cart">Cart</Link>
           </div>
         </nav>
       </div>

@@ -1,282 +1,216 @@
+import { useEffect, useState } from "react";
 import {
   LuArrowRight,
   LuBanknote,
+  LuChevronRight,
   LuFrame,
-  LuMapPin,
-  LuPalette,
   LuPrinter,
-  LuRuler,
   LuTruck,
-  LuType,
 } from "react-icons/lu";
 import { Link } from "@/core/router/router";
-import { themeOptions } from "@/features/theme/infrastructure/themeRepository";
 import {
   FRAME_OPTIONS,
   FREE_SHIPPING_THRESHOLD,
   PRINT_SIZES,
   formatMoney,
+  getFrame,
+  getPrintSize,
   resolveDimensions,
+  unitPrice,
 } from "../domain/catalog";
-import { DESIGN_PRESETS } from "../domain/presets";
+import { DESIGN_PRESETS, type DesignPreset } from "../domain/presets";
 import FramedPoster from "./FramedPoster";
 import StoreFooter from "./StoreFooter";
 import StoreHeader from "./StoreHeader";
 
-const HERO_PRESETS = ["new-york", "paris", "marrakech"];
+const preset = (id: string) => DESIGN_PRESETS.find((entry) => entry.id === id)!;
+
+const SLIDES = [
+  { preset: "new-york", kicker: "New in", title: ["City", "posters"], note: "Midnight Blue edition" },
+  { preset: "paris", kicker: "Bestseller", title: ["Paris in", "oak"], note: "Carrara edition" },
+  { preset: "marrakech", kicker: "Warm tones", title: ["Sun-baked", "streets"], note: "Terracotta edition" },
+];
+
+const FRAME_TILES = [
+  { frame: "black", preset: "amsterdam" },
+  { frame: "white", preset: "tokyo" },
+  { frame: "oak", preset: "lisbon" },
+] as const;
+
+const EUROPE = new Set(["paris", "lisbon", "amsterdam", "london", "barcelona"]);
+const TABS = [
+  { id: "all", label: "All designs", match: () => true },
+  { id: "europe", label: "Europe", match: (p: DesignPreset) => EUROPE.has(p.id) },
+  { id: "world", label: "Rest of the world", match: (p: DesignPreset) => !EUROPE.has(p.id) },
+];
+
 const FAQ = [
   {
     q: "How long does delivery take?",
-    a: "Every poster is printed to order. Prints ship within 3–5 business days, and framed posters within 5–7. We'll let you know as soon as it's on its way.",
+    a: "Every poster is printed to order. Unframed prints leave us in 3 to 5 working days, framed ones in 5 to 7.",
   },
   {
     q: "How do I pay?",
-    a: "You pay on delivery, so there's nothing to pay online. We'll contact you to confirm the order before it goes to print.",
+    a: "Cash or card when the parcel arrives. We call or email you to confirm the order before we print it.",
   },
   {
     q: "Can I change my design after ordering?",
-    a: "Yes, as long as it hasn't gone to print yet. Get in touch with your order number and the changes, and we'll take care of it.",
+    a: "Yes, until it goes to print. Contact us with your order number and the change you want.",
   },
   {
     q: "What paper and frames do you use?",
-    a: "Prints are made on 200 g/m² museum-grade matte paper with archival pigment inks. Frames come in matte black aluminium, soft white wood or natural oak, all with shatter-resistant acrylic glazing.",
+    a: "200 g/m² matte paper with pigment inks. Frames are black aluminium, white wood or oak veneer, with shatterproof acrylic instead of glass.",
   },
   {
     q: "Which places can I map?",
-    a: "Anywhere in the world: a city, a neighbourhood, the street you grew up on or a mountain you climbed. The maps come from OpenStreetMap data.",
+    a: "Anywhere covered by OpenStreetMap, which is almost everywhere: a city, a village, a single street.",
   },
 ];
 
 export default function StorefrontPage() {
-  const heroPresets = HERO_PRESETS.map((id) => DESIGN_PRESETS.find((preset) => preset.id === id)!);
   const minPrice = Math.min(...PRINT_SIZES.map((size) => size.price));
-  const palettes = themeOptions.slice(0, 12);
 
   return (
     <div className="store-page store-page--home">
       <StoreHeader variant="site" />
 
       <main>
-        <section className="store-hero">
-          <div className="store-hero__copy">
-            <p className="store-eyebrow">Personalised map posters</p>
-            <h1 className="store-hero__title">
-              The places that made you, <em>beautifully framed.</em>
-            </h1>
-            <p className="store-hero__lede">
-              Design a poster of any place in the world: the city where you met, the street you
-              grew up on, the town you call home. Choose the colours, words and frame, see it
-              live, and we'll print it on museum-grade paper.
-            </p>
-            <div className="store-hero__actions">
-              <Link to="/create" className="store-btn store-btn--primary store-btn--lg">
-                Design your poster <LuArrowRight aria-hidden="true" />
-              </Link>
-              <Link to="/#designs" className="store-btn store-btn--outline store-btn--lg">
-                Browse designs
-              </Link>
+        <HeroSlider />
+
+        <section className="home-block home-cats" aria-labelledby="cats-title">
+          <div className="home-cats__intro">
+            <h2 id="cats-title" className="home-heading">
+              Shop{" "}
+              <br />
+              by frame
+            </h2>
+            <span className="home-rule" aria-hidden="true" />
+            <div className="home-cats__count">
+              <LuFrame aria-hidden="true" />
+              <p>
+                <strong>4 finishes</strong>
+                <span>including unframed</span>
+              </p>
             </div>
-            <ul className="store-hero__facts">
-              <li>From {formatMoney(minPrice)}</li>
-              <li>Free shipping over {formatMoney(FREE_SHIPPING_THRESHOLD)}</li>
-              <li>Pay on delivery</li>
-            </ul>
-          </div>
-
-          <div className="store-hero__gallery" aria-hidden="true">
-            {heroPresets.map((preset, index) => {
-              const { widthCm, heightCm } = resolveDimensions(preset.product);
-              return (
-                <div key={preset.id} className={`store-hero__poster store-hero__poster--${index + 1}`}>
-                  <FramedPoster
-                    src={preset.image}
-                    alt=""
-                    frameId={preset.product.frameId}
-                    ratio={widthCm / heightCm}
-                    size={index === 1 ? "lg" : "md"}
-                    loading="eager"
-                  />
-                </div>
-              );
-            })}
-          </div>
-        </section>
-
-        <section className="trust-strip" aria-label="Why Maploom">
-          <div><LuPrinter aria-hidden="true" /><span>Museum-grade archival prints</span></div>
-          <div><LuFrame aria-hidden="true" /><span>Ready-to-hang frames</span></div>
-          <div><LuTruck aria-hidden="true" /><span>Printed to order, shipped in days</span></div>
-          <div><LuBanknote aria-hidden="true" /><span>Pay when it arrives</span></div>
-        </section>
-
-        <section className="store-section" id="designs">
-          <div className="store-section__head">
-            <p className="store-eyebrow">Start from a favourite</p>
-            <h2 className="store-section__title">Featured designs</h2>
-            <p className="store-section__lede">
-              Each one is a starting point. Open it in the studio and make it yours with a new
-              place, new colours or new words.
-            </p>
-          </div>
-          <div className="design-grid">
-            {DESIGN_PRESETS.map((preset) => {
-              const { widthCm, heightCm } = resolveDimensions(preset.product);
-              return (
-                <Link key={preset.id} to={`/create?preset=${preset.id}`} className="design-card">
-                  <div className="design-card__visual">
-                    <FramedPoster
-                      src={preset.image}
-                      alt={`${preset.city} map poster in the ${preset.themeLabel} style`}
-                      frameId={preset.product.frameId}
-                      ratio={widthCm / heightCm}
-                      size="md"
-                    />
-                  </div>
-                  <div className="design-card__body">
-                    <div>
-                      <h3 className="design-card__title">{preset.city}</h3>
-                      <p className="design-card__meta">{preset.themeLabel} style</p>
-                    </div>
-                    <span className="design-card__cta">
-                      Personalise <LuArrowRight aria-hidden="true" />
-                    </span>
-                  </div>
-                </Link>
-              );
-            })}
-          </div>
-        </section>
-
-        <section className="store-section store-section--tinted" id="how-it-works">
-          <div className="store-section__head">
-            <p className="store-eyebrow">How it works</p>
-            <h2 className="store-section__title">From a place to a poster in minutes</h2>
-          </div>
-          <ol className="steps-grid">
-            <li className="step-card">
-              <span className="step-card__num">01</span>
-              <LuMapPin className="step-card__icon" aria-hidden="true" />
-              <h3>Find your place</h3>
-              <p>Search any city, address or landmark, then pan and zoom until the framing is just right.</p>
-            </li>
-            <li className="step-card">
-              <span className="step-card__num">02</span>
-              <LuPalette className="step-card__icon" aria-hidden="true" />
-              <h3>Make it yours</h3>
-              <p>Choose a palette, typeface and words, and add a marker for the spot that matters.</p>
-            </li>
-            <li className="step-card">
-              <span className="step-card__num">03</span>
-              <LuFrame className="step-card__icon" aria-hidden="true" />
-              <h3>Pick size &amp; frame</h3>
-              <p>See it framed in real time, from A4 up to 50 × 70 cm, in black, white or oak.</p>
-            </li>
-            <li className="step-card">
-              <span className="step-card__num">04</span>
-              <LuTruck className="step-card__icon" aria-hidden="true" />
-              <h3>We print &amp; deliver</h3>
-              <p>Your poster is printed to order on archival paper and delivered to your door.</p>
-            </li>
-          </ol>
-          <div className="store-section__cta">
-            <Link to="/create" className="store-btn store-btn--dark store-btn--lg">
-              Start designing <LuArrowRight aria-hidden="true" />
+            <Link to="/create" className="home-textlink">
+              All options <LuChevronRight aria-hidden="true" />
             </Link>
           </div>
+          {FRAME_TILES.map((tile) => {
+            const design = preset(tile.preset);
+            const frame = getFrame(tile.frame);
+            return (
+              <Link key={tile.frame} to={`/create?preset=${design.id}`} className="cat-tile">
+                <div className="cat-tile__visual">
+                  <FramedPoster
+                    src={design.image}
+                    alt=""
+                    frameId={tile.frame}
+                    ratio={0.75}
+                    size="sm"
+                  />
+                </div>
+                <span className="cat-tile__label">{frame.label}</span>
+              </Link>
+            );
+          })}
         </section>
 
-        <section className="store-section feature-split">
-          <div className="feature-split__copy">
-            <p className="store-eyebrow">Endless combinations</p>
-            <h2 className="store-section__title">Designed by you, down to the last detail</h2>
-            <ul className="feature-list">
-              <li>
-                <LuPalette aria-hidden="true" />
-                <div>
-                  <h3>{themeOptions.length} palettes</h3>
-                  <p>From quiet marble whites to midnight blue and gold. Every colour can be fine-tuned.</p>
-                </div>
-              </li>
-              <li>
-                <LuType aria-hidden="true" />
-                <div>
-                  <h3>Your words, your type</h3>
-                  <p>Write your own title and subtitle, and pick from ten typefaces.</p>
-                </div>
-              </li>
-              <li>
-                <LuMapPin aria-hidden="true" />
-                <div>
-                  <h3>Markers &amp; routes</h3>
-                  <p>Pin the places that matter, or trace a marathon, a road trip or your daily walk.</p>
-                </div>
-              </li>
-              <li>
-                <LuRuler aria-hidden="true" />
-                <div>
-                  <h3>Print-perfect framing</h3>
-                  <p>Your preview is your print. Every design is rendered at 300 DPI for production.</p>
-                </div>
-              </li>
-            </ul>
-          </div>
-          <div className="palette-wall" aria-label="Some of the available palettes">
-            {palettes.map((theme) => (
-              <div key={theme.id} className="palette-chip" title={theme.name}>
-                <div className="palette-chip__swatches">
-                  {theme.palette.slice(0, 5).map((color, index) => (
-                    <span key={`${theme.id}-${index}`} style={{ background: color }} />
-                  ))}
-                </div>
-                <span className="palette-chip__name">{theme.name}</span>
+        <section className="home-block home-promos" aria-label="Offers">
+          <Link to="/create" className="promo promo--wall">
+            <div className="promo__scene" aria-hidden="true">
+              <div className="promo__poster promo__poster--a">
+                <FramedPoster src={preset("london").image} alt="" frameId="oak" ratio={0.75} size="sm" />
               </div>
-            ))}
+              <div className="promo__shelf" />
+            </div>
+            <div className="promo__box">
+              <p className="promo__kicker">Over {formatMoney(FREE_SHIPPING_THRESHOLD)}</p>
+              <p className="promo__title">Free delivery</p>
+              <span className="promo__btn">Shop now</span>
+            </div>
+          </Link>
+          <Link to="/create" className="promo promo--sage">
+            <div className="promo__scene" aria-hidden="true">
+              <div className="promo__poster promo__poster--b">
+                <FramedPoster src={preset("barcelona").image} alt="" frameId="white" ratio={0.707} size="sm" />
+              </div>
+              <div className="promo__poster promo__poster--c">
+                <FramedPoster src={preset("tokyo").image} alt="" frameId="black" ratio={0.75} size="sm" />
+              </div>
+            </div>
+            <div className="promo__box">
+              <p className="promo__kicker">No card needed online</p>
+              <p className="promo__title">Pay on delivery</p>
+              <span className="promo__btn">Shop now</span>
+            </div>
+          </Link>
+        </section>
+
+        <ProductGrid />
+
+        <section className="home-block service-row" aria-label="Our service">
+          <div>
+            <LuPrinter aria-hidden="true" />
+            <p><strong>Printed to order</strong><span>200 g/m² matte paper</span></p>
+          </div>
+          <div>
+            <LuFrame aria-hidden="true" />
+            <p><strong>Ready to hang</strong><span>Black, white or oak</span></p>
+          </div>
+          <div>
+            <LuTruck aria-hidden="true" />
+            <p><strong>Ships in 3–7 days</strong><span>Free over {formatMoney(FREE_SHIPPING_THRESHOLD)}</span></p>
+          </div>
+          <div>
+            <LuBanknote aria-hidden="true" />
+            <p><strong>Pay on delivery</strong><span>Cash or card</span></p>
           </div>
         </section>
 
-        <section className="store-section store-section--tinted" id="pricing">
-          <div className="store-section__head">
-            <p className="store-eyebrow">Sizes &amp; prices</p>
-            <h2 className="store-section__title">Choose the perfect size</h2>
-            <p className="store-section__lede">
-              All prints are on 200 g/m² museum matte paper. Add a frame to any size.
-            </p>
+        <section className="home-block" id="pricing" aria-labelledby="pricing-title">
+          <div className="home-head">
+            <div>
+              <h2 id="pricing-title" className="home-heading">Sizes &amp; prices</h2>
+              <span className="home-rule" aria-hidden="true" />
+            </div>
+            <p className="home-head__note">Prints from {formatMoney(minPrice)}. Any size can be framed.</p>
           </div>
-          <div className="pricing-grid">
+          <div className="size-table">
             {PRINT_SIZES.map((size) => (
-              <div key={size.id} className={`price-card${size.popular ? " price-card--popular" : ""}`}>
-                {size.popular ? <span className="price-card__badge">Most popular</span> : null}
-                <div
-                  className="price-card__shape"
-                  aria-hidden="true"
-                  style={{ width: `${size.widthCm * 1.3}px`, height: `${size.heightCm * 1.3}px` }}
-                />
-                <h3 className="price-card__label">{size.label}</h3>
-                <p className="price-card__dims">
-                  {size.widthCm} × {size.heightCm} cm
-                </p>
-                <p className="price-card__price">{formatMoney(size.price)}</p>
-                <p className="price-card__frame">Framed {formatMoney(size.price + size.framePrice)}</p>
-              </div>
-            ))}
-          </div>
-          <div className="frame-strip">
-            {FRAME_OPTIONS.filter((frame) => frame.id !== "none").map((frame) => (
-              <div key={frame.id} className="frame-strip__item">
-                <span className={`frame-card__swatch frame-card__swatch--${frame.id}`} aria-hidden="true" />
-                <div>
-                  <h3>{frame.label}</h3>
-                  <p>{frame.description}</p>
+              <div key={size.id} className="size-cell">
+                {size.popular ? <span className="badge badge--accent">Popular</span> : null}
+                <div className="size-cell__shape" aria-hidden="true">
+                  <span style={{ width: `${size.widthCm * 1.4}px`, height: `${size.heightCm * 1.4}px` }} />
                 </div>
+                <p className="size-cell__name">{size.label}</p>
+                <p className="size-cell__dims">
+                  {size.id.startsWith("a") ? `${size.widthCm} × ${size.heightCm} cm` : "Poster size"}
+                </p>
+                <p className="size-cell__price">
+                  {formatMoney(size.price)}
+                  <span>Framed {formatMoney(size.price + size.framePrice)}</span>
+                </p>
               </div>
             ))}
           </div>
+          <ul className="frame-list">
+            {FRAME_OPTIONS.filter((frame) => frame.id !== "none").map((frame) => (
+              <li key={frame.id}>
+                <span className={`frame-card__swatch frame-card__swatch--${frame.id}`} aria-hidden="true" />
+                <span><strong>{frame.label}.</strong> {frame.description}</span>
+              </li>
+            ))}
+          </ul>
         </section>
 
-        <section className="store-section" id="faq">
-          <div className="store-section__head">
-            <p className="store-eyebrow">Good to know</p>
-            <h2 className="store-section__title">Questions, answered</h2>
+        <section className="home-block home-faq" id="faq" aria-labelledby="faq-title">
+          <div>
+            <h2 id="faq-title" className="home-heading">Questions</h2>
+            <span className="home-rule" aria-hidden="true" />
+            <p className="home-faq__note">
+              Something else? Write to us after ordering and quote your order number.
+            </p>
           </div>
           <div className="faq">
             {FAQ.map((entry) => (
@@ -287,17 +221,154 @@ export default function StorefrontPage() {
             ))}
           </div>
         </section>
-
-        <section className="closing-cta">
-          <h2>Every place has a story.</h2>
-          <p>Put yours on the wall.</p>
-          <Link to="/create" className="store-btn store-btn--light store-btn--lg">
-            Create your map poster <LuArrowRight aria-hidden="true" />
-          </Link>
-        </section>
       </main>
 
       <StoreFooter />
     </div>
+  );
+}
+
+function HeroSlider() {
+  const [index, setIndex] = useState(0);
+  const [paused, setPaused] = useState(false);
+
+  useEffect(() => {
+    if (paused) return undefined;
+    const timer = window.setTimeout(() => setIndex((current) => (current + 1) % SLIDES.length), 6000);
+    return () => window.clearTimeout(timer);
+  }, [index, paused]);
+
+  return (
+    <section
+      className="hero"
+      aria-roledescription="carousel"
+      aria-label="Featured designs"
+      onMouseEnter={() => setPaused(true)}
+      onMouseLeave={() => setPaused(false)}
+    >
+      {SLIDES.map((slide, slideIndex) => {
+        const design = preset(slide.preset);
+        const { widthCm, heightCm } = resolveDimensions(design.product);
+        const isActive = slideIndex === index;
+        return (
+          <div
+            key={slide.preset}
+            className={`hero__slide${isActive ? " is-active" : ""}`}
+            aria-hidden={!isActive}
+            role="group"
+            aria-roledescription="slide"
+            aria-label={`${slideIndex + 1} of ${SLIDES.length}`}
+          >
+            <div className="hero__copy">
+              <p className="hero__brand">
+                Maploom
+                <span>{slide.note}</span>
+              </p>
+              <p className="hero__kicker">{slide.kicker}</p>
+              <h1 className="hero__title">
+                {slide.title[0]}
+                <br />
+                {slide.title[1]}
+              </h1>
+              <Link
+                to={`/create?preset=${design.id}`}
+                className="store-btn store-btn--primary"
+                tabIndex={isActive ? 0 : -1}
+              >
+                Shop now <LuArrowRight aria-hidden="true" />
+              </Link>
+              <span className="hero__numeral" aria-hidden="true">
+                {String(slideIndex + 1).padStart(2, "0")}
+              </span>
+            </div>
+            <div className="hero__art">
+              <span className="hero__disc" aria-hidden="true" />
+              <div className="hero__poster">
+                <FramedPoster
+                  src={design.image}
+                  alt={`${design.city} map poster`}
+                  frameId={design.product.frameId}
+                  ratio={widthCm / heightCm}
+                  size="lg"
+                  loading={slideIndex === 0 ? "eager" : "lazy"}
+                />
+              </div>
+            </div>
+          </div>
+        );
+      })}
+      <div className="hero__dots">
+        {SLIDES.map((slide, slideIndex) => (
+          <button
+            key={slide.preset}
+            type="button"
+            className={slideIndex === index ? "is-active" : ""}
+            aria-label={`Show slide ${slideIndex + 1}`}
+            aria-current={slideIndex === index}
+            onClick={() => setIndex(slideIndex)}
+          />
+        ))}
+      </div>
+    </section>
+  );
+}
+
+function ProductGrid() {
+  const [tab, setTab] = useState("all");
+  const active = TABS.find((entry) => entry.id === tab) ?? TABS[0];
+  const items = DESIGN_PRESETS.filter(active.match);
+
+  return (
+    <section className="home-block" id="designs" aria-labelledby="designs-title">
+      <div className="home-head">
+        <div>
+          <h2 id="designs-title" className="home-heading">Popular designs</h2>
+          <span className="home-rule" aria-hidden="true" />
+        </div>
+        <div className="home-tabs" role="tablist" aria-label="Filter designs">
+          {TABS.map((entry) => (
+            <button
+              key={entry.id}
+              type="button"
+              role="tab"
+              aria-selected={entry.id === tab}
+              className={entry.id === tab ? "is-active" : ""}
+              onClick={() => setTab(entry.id)}
+            >
+              {entry.label}
+            </button>
+          ))}
+        </div>
+        <Link to="/create" className="store-btn store-btn--outline store-btn--sm">
+          Start from scratch <LuArrowRight aria-hidden="true" />
+        </Link>
+      </div>
+
+      <div className="product-grid">
+        {items.map((design) => {
+          const { widthCm, heightCm } = resolveDimensions(design.product);
+          const size = getPrintSize(design.product.sizeId);
+          const frame = getFrame(design.product.frameId);
+          return (
+            <Link key={design.id} to={`/create?preset=${design.id}`} className="product-card">
+              <div className="product-card__visual">
+                <span className="badge">{size.label}</span>
+                <FramedPoster
+                  src={design.image}
+                  alt={`${design.city} map poster, ${design.themeLabel} colours`}
+                  frameId={design.product.frameId}
+                  ratio={widthCm / heightCm}
+                  size="md"
+                />
+                <span className="product-card__hover">Customise</span>
+              </div>
+              <p className="product-card__meta">{design.themeLabel} · {frame.label}</p>
+              <h3 className="product-card__title">{design.city}</h3>
+              <p className="product-card__price">{formatMoney(unitPrice(design.product))}</p>
+            </Link>
+          );
+        })}
+      </div>
+    </section>
   );
 }

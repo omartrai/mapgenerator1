@@ -47,7 +47,7 @@ export const FRAME_OPTIONS: FrameOption[] = [
   { id: "oak", label: "Oak frame", description: "Natural oak veneer with acrylic glazing.", swatch: "#b98b5a" },
 ];
 
-export const PAPER_DESCRIPTION = "Museum-grade 200 g/m² matte paper, printed with archival pigment inks.";
+export const PAPER_DESCRIPTION = "200 g/m² matte paper, printed with pigment inks.";
 
 export const SHIPPING_FLAT = 495;
 export const FREE_SHIPPING_THRESHOLD = 7500;

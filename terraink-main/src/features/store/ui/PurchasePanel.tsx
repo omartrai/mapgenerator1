@@ -89,7 +89,7 @@ export default function PurchasePanel({ isMobile }: { isMobile: boolean }) {
         </div>
         <div>
           <dt>Paper</dt>
-          <dd>Museum matte, 200 g/m²</dd>
+          <dd>Matte, 200 g/m²</dd>
         </div>
       </dl>
 
@@ -118,7 +118,7 @@ export default function PurchasePanel({ isMobile }: { isMobile: boolean }) {
       {error ? <p className="store-error" role="alert">{error}</p> : null}
 
       <ul className="studio-buy__trust">
-        <li><LuPrinter aria-hidden="true" /> Printed with archival pigment inks</li>
+        <li><LuPrinter aria-hidden="true" /> Printed with pigment inks</li>
         <li><LuTruck aria-hidden="true" /> Ships in 3–5 business days</li>
         <li><LuBanknote aria-hidden="true" /> Pay on delivery</li>
       </ul>
