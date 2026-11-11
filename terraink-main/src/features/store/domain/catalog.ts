@@ -154,9 +154,11 @@ export interface OrderTotals {
   currency: string;
 }
 
-export function computeTotals(lines: { product: ProductOptions; quantity: number }[]): OrderTotals {
+export function computeTotals(
+  lines: { product: ProductOptions; quantity: number; collection?: { price: number } | null }[],
+): OrderTotals {
   const subtotal = lines.reduce(
-    (sum, line) => sum + unitPrice(line.product) * line.quantity,
+    (sum, line) => sum + (line.collection ? line.collection.price : unitPrice(line.product)) * line.quantity,
     0,
   );
   const shipping = subtotal === 0 || subtotal >= FREE_SHIPPING_THRESHOLD ? 0 : SHIPPING_FLAT;

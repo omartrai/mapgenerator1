@@ -1,4 +1,5 @@
 import { useCallback, useMemo } from "react";
+import { formatCollectionSize, type CollectionLine } from "../domain/collection";
 import { useLanguage, type AppLanguage } from "@/shared/i18n/LanguageContext";
 import {
   STORE_CURRENCY,
@@ -286,7 +287,8 @@ const en = {
   "collection.withoutMat": "Without",
   "collection.depth": "Frame depth",
   "collection.frame": "Wooden frame included.",
-  "collection.soon": "Online ordering for the collection is coming very soon.",
+  "collection.color": "Frame colour",
+  "collection.keep": "Keep shopping",
   "collection.alt": "{title}, view {n}",
   "collection.count": "{count} posters",
   "collection.categories": "Categories",
@@ -607,7 +609,8 @@ const fr: Dictionary = {
   "collection.withoutMat": "Sans",
   "collection.depth": "Épaisseur du cadre",
   "collection.frame": "Cadre en bois inclus.",
-  "collection.soon": "La commande en ligne de la collection arrive très bientôt.",
+  "collection.color": "Couleur du cadre",
+  "collection.keep": "Continuer mes achats",
   "collection.alt": "{title}, vue {n}",
   "collection.count": "{count} affiches",
   "collection.categories": "Catégories",
@@ -925,7 +928,8 @@ const ar: Dictionary = {
   "collection.withoutMat": "بدون",
   "collection.depth": "سُمك الإطار",
   "collection.frame": "إطار خشبي مرفق.",
-  "collection.soon": "الطلب عبر الإنترنت لهذه المجموعة قريبًا جدًا.",
+  "collection.color": "لون الإطار",
+  "collection.keep": "متابعة التسوق",
   "collection.alt": "{title}، صورة {n}",
   "collection.count": "{count} ملصقات",
   "collection.categories": "الفئات",
@@ -1012,11 +1016,22 @@ export function useStoreText() {
         frameLabel(product.frameId),
         ...(hasMat(product) ? [t("mat.short")] : []),
       ].join(" · ");
+    /** Options line for a cart/order item (studio map or collection poster). */
+    const describeItem = (item: { product: ProductOptions; collection?: CollectionLine | null }) => {
+      const line = item.collection;
+      if (!line) return describe(item.product);
+      const depth = `${String(line.frameDepthCm).replace(".", language === "en" ? "." : ",")} cm`;
+      return [
+        formatCollectionSize(line.size),
+        `${frameLabel(line.frameColor)} ${depth}`,
+        ...(line.withMat ? [t("mat.short")] : []),
+      ].join(" · ");
+    };
     const cityName = (preset: DesignPreset) =>
       (language === "ar" ? preset.names?.ar : language === "fr" ? preset.names?.fr : null) ??
       preset.city;
     /** Two-line headings are written "line one|line two". */
     const lines = (key: StoreTextKey) => t(key).split("|");
-    return { t, language, money, sizeLabel, shapeName, formatName, frameLabel, describe, cityName, lines };
+    return { t, language, money, sizeLabel, shapeName, formatName, frameLabel, describe, describeItem, cityName, lines };
   }, [language, t]);
 }

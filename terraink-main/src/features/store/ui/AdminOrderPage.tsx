@@ -182,6 +182,49 @@ function OrderItemCard({
   onDownload: (fileName: string) => Promise<void>;
 }) {
   const { navigate } = useRouter();
+  const line = item.collection;
+  if (line || !item.design) {
+    const rows: [string, string][] = line
+      ? [
+          ["Product", item.productLabel],
+          ["Partner product", `UrbanArt #${line.productId} · ${line.title}`],
+          ["Variant", `#${line.variantIndex}`],
+          ["Size", `${item.widthCm} × ${item.heightCm} cm`],
+          ["Frame colour", line.frameColor],
+          ["Frame depth", `${line.frameDepthCm} cm`],
+          ["Passe-partout", line.withMat ? "Yes" : "No"],
+          ["Quantity", String(item.quantity)],
+        ]
+      : [["Product", item.productLabel], ["Quantity", String(item.quantity)]];
+    return (
+      <section className="admin-card admin-item">
+        <div className="admin-card__head">
+          <h2>
+            Poster {index + 1} · {item.summary.title} {line ? "(collection)" : ""}
+          </h2>
+          <span className="admin-subtle">{formatMoney(item.lineTotal, order.totals.currency)}</span>
+        </div>
+        <div className="admin-item__body">
+          <div className="admin-item__visual">
+            {line ? (
+              <FramedPoster src={line.image} alt={`${item.summary.title}`} frameId={line.frameColor} mat={line.withMat} ratio={item.widthCm / item.heightCm} size="md" />
+            ) : null}
+          </div>
+          <div className="admin-item__details">
+            <dl className="admin-dl admin-dl--compact">
+              {rows.map(([label, value]) => (
+                <div key={label}>
+                  <dt>{label}</dt>
+                  <dd>{value || "—"}</dd>
+                </div>
+              ))}
+            </dl>
+            <p className="admin-subtle">Ready-made poster: order it from UrbanArt with the product and options above. No print file needed.</p>
+          </div>
+        </div>
+      </section>
+    );
+  }
   const form = item.design.form as Record<string, string | boolean>;
   const rows: [string, string][] = [
     ["Product", item.productLabel],

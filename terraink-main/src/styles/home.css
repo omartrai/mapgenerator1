@@ -742,15 +742,6 @@
   padding: 12px 16px;
 }
 
-.collection-soon {
-  margin: 24px 0 18px;
-  padding: 14px 16px;
-  border-radius: 12px;
-  background: #fbe4d8;
-  color: #9a3b17;
-  font-weight: 600;
-}
-
 .collection-product .studio-buy__trust {
   display: grid;
   gap: 10px;
@@ -1520,4 +1511,13 @@
 .text-parts__chip input:focus-visible + span {
   outline: 2px solid var(--s-accent, #e4572e);
   outline-offset: 2px;
+}
+
+/* Collection product: frame colours and add to cart */
+.collection-colors {
+  grid-template-columns: repeat(5, minmax(0, 1fr));
+}
+
+.collection-add {
+  margin: 24px 0 18px;
 }

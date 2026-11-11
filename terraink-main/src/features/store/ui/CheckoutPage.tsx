@@ -2,7 +2,7 @@ import { useEffect, type FormEvent } from "react";
 import { LuArrowLeft, LuBanknote, LuLoader, LuLock } from "react-icons/lu";
 import { Link, useRouter } from "@/core/router/router";
 import { useCheckout } from "../application/useCheckout";
-import { resolveDimensions, unitPrice } from "../domain/catalog";
+import { itemDimensions, itemUnitPrice } from "../domain/cart";
 import type { CustomerInfo } from "../domain/order";
 import FramedPoster from "./FramedPoster";
 import OrderTotalsList from "./OrderTotalsList";
@@ -47,7 +47,7 @@ export default function CheckoutPage() {
   const { cart, totals } = useStore();
   const { navigate } = useRouter();
   const checkout = useCheckout();
-  const { t, money, describe, language } = useStoreText();
+  const { t, money, describeItem, language } = useStoreText();
 
   useEffect(() => {
     if (!checkout.customer.country) checkout.setField("country", t("checkout.defaultCountry"));
@@ -178,7 +178,7 @@ export default function CheckoutPage() {
             <h2 className="summary-card__title">{t("checkout.yourOrder")}</h2>
             <ul className="mini-lines">
               {cart.map((item) => {
-                const { widthCm, heightCm } = resolveDimensions(item.product);
+                const { widthCm, heightCm } = itemDimensions(item);
                 return (
                   <li key={item.id} className="mini-line">
                     <div className="mini-line__visual">
@@ -193,9 +193,9 @@ export default function CheckoutPage() {
                     </div>
                     <div className="mini-line__text">
                       <p className="mini-line__title">{item.summary.title}</p>
-                      <p className="mini-line__meta">{describe(item.product)}</p>
+                      <p className="mini-line__meta">{describeItem(item)}</p>
                     </div>
-                    <p className="mini-line__price">{money(unitPrice(item.product) * item.quantity)}</p>
+                    <p className="mini-line__price">{money(itemUnitPrice(item) * item.quantity)}</p>
                   </li>
                 );
               })}

@@ -61,7 +61,9 @@ export function useCheckout() {
           quantity: item.quantity,
           design: item.design,
           summary: item.summary,
-          previewDataUrl: item.previewDataUrl,
+          ...(item.collection
+            ? { collection: item.collection, previewDataUrl: "" }
+            : { previewDataUrl: item.previewDataUrl }),
         })),
       });
       rememberOrder({ number: order.number, accessKey, createdAt: order.createdAt });

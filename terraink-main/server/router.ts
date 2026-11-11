@@ -73,7 +73,11 @@ export function createApiHandler(options: RouterOptions) {
         "Order storage is not configured. Connect a Vercel Blob store to this project.",
       );
     }
-    service = createOrderService(storage, createFulfillmentProvider(options.env));
+    service = createOrderService(
+      storage,
+      createFulfillmentProvider(options.env),
+      catalog ? async (id) => (await catalog.getProduct(id))?.product ?? null : undefined,
+    );
     return service;
   };
 

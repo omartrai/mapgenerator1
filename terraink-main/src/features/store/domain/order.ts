@@ -1,5 +1,6 @@
 import type { OrderTotals, ProductOptions } from "./catalog.js";
 import type { DesignSummary, PosterDesign } from "./design.js";
+import type { CollectionLine } from "./collection.js";
 
 export interface CustomerInfo {
   fullName: string;
@@ -47,8 +48,10 @@ export interface OrderItemInput {
   id: string;
   product: ProductOptions;
   quantity: number;
-  design: PosterDesign;
+  design: PosterDesign | null;
   summary: DesignSummary;
+  /** Ready-made collection poster (then design is null and no preview is sent). */
+  collection?: CollectionLine;
   /** JPEG data URL of the composited poster, used as the order preview. */
   previewDataUrl: string;
 }
@@ -78,8 +81,10 @@ export interface OrderItem {
   quantity: number;
   unitPrice: number;
   lineTotal: number;
-  design: PosterDesign;
+  design: PosterDesign | null;
   summary: DesignSummary;
+  /** Ready-made collection poster, with the partner's product and variant. */
+  collection?: CollectionLine;
   preview: StoredFile | null;
   printFiles: StoredFile[];
 }
@@ -159,7 +164,7 @@ export function toSummaryRow(order: Order): OrderSummaryRow {
     itemCount: order.items.reduce((sum, item) => sum + item.quantity, 0),
     total: order.totals.total,
     currency: order.totals.currency,
-    hasPrintFiles: order.items.every((item) => item.printFiles.length > 0),
+    hasPrintFiles: order.items.every((item) => !!item.collection || item.printFiles.length > 0),
   };
 }
 

@@ -3,9 +3,8 @@ import { Link, useRouter } from "@/core/router/router";
 import {
   FREE_SHIPPING_THRESHOLD,
   MAX_QUANTITY_PER_ITEM,
-  resolveDimensions,
-  unitPrice,
 } from "../domain/catalog";
+import { itemDimensions, itemUnitPrice } from "../domain/cart";
 import FramedPoster from "./FramedPoster";
 import StoreFooter from "./StoreFooter";
 import StoreHeader from "./StoreHeader";
@@ -16,7 +15,7 @@ import { useStoreText } from "./storeText";
 export default function CartPage() {
   const { cart, totals, removeItem, setQuantity } = useStore();
   const { navigate } = useRouter();
-  const { t, money, describe } = useStoreText();
+  const { t, money, describeItem } = useStoreText();
   const remaining = FREE_SHIPPING_THRESHOLD - totals.subtotal;
 
   return (
@@ -44,8 +43,8 @@ export default function CartPage() {
           <div className="cart-layout">
             <ul className="cart-list">
               {cart.map((item) => {
-                const { widthCm, heightCm } = resolveDimensions(item.product);
-                const price = unitPrice(item.product);
+                const { widthCm, heightCm } = itemDimensions(item);
+                const price = itemUnitPrice(item);
                 return (
                   <li key={item.id} className="cart-line">
                     <div className="cart-line__visual">
@@ -61,10 +60,12 @@ export default function CartPage() {
                       <div className="cart-line__head">
                         <div>
                           <h2 className="cart-line__title">{item.summary.title}</h2>
-                          <p className="cart-line__meta">{describe(item.product)}</p>
-                          <p className="cart-line__meta cart-line__meta--soft">
-                            {item.summary.themeName} · {item.summary.fontFamily}
-                          </p>
+                          <p className="cart-line__meta">{describeItem(item)}</p>
+                          {item.collection ? null : (
+                            <p className="cart-line__meta cart-line__meta--soft">
+                              {item.summary.themeName} · {item.summary.fontFamily}
+                            </p>
+                          )}
                         </div>
                         <p className="cart-line__price">{money(price * item.quantity)}</p>
                       </div>
@@ -88,13 +89,15 @@ export default function CartPage() {
                             <LuPlus />
                           </button>
                         </div>
-                        <button
-                          type="button"
-                          className="store-btn store-btn--ghost store-btn--sm"
-                          onClick={() => navigate(`/create?edit=${encodeURIComponent(item.id)}`)}
-                        >
-                          <LuPencil aria-hidden="true" /> {t("cart.edit")}
-                        </button>
+                        {item.collection ? null : (
+                          <button
+                            type="button"
+                            className="store-btn store-btn--ghost store-btn--sm"
+                            onClick={() => navigate(`/create?edit=${encodeURIComponent(item.id)}`)}
+                          >
+                            <LuPencil aria-hidden="true" /> {t("cart.edit")}
+                          </button>
+                        )}
                         <button
                           type="button"
                           className="store-btn store-btn--ghost store-btn--sm store-btn--danger"

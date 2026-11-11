@@ -17,7 +17,7 @@ export default function OrderConfirmationPage({ number }: { number: string }) {
     search.get("key") ?? (lastOrder?.number === number ? lastOrder.accessKey : "");
   const [order, setOrder] = useState<PublicOrder | null>(null);
   const [error, setError] = useState("");
-  const { t, money, language, describe } = useStoreText();
+  const { t, money, language, describeItem } = useStoreText();
 
   useEffect(() => {
     if (!accessKey) {
@@ -85,9 +85,13 @@ export default function OrderConfirmationPage({ number }: { number: string }) {
                   {order.items.map((item) => (
                     <li key={item.id} className="mini-line">
                       <div className="mini-line__visual">
-                        {item.preview ? (
+                        {item.preview || item.collection ? (
                           <FramedPoster
-                            src={ordersApi.previewUrl(order.number, item.preview.name, accessKey)}
+                            src={
+                              item.preview
+                                ? ordersApi.previewUrl(order.number, item.preview.name, accessKey)
+                                : item.collection!.image
+                            }
                             alt={`${item.summary.title} poster`}
                             frameId={item.product.frameId} mat={item.product.mat === true}
                             ratio={item.widthCm / item.heightCm}
@@ -98,8 +102,8 @@ export default function OrderConfirmationPage({ number }: { number: string }) {
                       </div>
                       <div className="mini-line__text">
                         <p className="mini-line__title">{item.summary.title}</p>
-                        <p className="mini-line__meta">{describe(item.product)}</p>
-                        <p className="mini-line__meta">{item.summary.themeName}</p>
+                        <p className="mini-line__meta">{describeItem(item)}</p>
+                        {item.collection ? null : <p className="mini-line__meta">{item.summary.themeName}</p>}
                       </div>
                       <p className="mini-line__price">{money(item.lineTotal, order.totals.currency)}</p>
                     </li>

@@ -1,15 +1,15 @@
 import { useEffect, useRef } from "react";
 import { LuCheck, LuX } from "react-icons/lu";
 import { useRouter } from "@/core/router/router";
-import { resolveDimensions, unitPrice } from "../domain/catalog";
+import { itemDimensions, itemUnitPrice } from "../domain/cart";
 import FramedPoster from "./FramedPoster";
 import { useStore } from "./StoreContext";
 import { useStoreText } from "./storeText";
 
-export default function AddedToCartDialog() {
+export default function AddedToCartDialog({ keepLabel }: { keepLabel?: string } = {}) {
   const { lastAdded, dismissLastAdded, cartCount, totals } = useStore();
   const { navigate } = useRouter();
-  const { t, money, describe } = useStoreText();
+  const { t, money, describeItem } = useStoreText();
   const primaryRef = useRef<HTMLButtonElement | null>(null);
 
   useEffect(() => {
@@ -23,7 +23,7 @@ export default function AddedToCartDialog() {
   }, [lastAdded, dismissLastAdded]);
 
   if (!lastAdded) return null;
-  const { widthCm, heightCm } = resolveDimensions(lastAdded.product);
+  const { widthCm, heightCm } = itemDimensions(lastAdded);
 
   return (
     <div className="store-dialog" role="dialog" aria-modal="true" aria-labelledby="added-title">
@@ -47,8 +47,8 @@ export default function AddedToCartDialog() {
             <LuCheck aria-hidden="true" /> {t("added.title")}
           </p>
           <h2 id="added-title" className="added-dialog__title">{lastAdded.summary.title}</h2>
-          <p className="added-dialog__meta">{describe(lastAdded.product)}</p>
-          <p className="added-dialog__price">{money(unitPrice(lastAdded.product))}</p>
+          <p className="added-dialog__meta">{describeItem(lastAdded)}</p>
+          <p className="added-dialog__price">{money(itemUnitPrice(lastAdded))}</p>
           <div className="added-dialog__actions">
             <button
               ref={primaryRef}
@@ -72,7 +72,7 @@ export default function AddedToCartDialog() {
               {t("added.view", { count: cartCount })}
             </button>
             <button type="button" className="store-btn store-btn--ghost store-btn--block" onClick={dismissLastAdded}>
-              {t("added.keep")}
+              {keepLabel ?? t("added.keep")}
             </button>
           </div>
         </div>

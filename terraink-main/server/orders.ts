@@ -9,6 +9,12 @@ import {
   unitPrice,
 } from "../src/features/store/domain/catalog.js";
 import { isPosterDesign } from "../src/features/store/domain/design.js";
+import {
+  collectionDimensions,
+  formatCollectionSize,
+  type CollectionLine,
+  type CollectionProduct,
+} from "../src/features/store/domain/collection.js";
 import type {
   CreateOrderInput,
   Order,
@@ -73,7 +79,63 @@ function decodeDataUrl(dataUrl: string): { bytes: Uint8Array; contentType: strin
 const extensionFor = (contentType: string) =>
   contentType === "image/png" ? "png" : contentType === "image/webp" ? "webp" : "jpg";
 
-export function createOrderService(storage: IOrderStorage, fulfillment: IFulfillmentProvider) {
+/** Looks up a collection poster in the partner catalogue (null if unknown). */
+export type CollectionLookup = (productId: number) => Promise<CollectionProduct | null>;
+
+const FRAME_NAMES: Record<string, string> = {
+  oak: "Oak",
+  white: "White",
+  grey: "Grey",
+  walnut: "Walnut",
+  black: "Black",
+};
+
+/** Re-checks a collection line against the live catalogue; price comes from there. */
+async function resolveCollectionLine(raw: unknown, lookup: CollectionLookup | undefined): Promise<CollectionLine> {
+  const input = (raw ?? {}) as Partial<CollectionLine>;
+  if (!lookup) throw new HttpError(503, "The collection can't be ordered right now.");
+  const productId = Number(input.productId);
+  const variantIndex = Number(input.variantIndex);
+  if (!Number.isInteger(productId) || !Number.isInteger(variantIndex)) {
+    throw new HttpError(400, "A collection poster is unknown.");
+  }
+  let product: CollectionProduct | null;
+  try {
+    product = await lookup(productId);
+  } catch {
+    throw new HttpError(502, "The collection is unavailable right now. Please try again.");
+  }
+  const variant = product?.variants.find((entry) => entry.index === variantIndex);
+  if (!product || !variant) throw new HttpError(400, "A collection poster is no longer available.");
+  const frameColor = variant.colors.find((color) => color === input.frameColor);
+  if (!frameColor) throw new HttpError(400, "A collection poster has an unknown frame colour.");
+  return {
+    productId,
+    variantIndex,
+    title: product.title,
+    size: variant.size,
+    withMat: variant.withMat,
+    frameDepthCm: variant.frameDepthCm,
+    frameColor,
+    image: product.image,
+    price: variant.price,
+  };
+}
+
+function describeCollectionLine(line: CollectionLine): string {
+  return [
+    `Collection #${line.productId}`,
+    formatCollectionSize(line.size),
+    `${FRAME_NAMES[line.frameColor] ?? line.frameColor} frame ${line.frameDepthCm} cm`,
+    line.withMat ? "Passe-partout" : "No passe-partout",
+  ].join(" · ");
+}
+
+export function createOrderService(
+  storage: IOrderStorage,
+  fulfillment: IFulfillmentProvider,
+  findCollectionProduct?: CollectionLookup,
+) {
   async function load(number: string): Promise<Order> {
     const order = await storage.getJson<Order>(orderPath(assertOrderNumber(number)));
     if (!order) throw new HttpError(404, "Order not found.");
@@ -110,6 +172,41 @@ export function createOrderService(storage: IOrderStorage, fulfillment: IFulfill
       const items: OrderItem[] = [];
 
       for (const [index, raw] of rawItems.entries()) {
+        const quantityValue = Math.floor(Number(raw?.quantity));
+        if (raw?.collection) {
+          if (!Number.isFinite(quantityValue) || quantityValue < 1 || quantityValue > MAX_QUANTITY_PER_ITEM) {
+            throw new HttpError(400, "Invalid quantity.");
+          }
+          const line = await resolveCollectionLine(raw.collection, findCollectionProduct);
+          const { widthCm, heightCm } = collectionDimensions(line.size);
+          items.push({
+            id: String(raw.id ?? `item-${index + 1}`).slice(0, 64),
+            product: { sizeId: line.size, orientation: "portrait", frameId: line.frameColor, mat: line.withMat },
+            productLabel: describeCollectionLine(line),
+            widthCm,
+            heightCm,
+            quantity: quantityValue,
+            unitPrice: line.price,
+            lineTotal: line.price * quantityValue,
+            design: null,
+            summary: {
+              title: line.title,
+              subtitle: formatCollectionSize(line.size),
+              themeId: "",
+              themeName: "Collection",
+              fontFamily: "",
+              latitude: 0,
+              longitude: 0,
+              distanceMeters: 0,
+              markerCount: 0,
+              routeCount: 0,
+            },
+            collection: line,
+            preview: null,
+            printFiles: [],
+          });
+          continue;
+        }
         if (!isValidProduct(raw?.product)) throw new HttpError(400, "A poster has an unknown size or frame.");
         if (!isPosterDesign(raw?.design)) throw new HttpError(400, "A poster design is missing.");
         if (JSON.stringify(raw.design).length > MAX_DESIGN_BYTES) {

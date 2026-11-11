@@ -1,3 +1,5 @@
+import type { FrameId } from "./catalog.js";
+
 /**
  * Ready-made posters from the print partner's catalogue (UrbanArt), as shown
  * in the shop. Only customer-facing fields are kept: reseller cost, product
@@ -14,6 +16,47 @@ export interface CollectionVariant {
   frameDepthCm: number;
   /** Suggested retail price, in centimes (MAD). */
   price: number;
+  /** Frame colours this variant comes in (shop frame ids). */
+  colors: FrameId[];
+}
+
+/** A collection poster as it sits in the cart or an order. */
+export interface CollectionLine {
+  productId: number;
+  variantIndex: number;
+  title: string;
+  /** e.g. "50x70". */
+  size: string;
+  withMat: boolean;
+  frameDepthCm: number;
+  frameColor: FrameId;
+  /** Picture shown in the cart and the order. */
+  image: string;
+  /** Retail price shown to the customer; the server re-checks it. */
+  price: number;
+}
+
+/** UrbanArt colour names → shop frame ids. */
+const COLOR_IDS: Record<string, FrameId> = {
+  oak: "oak",
+  chene: "oak",
+  white: "white",
+  blanc: "white",
+  grey: "grey",
+  gray: "grey",
+  gris: "grey",
+  noyer: "walnut",
+  walnut: "walnut",
+  black: "black",
+  noir: "black",
+};
+const FRAME_ORDER: FrameId[] = ["oak", "white", "grey", "walnut", "black"];
+
+function toColors(raw: unknown): FrameId[] {
+  const list = Array.isArray(raw) ? raw : [];
+  const ids = new Set(list.map((entry) => COLOR_IDS[text(entry).toLowerCase()]).filter(Boolean));
+  const colors = FRAME_ORDER.filter((id) => ids.has(id));
+  return colors.length ? colors : ["black"];
 }
 
 export interface CollectionProduct {
@@ -62,6 +105,7 @@ export function toCollectionProduct(raw: unknown): CollectionProduct | null {
       withMat: Number(variant.with_mat) === 1,
       frameDepthCm: Number(variant.frame_weight) || 0,
       price,
+      colors: toColors(variant.allColors),
     });
   });
   if (variants.length === 0) return null;
@@ -93,6 +137,12 @@ export function toCollectionMockups(raw: unknown): CollectionMockup[] {
 export function sizeArea(size: string): number {
   const [width, height] = size.split(/x/i).map(Number);
   return (width || 0) * (height || 0);
+}
+
+/** "40x60" → { widthCm: 40, heightCm: 60 }. */
+export function collectionDimensions(size: string): { widthCm: number; heightCm: number } {
+  const [widthCm, heightCm] = size.split(/x/i).map(Number);
+  return { widthCm: widthCm || 50, heightCm: heightCm || 70 };
 }
 
 /** "40x60" → "40 × 60 cm". */

@@ -3,17 +3,10 @@ import { usePosterContext } from "@/features/poster/ui/PosterContext";
 import { useExport } from "@/features/export/application/useExport";
 import { useStore } from "../ui/StoreContext";
 import { useDesignSnapshot } from "./useDesignSnapshot";
-import type { CartItem } from "../domain/cart";
+import { createId, type CartItem } from "../domain/cart";
 
 const PREVIEW_LONG_SIDE_PX = 1400;
 
-function createId(): string {
-  try {
-    return crypto.randomUUID();
-  } catch {
-    return `item-${Date.now().toString(36)}-${Math.random().toString(36).slice(2, 8)}`;
-  }
-}
 
 /**
  * Renders a preview of the live design and puts it in the cart (or updates

@@ -114,7 +114,7 @@ export default function StudioPage() {
 
     if (editId) {
       const item = store.cart.find((entry) => entry.id === editId);
-      if (item) {
+      if (item?.design) {
         applyDesign(item.design);
         store.setProduct(item.product);
         store.setEditingItemId(item.id);
@@ -136,8 +136,8 @@ export default function StudioPage() {
         .then(({ order }) => {
           if (cancelled) return;
           const item = order.items.find((entry) => entry.id === itemId);
-          if (!item) {
-            setLoadError("This order item no longer exists.");
+          if (!item || !item.design) {
+            setLoadError(item ? "This poster comes from the collection: no print file to generate." : "This order item no longer exists.");
             return;
           }
           applyDesign(item.design);
