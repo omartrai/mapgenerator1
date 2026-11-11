@@ -1,4 +1,4 @@
-import { defineConfig } from "vite";
+import { defineConfig, loadEnv } from "vite";
 import react from "@vitejs/plugin-react";
 import tailwindcss from "@tailwindcss/vite";
 import path from "path";
@@ -248,8 +248,66 @@ ${body}
   };
 }
 
+/**
+ * Serves the order API (/api/*) inside `vite dev`, using the same router as
+ * the Vercel Function in api/index.ts. Without BLOB_READ_WRITE_TOKEN, orders
+ * are written to ./.data and the admin password defaults to "admin".
+ */
+function ordersApiPlugin() {
+  let handlerPromise;
+  return {
+    name: "orders-api",
+    configureServer(server) {
+      const getHandler = () => {
+        if (!handlerPromise) {
+          handlerPromise = server
+            .ssrLoadModule("/server/router.ts")
+            .then(({ createApiHandler }) =>
+              createApiHandler({
+                env: { ...process.env, ...loadEnv(server.config.mode, server.config.root, "") },
+                devDataDir: path.resolve(server.config.root, ".data"),
+              }),
+            );
+        }
+        return handlerPromise;
+      };
+
+      server.middlewares.use(async (req, res, next) => {
+        if (!req.url || !req.url.startsWith("/api/")) return next();
+        try {
+          const chunks = [];
+          for await (const chunk of req) chunks.push(chunk);
+          const body = chunks.length ? Buffer.concat(chunks) : undefined;
+          const request = new Request(`http://${req.headers.host ?? "localhost"}${req.url}`, {
+            method: req.method,
+            headers: Object.entries(req.headers).flatMap(([key, value]) =>
+              value === undefined ? [] : [[key, Array.isArray(value) ? value.join(", ") : value]],
+            ),
+            body: req.method === "GET" || req.method === "HEAD" ? undefined : body,
+          });
+          const handler = await getHandler();
+          const response = await handler(request);
+          res.statusCode = response.status;
+          response.headers.forEach((value, key) => res.setHeader(key, value));
+          res.end(Buffer.from(await response.arrayBuffer()));
+        } catch (error) {
+          console.error("[orders-api]", error);
+          res.statusCode = 500;
+          res.end(JSON.stringify({ error: "Dev API failed." }));
+        }
+      });
+    },
+  };
+}
+
 export default defineConfig({
-  plugins: [tailwindcss(), react(), adsensePlugin(), legalPagesPlugin()],
+  plugins: [
+    tailwindcss(),
+    react(),
+    adsensePlugin(),
+    legalPagesPlugin(),
+    ordersApiPlugin(),
+  ],
   define: {
     "import.meta.env.VITE_APP_VERSION": JSON.stringify(appVersion),
   },

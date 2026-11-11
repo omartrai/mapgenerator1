@@ -41,3 +41,5 @@ updates.json
 
 # ignore agent setting files
 .claude/
+# Local order storage used by the dev API
+.data/

@@ -73,6 +73,11 @@ self.addEventListener("fetch", (event) => {
     return;
   }
 
+  // Orders and admin data are always live — never touch the cache.
+  if (url.pathname.startsWith("/api/")) {
+    return;
+  }
+
   const isNavigation = request.mode === "navigate";
 
   if (isNavigation) {
