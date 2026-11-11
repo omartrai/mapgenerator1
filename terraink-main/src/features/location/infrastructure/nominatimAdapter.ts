@@ -13,6 +13,17 @@ import {
   getReverseGeocodeCacheKey,
 } from "./cacheKeys";
 
+/**
+ * Names in the visitor's language: OSM otherwise returns every local script at
+ * once (e.g. "Rabat ⵕⴱⴰⵟ الرباط"). Follows the page language set by the app.
+ */
+function resultLanguage(): string {
+  const lang = typeof document === "undefined" ? "" : document.documentElement.lang;
+  if (lang.startsWith("ar")) return "ar,fr";
+  if (lang.startsWith("en")) return "en,fr";
+  return "fr,en";
+}
+
 // Deduplicate concurrent requests for the same query/coordinates
 const inFlightSearchRequests = new Map<string, Promise<SearchResult[]>>();
 const inFlightReverseRequests = new Map<string, Promise<SearchResult>>();
@@ -32,7 +43,8 @@ export function createNominatimAdapter(
     }
 
     const normalizedLimit = Math.max(1, Math.min(Math.round(limit), 10));
-    const cacheKey = getLocationSearchCacheKey(lookup, normalizedLimit);
+    const language = resultLanguage();
+    const cacheKey = `${language}:${getLocationSearchCacheKey(lookup, normalizedLimit)}`;
     const cached = cache.read<SearchResult[]>(cacheKey, LOCATION_SEARCH_TTL_MS);
     if (Array.isArray(cached)) {
       return cached;
@@ -44,7 +56,7 @@ export function createNominatimAdapter(
 
     const url =
       "https://nominatim.openstreetmap.org/search?" +
-      `format=jsonv2&addressdetails=1&limit=${normalizedLimit}&q=${encodeURIComponent(lookup)}`;
+      `format=jsonv2&addressdetails=1&limit=${normalizedLimit}&accept-language=${language}&q=${encodeURIComponent(lookup)}`;
 
     const promise = http
       .get(url, { headers: { Accept: "application/json" }, signal }, 16_000)
@@ -68,7 +80,7 @@ export function createNominatimAdapter(
       throw new Error("Location is required.");
     }
 
-    const cacheKey = getGeocodeCacheKey(lookup);
+    const cacheKey = `${resultLanguage()}:${getGeocodeCacheKey(lookup)}`;
     const cached = cache.read<Record<string, unknown>>(
       cacheKey,
       GEOCODE_TTL_MS,
@@ -108,7 +120,8 @@ export function createNominatimAdapter(
       throw new Error("Latitude and longitude are required.");
     }
 
-    const cacheKey = getReverseGeocodeCacheKey(lat, lon);
+    const language = resultLanguage();
+    const cacheKey = `${language}:${getReverseGeocodeCacheKey(lat, lon)}`;
     const cached = cache.read<Record<string, unknown>>(cacheKey, GEOCODE_TTL_MS);
     if (cached && typeof cached === "object") {
       const normalizedCached = normalizeLocationResult(cached as any);
@@ -123,7 +136,7 @@ export function createNominatimAdapter(
 
     const url =
       "https://nominatim.openstreetmap.org/reverse?" +
-      `format=jsonv2&addressdetails=1&zoom=10&lat=${encodeURIComponent(String(lat))}&lon=${encodeURIComponent(String(lon))}`;
+      `format=jsonv2&addressdetails=1&zoom=10&accept-language=${language}&lat=${encodeURIComponent(String(lat))}&lon=${encodeURIComponent(String(lon))}`;
 
     const promise = http
       .get(url, { headers: { Accept: "application/json" } }, 16_000)

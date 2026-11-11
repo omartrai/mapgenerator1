@@ -1,0 +1,437 @@
+/* ── Startup "create your map" dialog ── */
+
+.startup-modal {
+  --sm-ink: #17322a;
+  --sm-muted: #5d6460;
+  --sm-line: #e6dccf;
+  --sm-accent: #e4572e;
+  --sm-card: #fdf7f0;
+  position: fixed;
+  inset: 0;
+  z-index: 200;
+  display: grid;
+  place-items: center;
+  padding: 24px 16px;
+  overflow-y: auto;
+  background: #f6efe5 url("/assets/startup-map.svg") center / cover no-repeat;
+  font-family: "Plus Jakarta Sans", "Cairo", system-ui, sans-serif;
+  color: var(--sm-ink);
+  animation: startup-modal-in 0.28s ease both;
+}
+
+.startup-modal.is-closing {
+  animation: startup-modal-out 0.22s ease both;
+}
+
+.startup-modal__card {
+  position: relative;
+  display: flex;
+  flex-direction: column;
+  align-items: stretch;
+  width: min(100%, 560px);
+  padding: 36px 36px 0;
+  overflow: hidden;
+  border: 1px solid rgba(255, 255, 255, 0.7);
+  border-radius: 28px;
+  background: var(--sm-card);
+  box-shadow:
+    0 1px 2px rgba(60, 40, 20, 0.06),
+    0 30px 70px rgba(70, 50, 30, 0.18);
+  text-align: center;
+}
+
+.startup-modal__brand {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: 10px;
+  font-size: 1.85rem;
+  font-weight: 800;
+  letter-spacing: -0.04em;
+}
+
+.startup-modal__logo {
+  width: 40px;
+  height: 40px;
+}
+
+.startup-modal__eyebrow {
+  display: flex;
+  align-items: center;
+  gap: 16px;
+  margin: 18px 0 0;
+  color: var(--sm-muted);
+  font-size: 0.78rem;
+  font-weight: 600;
+  letter-spacing: 0.18em;
+  text-transform: uppercase;
+}
+
+.startup-modal__eyebrow::before,
+.startup-modal__eyebrow::after {
+  content: "";
+  flex: 1;
+  max-width: 64px;
+  height: 1px;
+  margin-inline: auto;
+  background: var(--sm-line);
+}
+
+.startup-modal__title {
+  margin: 14px 0 6px;
+  color: var(--sm-ink);
+  font-size: clamp(2rem, 6vw, 2.7rem);
+  font-weight: 800;
+  letter-spacing: -0.045em;
+  line-height: 1.05;
+}
+
+.startup-modal__lede {
+  margin: 0;
+  color: var(--sm-muted);
+  font-size: 1rem;
+  line-height: 1.5;
+}
+
+.startup-modal__kinds {
+  display: grid;
+  grid-template-columns: repeat(4, minmax(0, 1fr));
+  gap: 10px;
+  margin-top: 26px;
+}
+
+.startup-modal__kind {
+  display: grid;
+  justify-items: center;
+  gap: 6px;
+  min-width: 0;
+  margin: 0;
+  padding: 14px 6px 12px;
+  border: 1px solid var(--sm-line);
+  border-radius: 14px;
+  background: #fff;
+  color: var(--sm-ink);
+  font: inherit;
+  font-size: 0.86rem;
+  font-weight: 600;
+  cursor: pointer;
+  box-shadow: 0 2px 6px rgba(60, 40, 20, 0.05);
+  transition: border-color 0.2s ease, background 0.2s ease, transform 0.2s ease;
+}
+
+.startup-modal__kind svg {
+  width: 24px;
+  height: 24px;
+}
+
+.startup-modal__kind:hover {
+  border-color: #d6c8b6;
+  transform: translateY(-1px);
+}
+
+.startup-modal__kind.is-selected {
+  border-color: var(--sm-accent);
+  background: linear-gradient(180deg, #fff3ea, #fde3d3);
+  color: #c4461f;
+  box-shadow: 0 0 0 1px var(--sm-accent), 0 6px 14px rgba(228, 87, 46, 0.14);
+}
+
+.startup-modal__kind.is-selected svg {
+  color: var(--sm-accent);
+}
+
+.startup-modal__kind span {
+  overflow: hidden;
+  max-width: 100%;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+.startup-modal__sr {
+  position: absolute;
+  width: 1px;
+  height: 1px;
+  overflow: hidden;
+  clip: rect(0 0 0 0);
+  white-space: nowrap;
+}
+
+.startup-modal__search {
+  position: relative;
+  margin-top: 22px;
+  text-align: start;
+}
+
+.startup-modal__field {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  height: 58px;
+  padding: 0 18px;
+  border: 1.5px solid var(--sm-ink);
+  border-radius: 14px;
+  background: #fff;
+  transition: box-shadow 0.2s ease, border-color 0.2s ease;
+}
+
+.startup-modal__field:focus-within {
+  border-color: var(--sm-accent);
+  box-shadow: 0 0 0 4px rgba(228, 87, 46, 0.14);
+}
+
+.startup-modal__field svg {
+  flex: none;
+  width: 22px;
+  height: 22px;
+  color: var(--sm-ink);
+}
+
+.startup-modal__field input {
+  flex: 1;
+  min-width: 0;
+  height: 100%;
+  margin: 0;
+  padding: 0;
+  border: 0 !important;
+  outline: 0 !important;
+  background: transparent !important;
+  box-shadow: none !important;
+  color: var(--sm-ink);
+  font: inherit;
+  font-size: 1rem;
+}
+
+.startup-modal__field input::placeholder {
+  color: #8a8f8b;
+  opacity: 1;
+}
+
+.startup-modal .startup-location-suggestions {
+  position: absolute;
+  top: calc(100% + 6px);
+  inset-inline: 0;
+  z-index: 5;
+  max-height: 240px;
+  margin: 0;
+  padding: 6px;
+  border: 1px solid var(--sm-line) !important;
+  border-radius: 14px !important;
+  background: #fff !important;
+  box-shadow: 0 18px 40px rgba(60, 40, 20, 0.16);
+}
+
+.startup-modal .startup-location-suggestion,
+.startup-modal .startup-location-suggestion-status {
+  padding: 10px 12px;
+  border: 0;
+  border-radius: 10px;
+  color: var(--sm-ink) !important;
+  font-family: inherit;
+  font-size: 0.88rem;
+  letter-spacing: 0;
+  text-align: start;
+}
+
+.startup-modal .startup-location-suggestion:hover,
+.startup-modal .startup-location-suggestion:focus-visible {
+  background: #fbf1e8;
+}
+
+.startup-modal__geo {
+  display: inline-flex;
+  align-items: center;
+  gap: 10px;
+  align-self: flex-start;
+  margin: 16px 0 0;
+  padding: 6px 8px;
+  border: 0;
+  border-radius: 8px;
+  background: transparent;
+  color: var(--sm-ink);
+  font: inherit;
+  font-size: 0.95rem;
+  font-weight: 500;
+  text-decoration: underline;
+  text-underline-offset: 4px;
+  cursor: pointer;
+}
+
+.startup-modal__geo svg {
+  width: 20px;
+  height: 20px;
+}
+
+.startup-modal__geo:hover:not(:disabled) {
+  color: var(--sm-accent);
+}
+
+.startup-modal__start {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: 12px;
+  width: 100%;
+  min-height: 58px;
+  margin: 16px 0 0;
+  padding: 0 24px;
+  border: 0;
+  border-radius: 14px;
+  background: linear-gradient(180deg, #ee6a33, #dc4f22);
+  color: #fff;
+  font: inherit;
+  font-size: 1.08rem;
+  font-weight: 700;
+  cursor: pointer;
+  box-shadow: 0 10px 22px rgba(220, 79, 34, 0.28);
+  transition: transform 0.2s ease, box-shadow 0.2s ease;
+}
+
+.startup-modal__start:hover:not(:disabled) {
+  transform: translateY(-1px);
+  box-shadow: 0 14px 28px rgba(220, 79, 34, 0.34);
+}
+
+.startup-modal__start:hover:not(:disabled) .startup-modal__arrow {
+  transform: translateX(3px);
+}
+
+.startup-modal__arrow {
+  width: 22px;
+  height: 22px;
+  transition: transform 0.2s ease;
+}
+
+[dir="rtl"] .startup-modal__arrow {
+  transform: scaleX(-1);
+}
+
+[dir="rtl"] .startup-modal__start:hover:not(:disabled) .startup-modal__arrow {
+  transform: scaleX(-1) translateX(3px);
+}
+
+.startup-modal :is(button, input):disabled {
+  cursor: wait;
+  opacity: 0.7;
+}
+
+.startup-modal :is(button):focus-visible {
+  outline: 2px solid var(--sm-accent);
+  outline-offset: 2px;
+}
+
+.startup-modal__error {
+  margin: 12px 0 0;
+  color: #b3261e;
+  font-size: 0.86rem;
+}
+
+.startup-modal__skyline {
+  display: block;
+  width: calc(100% + 72px);
+  max-width: none;
+  margin: 18px -36px 0;
+  pointer-events: none;
+  user-select: none;
+  -webkit-mask-image: linear-gradient(180deg, transparent 0, #000 22%);
+  mask-image: linear-gradient(180deg, transparent 0, #000 22%);
+}
+
+:root[lang="ar"] .startup-modal * {
+  letter-spacing: 0 !important;
+}
+
+@media (max-width: 520px) {
+  .startup-modal__card {
+    padding: 28px 20px 0;
+    border-radius: 22px;
+  }
+
+  .startup-modal__kinds {
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+    margin-top: 20px;
+  }
+
+  .startup-modal__kind {
+    grid-auto-flow: column;
+    justify-content: center;
+    align-items: center;
+    padding: 12px 8px;
+  }
+
+  .startup-modal__kind svg {
+    width: 20px;
+    height: 20px;
+  }
+
+  .startup-modal__skyline {
+    width: calc(100% + 40px);
+    margin: 14px -20px 0;
+  }
+}
+
+@keyframes startup-modal-in {
+  from { opacity: 0; }
+  to { opacity: 1; }
+}
+
+@keyframes startup-modal-out {
+  from { opacity: 1; }
+  to { opacity: 0; }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .startup-modal,
+  .startup-modal * {
+    animation: none !important;
+    transition: none !important;
+  }
+}
+
+/* Above the studio's own bars (mobile tab bar, buy bar). */
+.startup-modal {
+  z-index: 1000;
+}
+
+@media (max-width: 520px) {
+  .startup-modal {
+    align-items: start;
+    padding: 16px 12px;
+  }
+
+  .startup-modal__brand {
+    font-size: 1.5rem;
+  }
+
+  .startup-modal__logo {
+    width: 32px;
+    height: 32px;
+  }
+
+  .startup-modal__eyebrow {
+    margin-top: 12px;
+    font-size: 0.7rem;
+  }
+
+  .startup-modal__title {
+    margin-top: 10px;
+    font-size: 1.9rem;
+  }
+
+  .startup-modal__lede {
+    font-size: 0.9rem;
+  }
+
+  .startup-modal__kind {
+    font-size: 0.82rem;
+  }
+
+  .startup-modal__field,
+  .startup-modal__start {
+    height: 52px;
+    min-height: 52px;
+  }
+
+  .startup-modal__field input {
+    font-size: 16px;
+  }
+}

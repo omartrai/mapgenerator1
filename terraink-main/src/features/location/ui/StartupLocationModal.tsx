@@ -12,7 +12,9 @@ import {
   getGeolocationFailureMessage,
   requestCurrentPositionWithRetry,
 } from "@/features/location/infrastructure";
+import { LuArrowRight, LuLandmark, LuMapPin, LuMapPinned, LuScan } from "react-icons/lu";
 import { MyLocationIcon, SearchIcon } from "@/shared/ui/Icons";
+import BrandMark from "@/shared/ui/BrandMark";
 import { usePosterDispatch } from "@/features/poster/ui/PosterContext";
 import { useLocationAutocomplete } from "@/features/location/application/useLocationAutocomplete";
 import {
@@ -21,10 +23,20 @@ import {
 } from "@/features/location/application/useRecentLocations";
 import LocationSuggestionsDropdown from "./LocationSuggestionsDropdown";
 import type { SearchResult } from "@/features/location/domain/types";
-import { useLanguage } from "@/shared/i18n/LanguageContext";
+import { useLanguage, type TranslationKey } from "@/shared/i18n/LanguageContext";
 
 const CLOSE_ANIMATION_MS = 220;
 const DEFAULT_LOCATION_LABEL = "Hanover, Region Hannover, Lower Saxony, Germany";
+
+type PlaceKind = "city" | "street" | "monument" | "zone";
+
+/** How much of the map each kind of place shows (poster distance, metres). */
+const PLACE_KINDS: { id: PlaceKind; distance: number; Icon: typeof LuMapPin }[] = [
+  { id: "city", distance: DEFAULT_DISTANCE_METERS, Icon: LuMapPin },
+  { id: "street", distance: 1_200, Icon: LuMapPinned },
+  { id: "monument", distance: 700, Icon: LuLandmark },
+  { id: "zone", distance: 15_000, Icon: LuScan },
+];
 
 interface PendingLocation {
   label: string;
@@ -54,6 +66,10 @@ export default function StartupLocationModal({
   // geocode fallbacks are not.
   const [pendingSuggestion, setPendingSuggestion] = useState<SearchResult | null>(null);
   const [isResolving, setIsResolving] = useState(false);
+  const [kind, setKind] = useState<PlaceKind>("city");
+  const distance = String(
+    PLACE_KINDS.find((entry) => entry.id === kind)?.distance ?? DEFAULT_DISTANCE_METERS,
+  );
   const [errorMessage, setErrorMessage] = useState("");
   const { locationSuggestions, isLocationSearching, clearLocationSuggestions, searchNow } =
     useLocationAutocomplete(locationInput, isInputFocused);
@@ -77,7 +93,7 @@ export default function StartupLocationModal({
           location: DEFAULT_LOCATION_LABEL,
           latitude: DEFAULT_LAT.toFixed(6),
           longitude: DEFAULT_LON.toFixed(6),
-          distance: String(DEFAULT_DISTANCE_METERS),
+          distance,
           displayCity: DEFAULT_CITY,
           displayCountry: DEFAULT_COUNTRY,
           displayContinent: "Europe",
@@ -93,7 +109,7 @@ export default function StartupLocationModal({
         location: location.label,
         latitude: location.lat.toFixed(6),
         longitude: location.lon.toFixed(6),
-        distance: String(DEFAULT_DISTANCE_METERS),
+        distance,
         displayCity: location.city,
         displayCountry: location.country,
         displayContinent: location.continent,
@@ -235,84 +251,102 @@ export default function StartupLocationModal({
 
   return (
     <div
-      className={`startup-location-modal${isClosing ? " is-closing" : ""}`}
+      className={`startup-modal${isClosing ? " is-closing" : ""}`}
       role="dialog"
       aria-modal="true"
       aria-labelledby="startup-location-title"
     >
-      <div className="startup-location-logo-wrap" aria-hidden="true">
-        <img className="startup-location-logo" src="/assets/logo.svg" alt="" />
-        <p className="startup-location-app-name">Maploom</p>
-        <p className="startup-location-tagline">{t("startup.tagline")}</p>
-      </div>
-
-      <div className="startup-location-card is-visible">
-        <p className="startup-location-eyebrow">{t("startup.eyebrow")}</p>
-        <h1 className="startup-location-title" id="startup-location-title">
+      <div className="startup-modal__card">
+        <div className="startup-modal__brand">
+          <BrandMark className="startup-modal__logo" />
+          <span>Maploom</span>
+        </div>
+        <p className="startup-modal__eyebrow">{t("startup.eyebrow")}</p>
+        <h1 className="startup-modal__title" id="startup-location-title">
           {t("startup.title")}
         </h1>
-        <p className="startup-location-description">
-          {t("startup.description")}
-        </p>
-        <label className="startup-location-field-label" htmlFor="startup-location-search">
+        <p className="startup-modal__lede">{t("startup.description")}</p>
+
+        <div className="startup-modal__kinds" role="radiogroup" aria-label={t("startup.kinds")}>
+          {PLACE_KINDS.map(({ id, Icon }) => (
+            <button
+              key={id}
+              type="button"
+              role="radio"
+              aria-checked={kind === id}
+              className={`startup-modal__kind${kind === id ? " is-selected" : ""}`}
+              onClick={() => setKind(id)}
+            >
+              <Icon aria-hidden="true" />
+              <span>{t(`startup.kind.${id}` as TranslationKey)}</span>
+            </button>
+          ))}
+        </div>
+
+        <label className="startup-modal__sr" htmlFor="startup-location-search">
           {t("startup.searchLabel")}
         </label>
-        <div className="startup-location-search-field">
-          <SearchIcon aria-hidden="true" />
-          <input
-            id="startup-location-search"
-            type="text"
-            className="startup-location-input"
-            value={locationInput}
-            onChange={(event) => {
-              setLocationInput(event.target.value);
-              setPendingLocation(null);
-              setPendingSuggestion(null);
-              // Restore focus state when user types after selecting a suggestion
-              // (DOM focus may still be on the input, so onFocus won't re-fire).
-              if (!isInputFocused) setIsInputFocused(true);
-            }}
-            onFocus={() => setIsInputFocused(true)}
-            onBlur={() => setTimeout(() => setIsInputFocused(false), 120)}
-            onKeyDown={(e) => { if (e.key === "Enter") void searchNow(e.currentTarget.value); }}
-            placeholder={t("startup.placeholder")}
-            autoComplete="off"
+        <div className="startup-modal__search">
+          <div className="startup-modal__field">
+            <SearchIcon aria-hidden="true" />
+            <input
+              id="startup-location-search"
+              type="text"
+              value={locationInput}
+              onChange={(event) => {
+                setLocationInput(event.target.value);
+                setPendingLocation(null);
+                setPendingSuggestion(null);
+                // Restore focus state when user types after selecting a suggestion
+                // (DOM focus may still be on the input, so onFocus won't re-fire).
+                if (!isInputFocused) setIsInputFocused(true);
+              }}
+              onFocus={() => setIsInputFocused(true)}
+              onBlur={() => setTimeout(() => setIsInputFocused(false), 120)}
+              onKeyDown={(e) => { if (e.key === "Enter") void searchNow(e.currentTarget.value); }}
+              placeholder={t("startup.placeholder")}
+              autoComplete="off"
+            />
+          </div>
+          <LocationSuggestionsDropdown
+            query={locationInput}
+            isFocused={isInputFocused}
+            suggestions={locationSuggestions}
+            isSearching={isLocationSearching}
+            onSelect={onSuggestionSelect}
+            recent={recent}
+            onRecentSelect={onSuggestionSelect}
+            onRecentRemove={removeRecent}
+            onClearRecent={clearRecent}
+            variant="startup"
           />
         </div>
-        <LocationSuggestionsDropdown
-          query={locationInput}
-          isFocused={isInputFocused}
-          suggestions={locationSuggestions}
-          isSearching={isLocationSearching}
-          onSelect={onSuggestionSelect}
-          recent={recent}
-          onRecentSelect={onSuggestionSelect}
-          onRecentRemove={removeRecent}
-          onClearRecent={clearRecent}
-          variant="startup"
-        />
+
         <button
           type="button"
-          className="startup-location-action startup-location-action--geo"
+          className="startup-modal__geo"
           onClick={handleUseMyLocation}
           disabled={isResolving}
         >
-          <MyLocationIcon />
+          <MyLocationIcon aria-hidden="true" />
           <span>{isResolving ? t("startup.locating") : t("startup.myLocation")}</span>
         </button>
         <button
           type="button"
-          className="startup-location-action startup-location-action--confirm"
+          className="startup-modal__start"
           onClick={() => void handleConfirm()}
           disabled={isResolving}
         >
           {t("startup.start")}
+          <LuArrowRight className="startup-modal__arrow" aria-hidden="true" />
         </button>
         {errorMessage ? (
-          <p className="startup-location-error" role="status">
+          <p className="startup-modal__error" role="status">
             {errorMessage}
           </p>
         ) : null}
+
+        <img className="startup-modal__skyline" src="/assets/startup-skyline.webp" alt="" />
       </div>
     </div>
   );
