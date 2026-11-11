@@ -4776,3 +4776,294 @@ button.store-btn--dark[type="submit"] {
     letter-spacing: -0.03em;
   }
 }
+
+/* ── Studio panel clean-up: forms, colour editor, markers, controls ── */
+
+.app-shell[data-store-studio] .desktop-settings-slide :is(.section-summary-label, .color-editor-screen > p:first-child, .panel-block > h2, .panel-block > h3) {
+  margin: 0;
+  color: var(--s-ink) !important;
+  font-family: var(--s-sans) !important;
+  font-size: 0.78rem !important;
+  font-weight: 700 !important;
+  letter-spacing: 0.08em !important;
+  line-height: 1.3 !important;
+  text-transform: uppercase;
+}
+
+.app-shell[data-store-studio] .desktop-settings-slide label {
+  color: var(--s-ink) !important;
+  font-family: var(--s-sans) !important;
+  font-size: 0.8rem !important;
+  font-weight: 600 !important;
+}
+
+.app-shell[data-store-studio] .desktop-settings-slide .field-grid {
+  align-items: end;
+  gap: 10px !important;
+}
+
+.app-shell[data-store-studio] .desktop-settings-slide .field-grid > label {
+  display: flex;
+  flex-direction: column;
+  justify-content: flex-end;
+  gap: 6px;
+  min-width: 0;
+}
+
+.app-shell[data-store-studio] .desktop-settings-slide :is(input.form-control-tall, .location-input-wrap input, select.form-control-tall) {
+  min-height: 44px !important;
+  border: 1px solid var(--s-line) !important;
+  border-radius: 10px !important;
+  background: #fff !important;
+  color: var(--s-ink) !important;
+  font-family: var(--s-sans) !important;
+  font-size: 0.88rem !important;
+  box-shadow: none !important;
+}
+
+.app-shell[data-store-studio] .desktop-settings-slide :is(input.form-control-tall, .location-input-wrap input):focus {
+  border-color: var(--s-accent) !important;
+  outline: 0 !important;
+  box-shadow: 0 0 0 3px rgba(228, 87, 46, 0.14) !important;
+}
+
+.app-shell[data-store-studio] .desktop-settings-slide .location-current-btn {
+  width: 44px !important;
+  height: 44px !important;
+  min-height: 44px !important;
+  border: 1px solid var(--s-line) !important;
+  border-radius: 10px !important;
+  background: #fff !important;
+  color: var(--s-accent) !important;
+  opacity: 1 !important;
+}
+
+.app-shell[data-store-studio] .desktop-settings-slide .location-clear-btn {
+  background: var(--s-paper-deep) !important;
+  color: var(--s-ink) !important;
+}
+
+/* Colour editor */
+.app-shell[data-store-studio] .color-editor-header {
+  display: flex !important;
+  flex-wrap: wrap;
+  align-items: center;
+  justify-content: space-between;
+  gap: 10px;
+  margin: 8px 0 14px !important;
+}
+
+.app-shell[data-store-studio] .theme-active-label {
+  margin: 0 !important;
+  color: var(--s-muted) !important;
+  font-family: var(--s-sans) !important;
+  font-size: 0.84rem !important;
+  font-weight: 600 !important;
+  letter-spacing: 0 !important;
+  text-transform: none !important;
+}
+
+.app-shell[data-store-studio] .theme-edit-actions {
+  display: flex !important;
+  gap: 8px;
+}
+
+.app-shell[data-store-studio] :is(.theme-reset-all-btn, .theme-edit-done-btn) {
+  min-height: 36px !important;
+  padding: 0 14px !important;
+  border-radius: 10px !important;
+  font-family: var(--s-sans) !important;
+  font-size: 0.8rem !important;
+  font-weight: 700 !important;
+  line-height: 1 !important;
+  white-space: nowrap;
+  box-shadow: none !important;
+}
+
+.app-shell[data-store-studio] .theme-reset-all-btn {
+  border: 1px solid var(--s-line-strong) !important;
+  background: #fff !important;
+  color: var(--s-ink) !important;
+}
+
+.app-shell[data-store-studio] .theme-edit-done-btn {
+  border: 1px solid var(--s-accent) !important;
+  background: var(--s-accent) !important;
+  color: #fff !important;
+}
+
+.app-shell[data-store-studio] .color-editor-target-grid {
+  display: grid !important;
+  grid-template-columns: repeat(3, minmax(0, 1fr)) !important;
+  gap: 8px !important;
+}
+
+.app-shell[data-store-studio] .color-editor-target {
+  display: flex !important;
+  flex-direction: column;
+  align-items: stretch;
+  gap: 6px;
+  min-width: 0;
+  min-height: 0 !important;
+  margin: 0 !important;
+  padding: 6px 6px 8px !important;
+  border: 1px solid var(--s-line) !important;
+  border-radius: 10px !important;
+  background: #fff !important;
+  box-shadow: none !important;
+}
+
+.app-shell[data-store-studio] .color-editor-target:hover {
+  border-color: var(--s-line-strong) !important;
+}
+
+.app-shell[data-store-studio] .color-editor-target.is-active {
+  border-color: var(--s-accent) !important;
+  box-shadow: 0 0 0 1px var(--s-accent) !important;
+}
+
+.app-shell[data-store-studio] .color-editor-target-swatch {
+  width: 100% !important;
+  height: 34px !important;
+  margin: 0 !important;
+  border: 1px solid rgba(0, 0, 0, 0.06) !important;
+  border-radius: 7px !important;
+}
+
+.app-shell[data-store-studio] .color-editor-target-name {
+  overflow: hidden;
+  color: var(--s-ink) !important;
+  font-family: var(--s-sans) !important;
+  font-size: 0.72rem !important;
+  font-weight: 600 !important;
+  line-height: 1.25 !important;
+  text-align: center;
+  overflow-wrap: anywhere;
+  hyphens: auto;
+  white-space: normal;
+}
+
+/* Markers & routes headers */
+.app-shell[data-store-studio] :is(.markers-section-head, .routes-section-head) {
+  display: flex !important;
+  flex-wrap: wrap;
+  align-items: center !important;
+  justify-content: space-between !important;
+  gap: 8px !important;
+  margin-bottom: 10px;
+}
+
+.app-shell[data-store-studio] .markers-section-head-actions {
+  display: flex !important;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: 6px !important;
+}
+
+.app-shell[data-store-studio] .marker-header-action-btn,
+.app-shell[data-store-studio] .marker-info-btn {
+  display: inline-flex !important;
+  align-items: center;
+  gap: 6px;
+  width: auto !important;
+  min-width: 36px !important;
+  height: 36px !important;
+  min-height: 36px !important;
+  margin: 0 !important;
+  padding: 0 12px !important;
+  border: 1px solid var(--s-line) !important;
+  border-radius: 10px !important;
+  background: #fff !important;
+  color: var(--s-ink) !important;
+  font-family: var(--s-sans) !important;
+  font-size: 0.78rem !important;
+  font-weight: 600 !important;
+  opacity: 1 !important;
+  box-shadow: none !important;
+}
+
+.app-shell[data-store-studio] .marker-header-action-btn.is-compact,
+.app-shell[data-store-studio] .marker-info-btn {
+  justify-content: center;
+  padding: 0 !important;
+}
+
+.app-shell[data-store-studio] .marker-header-action-btn.is-active {
+  border-color: var(--s-accent) !important;
+  background: #fbe4d8 !important;
+  color: var(--s-accent) !important;
+}
+
+.app-shell[data-store-studio] .marker-header-action-btn:disabled {
+  color: var(--s-faint) !important;
+}
+
+.app-shell[data-store-studio] .marker-info-wrap {
+  margin: 0 !important;
+}
+
+/* Buy box orientation switch */
+.studio-buy__orient button {
+  min-height: 0 !important;
+  margin: 0;
+  padding: 0 !important;
+  line-height: 0;
+}
+
+.studio-buy__orient button svg {
+  width: 16px;
+  height: 16px;
+}
+
+/* Map buttons under the poster: two separate pills, no outer capsule. */
+.app-shell[data-store-studio] .map-controls,
+.app-shell[data-store-studio] .map-control-group {
+  gap: 10px !important;
+  padding: 0 !important;
+  border: 0 !important;
+  background: transparent !important;
+  box-shadow: none !important;
+  backdrop-filter: none !important;
+  -webkit-backdrop-filter: none !important;
+}
+
+.app-shell[data-store-studio] .theme-edit-actions {
+  flex: 1 1 100%;
+  width: 100% !important;
+  min-width: 0;
+}
+
+.app-shell[data-store-studio] .theme-edit-actions > .theme-reset-all-btn {
+  flex: 1 1 auto;
+  min-width: 0;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+
+.app-shell[data-store-studio] .theme-edit-actions > .theme-edit-done-btn {
+  flex: none;
+}
+
+/* Switches and sliders use the brand red. */
+.app-shell[data-store-studio] .theme-switch input:checked + .theme-switch-track {
+  border-color: var(--s-accent) !important;
+  background: var(--s-accent) !important;
+}
+
+.app-shell[data-store-studio] .desktop-settings-slide input[type="range"] {
+  accent-color: var(--s-accent);
+}
+
+.app-shell[data-store-studio] .desktop-settings-slide input[type="range"]::-webkit-slider-thumb {
+  background: var(--s-accent) !important;
+  border-color: #fff !important;
+}
+
+.app-shell[data-store-studio] .desktop-settings-slide input[type="range"]::-moz-range-thumb {
+  background: var(--s-accent) !important;
+  border-color: #fff !important;
+}
+
+.app-shell[data-store-studio] .desktop-settings-slide input {
+  font-family: var(--s-sans) !important;
+}

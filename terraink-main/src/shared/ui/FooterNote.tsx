@@ -28,22 +28,11 @@ function handleLegalClick(
   openLegalDoc(doc);
 }
 
-/** Reopens Google's consent dialog so visitors can withdraw or change consent. */
-function handleCookieSettings() {
-  const gfc = (window as any).googlefc;
-  gfc?.callbackQueue?.push({
-    CONSENT_DATA_READY: () => gfc.showRevocationMessage(),
-  });
-}
-
 export default function FooterNote() {
   const contactEmail = String(CONTACT_EMAIL ?? "").trim();
   // These vars hold the raw markdown URLs; the links open the in-app modal.
   const imprintAvailable = Boolean(String(LEGAL_NOTICE_URL ?? "").trim());
   const privacyAvailable = Boolean(String(PRIVACY_URL ?? "").trim());
-  const hasLegalLinks = Boolean(
-    contactEmail || imprintAvailable || privacyAvailable,
-  );
 
   return (
     <footer className="app-footer desktop-footer">
@@ -78,17 +67,6 @@ export default function FooterNote() {
               Data Privacy
             </a>
           )}
-          {hasLegalLinks && " | "}
-          <button
-            type="button"
-            className="source-link"
-            onClick={() => {
-              trackEvent("cookie_settings_click");
-              handleCookieSettings();
-            }}
-          >
-            Cookie Settings
-          </button>
         </p>
       </div>
 
