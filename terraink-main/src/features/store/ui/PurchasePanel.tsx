@@ -19,6 +19,7 @@ import {
   FRAME_OPTIONS,
   FREE_SHIPPING_THRESHOLD,
   PRINT_SIZES,
+  formatRatio,
   resolveDimensions,
   unitPrice,
   type Orientation,
@@ -33,7 +34,7 @@ export default function PurchasePanel({ isMobile }: { isMobile: boolean }) {
   const { navigate } = useRouter();
   const { addToCart, isAdding, error, isEditing } = useAddToCart();
 
-  const { t, money, sizeLabel, frameLabel, language } = useStoreText();
+  const { t, money, sizeLabel, shapeName, frameLabel, language } = useStoreText();
   const price = unitPrice(product);
   const title = (state.form.displayCity || state.form.location || t("buy.yourMap")).trim();
   const buttonLabel = isEditing ? t("buy.update") : t("buy.add");
@@ -65,7 +66,7 @@ export default function PurchasePanel({ isMobile }: { isMobile: boolean }) {
         <div className="studio-buy-bar__info">
           <span className="studio-buy-bar__price">{money(price)}</span>
           <span className="studio-buy-bar__meta">
-            {sizeLabel(product.sizeId)} · {frameLabel(product.frameId)}
+            {formatRatio(product.sizeId, product.orientation)} · {sizeLabel(product.sizeId)} · {frameLabel(product.frameId)}
           </span>
         </div>
         <button
@@ -132,7 +133,8 @@ export default function PurchasePanel({ isMobile }: { isMobile: boolean }) {
                 title={`${formatCm(dims.widthCm)} × ${formatCm(dims.heightCm)} cm`}
                 onClick={() => setProduct({ sizeId: size.id })}
               >
-                <strong>{sizeLabel(size.id)}</strong>
+                <strong>{formatRatio(size.id, product.orientation)}</strong>
+                <small>{shapeName(size.id, product.orientation)}</small>
                 <span>{money(unitPrice({ ...product, sizeId: size.id }))}</span>
               </button>
             );

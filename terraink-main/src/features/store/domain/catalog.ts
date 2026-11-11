@@ -20,6 +20,8 @@ export interface PrintSize {
   /** Short-side × long-side in centimetres (portrait orientation). */
   widthCm: number;
   heightCm: number;
+  /** Shape in portrait, e.g. [3, 4]; flipped for landscape. */
+  ratio: [number, number];
   price: number;
   framePrice: number;
   popular?: boolean;
@@ -33,12 +35,24 @@ export interface FrameOption {
   swatch: string;
 }
 
+/**
+ * Formats for custom map posters (the studio): one print size per shape,
+ * each offered in portrait and landscape (3:4 / 4:3, 5:7 / 7:5, …).
+ * 40×60 and 40×50 prices were set from surface area; adjust freely.
+ */
 export const PRINT_SIZES: PrintSize[] = [
-  { id: "a4", label: "A4", widthCm: 21, heightCm: 29.7, price: 14900, framePrice: 14900 },
-  { id: "30x40", label: "30 × 40 cm", widthCm: 30, heightCm: 40, price: 19900, framePrice: 17900, popular: true },
-  { id: "a3", label: "A3", widthCm: 29.7, heightCm: 42, price: 22900, framePrice: 19900 },
-  { id: "50x70", label: "50 × 70 cm", widthCm: 50, heightCm: 70, price: 29900, framePrice: 29900 },
+  { id: "30x40", label: "30 × 40 cm", widthCm: 30, heightCm: 40, ratio: [3, 4], price: 19900, framePrice: 17900, popular: true },
+  { id: "50x70", label: "50 × 70 cm", widthCm: 50, heightCm: 70, ratio: [5, 7], price: 29900, framePrice: 29900 },
+  { id: "40x60", label: "40 × 60 cm", widthCm: 40, heightCm: 60, ratio: [2, 3], price: 25900, framePrice: 24900 },
+  { id: "21x30", label: "21 × 30 cm", widthCm: 21, heightCm: 30, ratio: [7, 10], price: 14900, framePrice: 14900 },
+  { id: "40x50", label: "40 × 50 cm", widthCm: 40, heightCm: 50, ratio: [4, 5], price: 22900, framePrice: 21900 },
 ];
+
+/** Sizes sold before the formats above; old carts and links map onto the 7:10 shape. */
+const LEGACY_SIZE_IDS: Record<string, string> = { a4: "21x30", a3: "21x30" };
+
+const findSize = (sizeId: string) =>
+  PRINT_SIZES.find((size) => size.id === (LEGACY_SIZE_IDS[sizeId] ?? sizeId));
 
 export const FRAME_OPTIONS: FrameOption[] = [
   { id: "none", label: "Print only", description: "Unframed print, rolled and shipped in a tube.", swatch: "transparent" },
@@ -67,7 +81,7 @@ export interface ProductOptions {
 }
 
 export function getPrintSize(sizeId: string): PrintSize {
-  return PRINT_SIZES.find((size) => size.id === sizeId) ?? PRINT_SIZES[1];
+  return findSize(sizeId) ?? PRINT_SIZES[0];
 }
 
 export function getFrame(frameId: string): FrameOption {
@@ -78,7 +92,8 @@ export function isValidProduct(options: unknown): options is ProductOptions {
   if (!options || typeof options !== "object") return false;
   const value = options as Record<string, unknown>;
   return (
-    PRINT_SIZES.some((size) => size.id === value.sizeId) &&
+    typeof value.sizeId === "string" &&
+    !!findSize(value.sizeId) &&
     FRAME_OPTIONS.some((frame) => frame.id === value.frameId) &&
     (value.orientation === "portrait" || value.orientation === "landscape")
   );
@@ -92,6 +107,12 @@ export function resolveDimensions(options: ProductOptions): { widthCm: number; h
     : { widthCm: size.widthCm, heightCm: size.heightCm };
 }
 
+/** "3:4" in portrait, "4:3" in landscape. */
+export function formatRatio(sizeId: string, orientation: Orientation): string {
+  const [short, long] = getPrintSize(sizeId).ratio;
+  return orientation === "landscape" ? `${long}:${short}` : `${short}:${long}`;
+}
+
 export function unitPrice(options: ProductOptions): number {
   const size = getPrintSize(options.sizeId);
   return size.price + (options.frameId === "none" ? 0 : size.framePrice);
@@ -101,7 +122,7 @@ export function describeProduct(options: ProductOptions): string {
   const size = getPrintSize(options.sizeId);
   const frame = getFrame(options.frameId);
   const orientation = options.orientation === "landscape" ? "Landscape" : "Portrait";
-  return `${size.label} · ${orientation} · ${frame.label}`;
+  return `${formatRatio(size.id, options.orientation)} ${orientation} · ${size.label} · ${frame.label}`;
 }
 
 export interface PricedLine {

@@ -2,6 +2,7 @@ import { LuRectangleHorizontal, LuRectangleVertical } from "react-icons/lu";
 import {
   FRAME_OPTIONS,
   PRINT_SIZES,
+  formatRatio,
   resolveDimensions,
   unitPrice,
   type Orientation,
@@ -14,7 +15,7 @@ const formatCm = (value: number) => String(Math.round(value * 10) / 10);
 /** Step 4 of the studio: print size, orientation and frame, with live prices. */
 export default function SizeFrameSection() {
   const { product, setProduct } = useStore();
-  const { t, money, sizeLabel, frameLabel } = useStoreText();
+  const { t, money, frameLabel, shapeName } = useStoreText();
 
   return (
     <div className="size-frame">
@@ -41,7 +42,8 @@ export default function SizeFrameSection() {
                     height: `${Math.round((dims.heightCm / 70) * 30 + 10)}px`,
                   }}
                 />
-                <span className="size-card__label">{sizeLabel(size.id)}</span>
+                <span className="size-card__label">{formatRatio(size.id, product.orientation)}</span>
+                <span className="size-card__name">{shapeName(size.id, product.orientation)}</span>
                 <span className="size-card__dims">
                   {formatCm(dims.widthCm)} × {formatCm(dims.heightCm)} cm
                 </span>

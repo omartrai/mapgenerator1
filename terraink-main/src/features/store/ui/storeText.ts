@@ -3,8 +3,10 @@ import { useLanguage, type AppLanguage } from "@/shared/i18n/LanguageContext";
 import {
   STORE_CURRENCY,
   formatMoney,
+  formatRatio,
   getPrintSize,
   type FrameId,
+  type Orientation,
   type ProductOptions,
 } from "../domain/catalog";
 import type { DesignPreset } from "../domain/presets";
@@ -101,10 +103,21 @@ const en = {
   "footer.mapData": "Map data ©",
   "footer.osm": "OpenStreetMap contributors",
 
-  "size.a4": "A4",
   "size.30x40": "30 × 40 cm",
-  "size.a3": "A3",
+  "shape.30x40.portrait": "Portrait",
+  "shape.30x40.landscape": "Classic",
   "size.50x70": "50 × 70 cm",
+  "shape.50x70.portrait": "Narrow portrait",
+  "shape.50x70.landscape": "Landscape",
+  "size.40x60": "40 × 60 cm",
+  "shape.40x60.portrait": "Portrait",
+  "shape.40x60.landscape": "Wide landscape",
+  "size.21x30": "21 × 30 cm",
+  "shape.21x30.portrait": "Long portrait",
+  "shape.21x30.landscape": "Panoramic landscape",
+  "size.40x50": "40 × 50 cm",
+  "shape.40x50.portrait": "Portrait",
+  "shape.40x50.landscape": "Landscape",
   "frameShort.none": "None",
   "frameShort.black": "Black",
   "frameShort.white": "White",
@@ -400,10 +413,21 @@ const fr: Dictionary = {
   "footer.mapData": "Données cartographiques ©",
   "footer.osm": "contributeurs OpenStreetMap",
 
-  "size.a4": "A4",
   "size.30x40": "30 × 40 cm",
-  "size.a3": "A3",
+  "shape.30x40.portrait": "Portrait",
+  "shape.30x40.landscape": "Classique",
   "size.50x70": "50 × 70 cm",
+  "shape.50x70.portrait": "Portrait étroit",
+  "shape.50x70.landscape": "Paysage",
+  "size.40x60": "40 × 60 cm",
+  "shape.40x60.portrait": "Portrait",
+  "shape.40x60.landscape": "Paysage large",
+  "size.21x30": "21 × 30 cm",
+  "shape.21x30.portrait": "Portrait long",
+  "shape.21x30.landscape": "Paysage panoramique",
+  "size.40x50": "40 × 50 cm",
+  "shape.40x50.portrait": "Portrait",
+  "shape.40x50.landscape": "Paysage",
   "frameShort.none": "Aucun",
   "frameShort.black": "Noir",
   "frameShort.white": "Blanc",
@@ -696,10 +720,21 @@ const ar: Dictionary = {
   "footer.mapData": "بيانات الخريطة ©",
   "footer.osm": "مساهمو OpenStreetMap",
 
-  "size.a4": "A4",
   "size.30x40": "30 × 40 سم",
-  "size.a3": "A3",
+  "shape.30x40.portrait": "عمودي",
+  "shape.30x40.landscape": "كلاسيكي",
   "size.50x70": "50 × 70 سم",
+  "shape.50x70.portrait": "عمودي ضيق",
+  "shape.50x70.landscape": "أفقي",
+  "size.40x60": "40 × 60 سم",
+  "shape.40x60.portrait": "عمودي",
+  "shape.40x60.landscape": "أفقي عريض",
+  "size.21x30": "21 × 30 سم",
+  "shape.21x30.portrait": "عمودي طويل",
+  "shape.21x30.landscape": "أفقي بانورامي",
+  "size.40x50": "40 × 50 سم",
+  "shape.40x50.portrait": "عمودي",
+  "shape.40x50.landscape": "أفقي",
   "frameShort.none": "بدون",
   "frameShort.black": "أسود",
   "frameShort.white": "أبيض",
@@ -930,10 +965,16 @@ export function useStoreText() {
     const sizeLabel = (sizeId: string) =>
       t(`size.${getPrintSize(sizeId).id}` as StoreTextKey);
     const frameLabel = (frameId: FrameId | string) => t(`frame.${frameId}` as StoreTextKey);
+    /** Format name for a size in an orientation, e.g. "Paysage large". */
+    const shapeName = (sizeId: string, orientation: Orientation) =>
+      t(`shape.${getPrintSize(sizeId).id}.${orientation}` as StoreTextKey);
+    /** "3:2 Paysage large" */
+    const formatName = (sizeId: string, orientation: Orientation) =>
+      `${formatRatio(sizeId, orientation)} ${shapeName(sizeId, orientation)}`;
     const describe = (product: ProductOptions) =>
       [
+        formatName(product.sizeId, product.orientation),
         sizeLabel(product.sizeId),
-        t(product.orientation === "landscape" ? "orientation.landscape" : "orientation.portrait"),
         frameLabel(product.frameId),
       ].join(" · ");
     const cityName = (preset: DesignPreset) =>
@@ -941,6 +982,6 @@ export function useStoreText() {
       preset.city;
     /** Two-line headings are written "line one|line two". */
     const lines = (key: StoreTextKey) => t(key).split("|");
-    return { t, language, money, sizeLabel, frameLabel, describe, cityName, lines };
+    return { t, language, money, sizeLabel, shapeName, formatName, frameLabel, describe, cityName, lines };
   }, [language, t]);
 }

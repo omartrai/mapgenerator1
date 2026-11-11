@@ -1270,3 +1270,38 @@
     background-size: 11px, auto;
   }
 }
+
+/* ── Studio formats: ratio + format name (3:4 Portrait, 3:2 Paysage large…) ── */
+
+.size-card__name {
+  color: var(--s-ink);
+  font-size: 0.78rem;
+  font-weight: 500;
+  line-height: 1.25;
+}
+
+.buy-size small {
+  overflow: hidden;
+  color: var(--s-ink);
+  font-size: 0.72rem;
+  font-weight: 500;
+  line-height: 1.2;
+  white-space: nowrap;
+  text-overflow: ellipsis;
+}
+
+/* Five formats in a two-column grid: the last one spans the row. */
+.studio-buy__sizes .buy-size:last-child:nth-child(odd),
+.size-frame__sizes .size-card:last-child:nth-child(odd) {
+  grid-column: 1 / -1;
+}
+
+.configurator__sizes {
+  grid-template-columns: repeat(5, minmax(0, 1fr));
+}
+
+@media (max-width: 640px) {
+  .configurator__sizes {
+    grid-template-columns: repeat(3, minmax(0, 1fr));
+  }
+}

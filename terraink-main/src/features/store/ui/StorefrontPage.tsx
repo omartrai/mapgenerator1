@@ -21,6 +21,7 @@ import {
   FRAME_OPTIONS,
   FREE_SHIPPING_THRESHOLD,
   PRINT_SIZES,
+  formatRatio,
   resolveDimensions,
   unitPrice,
   type FrameId,
@@ -236,7 +237,7 @@ function ProductGrid({ choice }: { choice: Choice }) {
 }
 
 function Configurator({ choice, onChange }: { choice: Choice; onChange: (choice: Choice) => void }) {
-  const { t, lines, sizeLabel } = useStoreText();
+  const { t, lines } = useStoreText();
   const [line1, line2] = lines("custom.title");
   const formatCm = (value: number) => String(Math.round(value * 10) / 10).replace(".", ",");
 
@@ -297,7 +298,7 @@ function Configurator({ choice, onChange }: { choice: Choice; onChange: (choice:
                   className={`buy-size${selected ? " is-selected" : ""}`}
                   onClick={() => onChange({ ...choice, sizeId: selected ? undefined : size.id })}
                 >
-                  <strong>{size.id.startsWith("a") ? sizeLabel(size.id) : `${size.widthCm} × ${size.heightCm}`}</strong>
+                  <strong>{formatRatio(size.id, "portrait")}</strong>
                   <span>{formatCm(size.widthCm)} × {formatCm(size.heightCm)} cm</span>
                 </button>
               );
