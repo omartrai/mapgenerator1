@@ -475,3 +475,17 @@
     grid-template-columns: auto minmax(120px, 1fr) auto;
   }
 }
+
+.poster-message {
+  position: absolute;
+  left: 15%;
+  right: 15%;
+  margin: 0;
+  overflow: hidden;
+  font-style: italic;
+  font-weight: 400;
+  text-align: center;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+  transform: translateY(-50%);
+}

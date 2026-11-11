@@ -35,6 +35,8 @@ export interface PosterForm {
   displayContinent: string;
   fontFamily: string;
   showPosterText: boolean;
+  /** Personal message printed under the coordinates; empty hides it. */
+  customMessage: string;
   includeCredits: boolean;
   includeLandcover: boolean;
   includeBuildings: boolean;

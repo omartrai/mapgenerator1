@@ -163,6 +163,7 @@ export function useExport() {
         showPosterText: form.showPosterText,
         showOverlay: form.showMarkers,
         includeCredits: form.includeCredits,
+        customMessage: form.customMessage || "",
         markers: hasVisibleMarkers ? state.markers : [],
         markerIcons: hasVisibleOverlays
           ? getAllMarkerIcons(state.customMarkerIcons)
@@ -230,6 +231,7 @@ export function useExport() {
           showPosterText: form.showPosterText,
           showOverlay: form.showMarkers,
           includeCredits: form.includeCredits,
+          customMessage: form.customMessage || "",
           markers: hasVisibleMarkers ? state.markers : [],
           markerIcons: hasVisibleOverlays
             ? getAllMarkerIcons(state.customMarkerIcons)

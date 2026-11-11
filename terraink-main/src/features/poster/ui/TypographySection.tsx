@@ -1,3 +1,4 @@
+import { MESSAGE_MAX_LENGTH } from "@/features/poster/domain/textLayout";
 import { useCallback, useRef } from "react";
 import { ensureFont } from "@/core/services";
 import type { PosterForm } from "@/features/poster/application/posterReducer";
@@ -91,6 +92,23 @@ export default function TypographySection({
             />
           </label>
         </div>
+        <label className="poster-message-field">
+          <span className="poster-message-field__head">
+            {t("style.message")}
+            <span className="poster-message-field__count" aria-hidden="true">
+              {(form.customMessage ?? "").length}/{MESSAGE_MAX_LENGTH}
+            </span>
+          </span>
+          <input
+            className="form-control-tall"
+            name="customMessage"
+            value={form.customMessage ?? ""}
+            onChange={onChange}
+            maxLength={MESSAGE_MAX_LENGTH}
+            placeholder={t("style.messagePlaceholder")}
+          />
+          <span className="poster-message-field__hint">{t("style.messageHint")}</span>
+        </label>
         <label>
           {t("style.font")}
           <select

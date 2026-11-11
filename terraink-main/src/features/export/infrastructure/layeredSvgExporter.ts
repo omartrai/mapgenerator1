@@ -29,6 +29,7 @@ interface LayeredSvgOptions {
   showPosterText: boolean;
   showOverlay: boolean;
   includeCredits: boolean;
+  customMessage?: string;
   markers: MarkerItem[];
   markerIcons: MarkerIconDefinition[];
   routes?: Route[];
@@ -84,6 +85,7 @@ export async function createLayeredSvgBlobFromMap({
   showPosterText,
   showOverlay,
   includeCredits,
+  customMessage = "",
   markers,
   markerIcons,
   routes = [],
@@ -257,6 +259,7 @@ export async function createLayeredSvgBlobFromMap({
           showPosterText,
           showOverlay,
           includeCredits,
+          customMessage,
         );
       }),
     });

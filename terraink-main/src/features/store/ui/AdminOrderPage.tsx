@@ -192,6 +192,7 @@ function OrderItemCard({
     ["Text on poster", form.showPosterText === false ? "Hidden" : "Shown"],
     ["Style", item.summary.themeName],
     ["Typeface", item.summary.fontFamily],
+    ...(item.summary.message ? ([["Message", item.summary.message]] as [string, string][]) : []),
     ["Place", String(form.location ?? "")],
     ["Centre", `${Number(form.latitude).toFixed(5)}, ${Number(form.longitude).toFixed(5)}`],
     ["Map width", `${(Number(form.distance) * 2 / 1000).toFixed(1)} km`],

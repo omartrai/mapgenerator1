@@ -6,6 +6,8 @@ import {
   TEXT_DIVIDER_Y_RATIO,
   TEXT_COUNTRY_Y_RATIO,
   TEXT_COORDS_Y_RATIO,
+  TEXT_MESSAGE_Y_RATIO,
+  MESSAGE_FONT_BASE_PX,
   TEXT_EDGE_MARGIN_RATIO,
   CITY_FONT_BASE_PX,
   COUNTRY_FONT_BASE_PX,
@@ -51,6 +53,7 @@ export function drawPosterText(
   showPosterText: boolean,
   showOverlay: boolean,
   includeCredits: boolean = true,
+  customMessage: string = "",
 ): void {
   const textColor = theme.ui?.text || "#111111";
   const landColor = theme.map?.land || "#808080";
@@ -105,6 +108,20 @@ export function drawPosterText(
       coordinatesY,
     );
     ctx.globalAlpha = 1;
+
+    const message = customMessage.trim();
+    if (message) {
+      setFittedFont(
+        ctx,
+        message,
+        400,
+        MESSAGE_FONT_BASE_PX * dimScale,
+        titleFontFamily,
+        width * 0.7,
+      );
+      ctx.font = `italic ${ctx.font}`;
+      ctx.fillText(message, width * 0.5, height * TEXT_MESSAGE_Y_RATIO);
+    }
   }
 
   ctx.fillStyle = attributionColor;

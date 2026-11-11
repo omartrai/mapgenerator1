@@ -21,6 +21,8 @@ export interface PosterDesign {
 export interface DesignSummary {
   title: string;
   subtitle: string;
+  /** Personal message printed on the poster, if any. */
+  message?: string;
   themeId: string;
   themeName: string;
   fontFamily: string;

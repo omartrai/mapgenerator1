@@ -25,6 +25,7 @@ export interface ExportOptions {
   displayContinent?: string;
   fontFamily: string;
   showPosterText: boolean;
+  customMessage?: string;
   showOverlay?: boolean;
   includeCredits?: boolean;
   markers?: MarkerItem[];

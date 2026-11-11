@@ -9,6 +9,10 @@ export const TEXT_CITY_Y_RATIO = 0.845;
 export const TEXT_DIVIDER_Y_RATIO = 0.875;
 export const TEXT_COUNTRY_Y_RATIO = 0.9;
 export const TEXT_COORDS_Y_RATIO = 0.93;
+/** Optional personal message (e.g. a date or a dedication) under the coordinates. */
+export const TEXT_MESSAGE_Y_RATIO = 0.958;
+export const MESSAGE_FONT_BASE_PX = 66;
+export const MESSAGE_MAX_LENGTH = 60;
 
 /** Margin from the edges for attribution/credits. */
 export const TEXT_EDGE_MARGIN_RATIO = 0.02;

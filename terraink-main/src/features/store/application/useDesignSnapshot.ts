@@ -39,6 +39,7 @@ export function useDesignSnapshot() {
     return {
       title: (form.displayCity || form.location || "Custom map").trim(),
       subtitle: (form.displayCountry || "").trim(),
+      message: (form.customMessage || "").trim() || undefined,
       themeId: form.theme,
       themeName:
         effectiveTheme.name +
@@ -87,6 +88,7 @@ export function useDesignSnapshot() {
             width: String(widthCm),
             height: String(heightCm),
             showPosterText: true,
+            customMessage: "",
           },
           customColors: {},
           markers: [],

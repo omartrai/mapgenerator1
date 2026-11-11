@@ -479,6 +479,7 @@ export default function PreviewPanel({ sidePanel, belowPoster }: PreviewPanelPro
             textColor={effectiveTheme.ui.text}
             landColor={effectiveTheme.map.land}
             showPosterText={form.showPosterText}
+            message={form.customMessage}
             includeCredits={form.includeCredits}
             showOverlay={form.showMarkers}
           />

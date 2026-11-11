@@ -27,6 +27,7 @@ export async function compositeExport(
     displayCountry,
     fontFamily,
     showPosterText = true,
+    customMessage = "",
     showOverlay = true,
     includeCredits = true,
     markers = [],
@@ -110,6 +111,7 @@ export async function compositeExport(
     showPosterText,
     showOverlay,
     includeCredits,
+    customMessage,
   );
 
   const size: CanvasSize = {

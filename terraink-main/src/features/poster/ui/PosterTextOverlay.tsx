@@ -5,6 +5,8 @@ import {
   TEXT_DIVIDER_Y_RATIO,
   TEXT_COUNTRY_Y_RATIO,
   TEXT_COORDS_Y_RATIO,
+  TEXT_MESSAGE_Y_RATIO,
+  MESSAGE_FONT_BASE_PX,
   TEXT_EDGE_MARGIN_RATIO,
   CITY_FONT_BASE_PX,
   COUNTRY_FONT_BASE_PX,
@@ -24,6 +26,7 @@ interface PosterTextOverlayProps {
   textColor: string;
   landColor: string;
   showPosterText: boolean;
+  message?: string;
   includeCredits: boolean;
   showOverlay: boolean;
 }
@@ -42,6 +45,7 @@ export default function PosterTextOverlay({
   textColor,
   landColor,
   showPosterText,
+  message = "",
   includeCredits,
   showOverlay,
 }: PosterTextOverlayProps) {
@@ -103,6 +107,18 @@ export default function PosterTextOverlay({
           >
             {formatCoordinates(lat, lon)}
           </p>
+          {message.trim() ? (
+            <p
+              className="poster-message"
+              style={{
+                fontFamily: titleFont,
+                top: `${TEXT_MESSAGE_Y_RATIO * 100}%`,
+                fontSize: `${toCqMin(MESSAGE_FONT_BASE_PX)}cqmin`,
+              }}
+            >
+              {message.trim()}
+            </p>
+          ) : null}
         </>
       )}
 
