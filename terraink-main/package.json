@@ -12,6 +12,7 @@
     "showcase:grid": "node scripts/combine-showcase-grid.mjs"
   },
   "dependencies": {
+    "@fontsource/cairo": "^5.3.0",
     "@fontsource/poppins": "^5.3.0",
     "@vercel/blob": "^2.9.0",
     "maplibre-gl": "^5.19.0",

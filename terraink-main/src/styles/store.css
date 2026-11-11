@@ -26,8 +26,8 @@
   --s-shadow-sm: 0 1px 2px rgba(0, 0, 0, 0.05), 0 2px 8px rgba(0, 0, 0, 0.04);
   --s-shadow: 0 2px 6px rgba(0, 0, 0, 0.04), 0 14px 32px rgba(0, 0, 0, 0.07);
   --s-shadow-lg: 0 8px 20px rgba(0, 0, 0, 0.07), 0 30px 60px rgba(0, 0, 0, 0.12);
-  --s-serif: "Poppins", system-ui, -apple-system, "Segoe UI", sans-serif;
-  --s-sans: "Poppins", system-ui, -apple-system, "Segoe UI", sans-serif;
+  --s-serif: "Poppins", "Cairo", system-ui, -apple-system, "Segoe UI", sans-serif;
+  --s-sans: "Poppins", "Cairo", system-ui, -apple-system, "Segoe UI", sans-serif;
   --s-ease: cubic-bezier(0.22, 0.8, 0.24, 1);
   --frame-black: #1c1c1a;
   --frame-white: #f3f1ec;
@@ -422,6 +422,40 @@ button.store-btn--dark[type="submit"] {
   height: 16px;
 }
 
+.lang-pick {
+  display: inline-flex;
+  padding: 2px;
+  border: 1px solid var(--s-line-strong);
+  border-radius: var(--s-radius-sm);
+}
+
+.lang-pick button {
+  min-width: 30px;
+  height: 30px;
+  padding: 0 6px;
+  border: 0;
+  border-radius: 2px;
+  background: transparent;
+  color: var(--s-muted);
+  font: 500 0.74rem var(--s-sans);
+  cursor: pointer;
+  transition: background-color 0.2s, color 0.2s;
+}
+
+.lang-pick button[lang="ar"] {
+  font-size: 0.9rem;
+  line-height: 1;
+}
+
+.lang-pick button:hover {
+  color: var(--s-ink);
+}
+
+.lang-pick button.is-active {
+  background: var(--s-ink);
+  color: #fff;
+}
+
 .store-cart-btn {
   position: relative;
   display: inline-grid;
@@ -615,7 +649,7 @@ button.store-btn--dark[type="submit"] {
 .badge {
   position: absolute;
   top: 12px;
-  left: 12px;
+  inset-inline-start: 12px;
   z-index: 2;
   padding: 3px 8px;
   border-radius: 2px;
@@ -632,6 +666,23 @@ button.store-btn--dark[type="submit"] {
 }
 
 /* ── Home: hero slider ── */
+
+.hero__pattern {
+  /* Zellige-style eight-point stars, kept faint so the posters lead. */
+  position: absolute;
+  inset: 0;
+  background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='64' height='64' viewBox='0 0 64 64'%3E%3Cg fill='none' stroke='%23ffffff' stroke-width='1.2'%3E%3Cpath d='M32 14l5.3 12.7L50 32l-12.7 5.3L32 50l-5.3-12.7L14 32l12.7-5.3z'/%3E%3Cpath d='M19.3 19.3h25.4v25.4H19.3z' transform='rotate(45 32 32)'/%3E%3Cpath d='M19.3 19.3h25.4v25.4H19.3z'/%3E%3C/g%3E%3C/svg%3E");
+  background-size: 64px 64px;
+  opacity: 0.55;
+  -webkit-mask-image: linear-gradient(90deg, transparent 0%, #000 55%, #000 100%);
+  mask-image: linear-gradient(90deg, transparent 0%, #000 55%, #000 100%);
+  pointer-events: none;
+}
+
+[dir="rtl"] .hero__pattern {
+  -webkit-mask-image: linear-gradient(270deg, transparent 0%, #000 55%, #000 100%);
+  mask-image: linear-gradient(270deg, transparent 0%, #000 55%, #000 100%);
+}
 
 .hero {
   position: relative;
@@ -674,8 +725,8 @@ button.store-btn--dark[type="submit"] {
   flex-direction: column;
   gap: 2px;
   margin-bottom: 36px !important;
-  padding-left: 14px;
-  border-left: 2px solid var(--s-ink);
+  padding-inline-start: 14px;
+  border-inline-start: 2px solid var(--s-ink);
   color: var(--s-ink);
   font-size: 0.78rem;
   font-weight: 500;
@@ -705,7 +756,7 @@ button.store-btn--dark[type="submit"] {
 
 .hero__numeral {
   position: absolute;
-  left: 34%;
+  inset-inline-start: 34%;
   bottom: -150px;
   z-index: -1;
   color: transparent;
@@ -1144,7 +1195,7 @@ button.store-btn--dark[type="submit"] {
 }
 
 .service-row > div + div {
-  border-left: 0;
+  border-inline-start: 0;
 }
 
 .service-row svg {
@@ -1429,7 +1480,7 @@ button.store-btn--dark[type="submit"] {
   }
 
   .service-row > div:nth-child(3) {
-    border-left: 1px solid var(--s-line);
+    border-inline-start: 1px solid var(--s-line);
   }
 
   .service-row > div:nth-child(n + 3) {
@@ -1463,8 +1514,8 @@ button.store-btn--dark[type="submit"] {
   }
 
   .hero__numeral {
-    left: auto;
-    right: -10px;
+    inset-inline-start: auto;
+    inset-inline-end: -10px;
     bottom: auto;
     top: -20px;
     font-size: 7rem;
@@ -1556,7 +1607,7 @@ button.store-btn--dark[type="submit"] {
 
   .service-row > div {
     padding: 18px 16px;
-    border-left: 1px solid var(--s-line) !important;
+    border-inline-start: 1px solid var(--s-line) !important;
   }
 
   .service-row > div + div {
@@ -3703,4 +3754,57 @@ button.store-btn--dark[type="submit"] {
 
 .app-shell[data-store-studio] .desktop-right-panel {
   display: none !important;
+}
+
+/* ── Right-to-left (Arabic) ── */
+
+[dir="rtl"] .rtl-flip {
+  transform: scaleX(-1);
+}
+
+[dir="rtl"] .store-btn:hover:not(:disabled) svg.rtl-flip:last-child {
+  transform: scaleX(-1) translateX(2px);
+}
+
+/* Letter-spacing breaks the joins between Arabic letters. */
+:root[lang="ar"] :is(.store-page, .store-dialog, .studio-buy, .studio-buy-bar, .size-frame, .studio-step, .store-header) * {
+  letter-spacing: 0 !important;
+}
+
+:root[lang="ar"] .hero__title {
+  font-weight: 500 !important;
+  line-height: 1.3 !important;
+}
+
+:root[lang="ar"] .hero__kicker,
+:root[lang="ar"] .promo__kicker,
+:root[lang="ar"] .home-tabs button,
+:root[lang="ar"] .home-textlink {
+  font-size: 0.8rem;
+}
+
+[dir="rtl"] .store-search button {
+  margin: -1px 0 -1px -1px;
+}
+
+@media (max-width: 760px) {
+  .store-nav__link--design {
+    white-space: nowrap;
+  }
+
+  .store-header__actions {
+    gap: 8px;
+  }
+
+  .lang-pick button {
+    min-width: 26px;
+    height: 28px;
+    padding: 0 4px;
+  }
+}
+
+@media (max-width: 480px) {
+  .store-header--site .store-brand__name {
+    display: none;
+  }
 }

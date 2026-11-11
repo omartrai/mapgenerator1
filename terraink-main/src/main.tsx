@@ -18,6 +18,10 @@ import "@fontsource/poppins/300.css";
 import "@fontsource/poppins/400.css";
 import "@fontsource/poppins/500.css";
 import "@fontsource/poppins/600.css";
+// Arabic storefront text (Poppins has no Arabic glyphs).
+import "@fontsource/cairo/arabic-400.css";
+import "@fontsource/cairo/arabic-500.css";
+import "@fontsource/cairo/arabic-600.css";
 
 // Default poster typefaces. Every poster falls back to these when no custom
 // font is chosen, but nothing ever loaded them — until now they silently

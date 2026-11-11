@@ -735,7 +735,12 @@ const STORAGE_KEY = "maploom-language";
 function getInitialLanguage(): AppLanguage {
   if (typeof window === "undefined") return "en";
   const saved = window.localStorage.getItem(STORAGE_KEY);
-  return saved === "fr" || saved === "ar" || saved === "en" ? saved : "en";
+  if (saved === "fr" || saved === "ar" || saved === "en") return saved;
+  // First visit: follow the browser, defaulting to French for Moroccan visitors.
+  const browser = (window.navigator.language || "").toLowerCase();
+  if (browser.startsWith("ar")) return "ar";
+  if (browser.startsWith("en") && !browser.endsWith("-ma")) return "en";
+  return "fr";
 }
 
 export function LanguageProvider({ children }: { children: ReactNode }) {

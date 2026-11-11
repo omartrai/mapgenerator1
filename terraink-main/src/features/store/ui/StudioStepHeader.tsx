@@ -1,18 +1,9 @@
 import { LuArrowLeft, LuArrowRight } from "react-icons/lu";
 import type { MobileTab } from "@/shared/ui/MobileNavBar";
+import { useStoreText, type StoreTextKey } from "./storeText";
 
-const STEPS: { tab: MobileTab; title: string; hint: string }[] = [
-  { tab: "location", title: "Find your place", hint: "Search for a city, an address or the spot where something happened." },
-  { tab: "theme", title: "Choose a style", hint: "Pick a colour palette. Fine-tune any colour with the pencil button." },
-  { tab: "style", title: "Make it personal", hint: "Edit the title and subtitle, and choose a typeface." },
-  { tab: "size", title: "Size & frame", hint: "Pick the print size and a frame. Your preview updates instantly." },
-];
-
-const EXTRAS: Partial<Record<MobileTab, { title: string; hint: string }>> = {
-  layers: { title: "Map details", hint: "Optional. Show or hide buildings, parks, water and road types." },
-  markers: { title: "Add a marker", hint: "Optional. Pin your home, a first date or a favourite café." },
-  routes: { title: "Add a route", hint: "Optional. Upload a GPX file of a run, ride or road trip." },
-};
+const STEPS: MobileTab[] = ["location", "theme", "style", "size"];
+const EXTRAS: MobileTab[] = ["layers", "markers", "routes"];
 
 interface StudioStepHeaderProps {
   tab: MobileTab;
@@ -20,20 +11,23 @@ interface StudioStepHeaderProps {
 }
 
 export default function StudioStepHeader({ tab, setTab }: StudioStepHeaderProps) {
-  const index = STEPS.findIndex((step) => step.tab === tab);
+  const { t } = useStoreText();
+  const title = (step: MobileTab) => t(`steps.${step}.title` as StoreTextKey);
+  const hint = (step: MobileTab) => t(`steps.${step}.hint` as StoreTextKey);
+  const index = STEPS.indexOf(tab);
 
   if (index === -1) {
-    const extra = EXTRAS[tab];
+    const isExtra = EXTRAS.includes(tab);
     return (
       <div className="studio-step studio-step--extra">
         <div className="studio-step__meta">
-          <span className="studio-step__count">Extras</span>
+          <span className="studio-step__count">{t("steps.extras")}</span>
           <button type="button" className="studio-step__link" onClick={() => setTab("size")}>
-            Back to size &amp; frame
+            {t("steps.backToSize")}
           </button>
         </div>
-        <h2 className="studio-step__title">{extra?.title ?? "Extras"}</h2>
-        <p className="studio-step__hint">{extra?.hint}</p>
+        <h2 className="studio-step__title">{isExtra ? title(tab) : t("steps.extras")}</h2>
+        {isExtra ? <p className="studio-step__hint">{hint(tab)}</p> : null}
       </div>
     );
   }
@@ -44,40 +38,40 @@ export default function StudioStepHeader({ tab, setTab }: StudioStepHeaderProps)
 
   return (
     <div className="studio-step">
-      <ol className="studio-step__progress" aria-label="Design steps">
+      <ol className="studio-step__progress" aria-label={t("steps.label")}>
         {STEPS.map((entry, entryIndex) => (
-          <li key={entry.tab}>
+          <li key={entry}>
             <button
               type="button"
               className={`studio-step__dot${entryIndex === index ? " is-current" : ""}${entryIndex < index ? " is-done" : ""}`}
-              onClick={() => setTab(entry.tab)}
+              onClick={() => setTab(entry)}
               aria-current={entryIndex === index ? "step" : undefined}
-              aria-label={`Step ${entryIndex + 1}: ${entry.title}`}
+              aria-label={t("steps.stepLabel", { n: entryIndex + 1, title: title(entry) })}
             />
           </li>
         ))}
       </ol>
       <div className="studio-step__meta">
         <span className="studio-step__count">
-          Step {index + 1} of {STEPS.length}
+          {t("steps.count", { n: index + 1, total: STEPS.length })}
         </span>
       </div>
-      <h2 className="studio-step__title">{step.title}</h2>
-      <p className="studio-step__hint">{step.hint}</p>
+      <h2 className="studio-step__title">{title(step)}</h2>
+      <p className="studio-step__hint">{hint(step)}</p>
       <div className="studio-step__nav">
         {previous ? (
-          <button type="button" className="store-btn store-btn--ghost store-btn--sm" onClick={() => setTab(previous.tab)}>
-            <LuArrowLeft aria-hidden="true" /> {previous.title}
+          <button type="button" className="store-btn store-btn--ghost store-btn--sm" onClick={() => setTab(previous)}>
+            <LuArrowLeft className="rtl-flip" aria-hidden="true" /> {title(previous)}
           </button>
         ) : (
           <span />
         )}
         {next ? (
-          <button type="button" className="store-btn store-btn--dark store-btn--sm" onClick={() => setTab(next.tab)}>
-            Next: {next.title} <LuArrowRight aria-hidden="true" />
+          <button type="button" className="store-btn store-btn--dark store-btn--sm" onClick={() => setTab(next)}>
+            {t("steps.next", { title: title(next) })} <LuArrowRight className="rtl-flip" aria-hidden="true" />
           </button>
         ) : (
-          <span className="studio-step__done">Looks good? Add it to your cart.</span>
+          <span className="studio-step__done">{t("steps.done")}</span>
         )}
       </div>
     </div>

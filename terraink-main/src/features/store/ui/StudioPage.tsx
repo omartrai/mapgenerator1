@@ -66,7 +66,7 @@ export default function StudioPage() {
         .then((found) => {
           if (cancelled) return;
           applyPreset({
-            ...DESIGN_PRESETS[0],
+            ...(getPreset("paris") ?? DESIGN_PRESETS[0]),
             location: found.label,
             lat: found.lat,
             lon: found.lon,

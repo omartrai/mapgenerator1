@@ -1,13 +1,15 @@
 import { useEffect, useRef } from "react";
 import { LuCheck, LuX } from "react-icons/lu";
 import { useRouter } from "@/core/router/router";
-import { describeProduct, formatMoney, resolveDimensions, unitPrice } from "../domain/catalog";
+import { resolveDimensions, unitPrice } from "../domain/catalog";
 import FramedPoster from "./FramedPoster";
 import { useStore } from "./StoreContext";
+import { useStoreText } from "./storeText";
 
 export default function AddedToCartDialog() {
   const { lastAdded, dismissLastAdded, cartCount, totals } = useStore();
   const { navigate } = useRouter();
+  const { t, money, describe } = useStoreText();
   const primaryRef = useRef<HTMLButtonElement | null>(null);
 
   useEffect(() => {
@@ -27,7 +29,7 @@ export default function AddedToCartDialog() {
     <div className="store-dialog" role="dialog" aria-modal="true" aria-labelledby="added-title">
       <div className="store-dialog__backdrop" onClick={dismissLastAdded} aria-hidden="true" />
       <div className="store-dialog__panel added-dialog">
-        <button type="button" className="store-dialog__close" onClick={dismissLastAdded} aria-label="Close">
+        <button type="button" className="store-dialog__close" onClick={dismissLastAdded} aria-label={t("common.close")}>
           <LuX />
         </button>
         <div className="added-dialog__visual">
@@ -42,11 +44,11 @@ export default function AddedToCartDialog() {
         </div>
         <div className="added-dialog__body">
           <p className="added-dialog__check">
-            <LuCheck aria-hidden="true" /> Added to your cart
+            <LuCheck aria-hidden="true" /> {t("added.title")}
           </p>
           <h2 id="added-title" className="added-dialog__title">{lastAdded.summary.title}</h2>
-          <p className="added-dialog__meta">{describeProduct(lastAdded.product)}</p>
-          <p className="added-dialog__price">{formatMoney(unitPrice(lastAdded.product))}</p>
+          <p className="added-dialog__meta">{describe(lastAdded.product)}</p>
+          <p className="added-dialog__price">{money(unitPrice(lastAdded.product))}</p>
           <div className="added-dialog__actions">
             <button
               ref={primaryRef}
@@ -57,7 +59,7 @@ export default function AddedToCartDialog() {
                 navigate("/checkout");
               }}
             >
-              Checkout · {formatMoney(totals.total)}
+              {t("added.checkout", { amount: money(totals.total) })}
             </button>
             <button
               type="button"
@@ -67,10 +69,10 @@ export default function AddedToCartDialog() {
                 navigate("/cart");
               }}
             >
-              View cart ({cartCount})
+              {t("added.view", { count: cartCount })}
             </button>
             <button type="button" className="store-btn store-btn--ghost store-btn--block" onClick={dismissLastAdded}>
-              Keep designing
+              {t("added.keep")}
             </button>
           </div>
         </div>

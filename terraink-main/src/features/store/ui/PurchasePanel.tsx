@@ -2,14 +2,9 @@ import { LuBanknote, LuLoader, LuPrinter, LuShoppingBag, LuTruck } from "react-i
 import { usePosterContext } from "@/features/poster/ui/PosterContext";
 import { useRouter } from "@/core/router/router";
 import { useAddToCart } from "../application/useAddToCart";
-import {
-  FREE_SHIPPING_THRESHOLD,
-  formatMoney,
-  getFrame,
-  getPrintSize,
-  unitPrice,
-} from "../domain/catalog";
+import { FREE_SHIPPING_THRESHOLD, unitPrice } from "../domain/catalog";
 import { useStore } from "./StoreContext";
+import { useStoreText } from "./storeText";
 
 /** The "buy box": a summary of the configured poster with its price. */
 export default function PurchasePanel({ isMobile }: { isMobile: boolean }) {
@@ -18,11 +13,11 @@ export default function PurchasePanel({ isMobile }: { isMobile: boolean }) {
   const { navigate } = useRouter();
   const { addToCart, isAdding, error, isEditing } = useAddToCart();
 
-  const size = getPrintSize(product.sizeId);
-  const frame = getFrame(product.frameId);
+  const { t, money, sizeLabel, frameLabel, language } = useStoreText();
   const price = unitPrice(product);
-  const title = (state.form.displayCity || state.form.location || "Your map").trim();
-  const buttonLabel = isEditing ? "Update cart item" : "Add to cart";
+  const title = (state.form.displayCity || state.form.location || t("buy.yourMap")).trim();
+  const buttonLabel = isEditing ? t("buy.update") : t("buy.add");
+  const errorText = error ? (language === "en" ? error : t("buy.error")) : "";
 
   const button = (
     <button
@@ -34,11 +29,11 @@ export default function PurchasePanel({ isMobile }: { isMobile: boolean }) {
     >
       {isAdding ? (
         <>
-          <LuLoader className="store-spin" aria-hidden="true" /> Preparing your poster…
+          <LuLoader className="store-spin" aria-hidden="true" /> {t("buy.preparing")}
         </>
       ) : (
         <>
-          <LuShoppingBag aria-hidden="true" /> {buttonLabel} · {formatMoney(price)}
+          <LuShoppingBag aria-hidden="true" /> {buttonLabel} · {money(price)}
         </>
       )}
     </button>
@@ -46,11 +41,11 @@ export default function PurchasePanel({ isMobile }: { isMobile: boolean }) {
 
   if (isMobile) {
     return (
-      <div className="studio-buy-bar" role="region" aria-label="Purchase">
+      <div className="studio-buy-bar" role="region" aria-label={t("buy.region")}>
         <div className="studio-buy-bar__info">
-          <span className="studio-buy-bar__price">{formatMoney(price)}</span>
+          <span className="studio-buy-bar__price">{money(price)}</span>
           <span className="studio-buy-bar__meta">
-            {size.label} · {frame.id === "none" ? "Print only" : frame.label}
+            {sizeLabel(product.sizeId)} · {frameLabel(product.frameId)}
           </span>
         </div>
         <button
@@ -61,16 +56,16 @@ export default function PurchasePanel({ isMobile }: { isMobile: boolean }) {
           aria-busy={isAdding}
         >
           {isAdding ? <LuLoader className="store-spin" aria-hidden="true" /> : <LuShoppingBag aria-hidden="true" />}
-          {isAdding ? "Preparing…" : isEditing ? "Update" : "Add to cart"}
+          {isAdding ? t("buy.preparingShort") : isEditing ? t("buy.updateShort") : t("buy.add")}
         </button>
-        {error ? <p className="studio-buy-bar__error" role="alert">{error}</p> : null}
+        {errorText ? <p className="studio-buy-bar__error" role="alert">{errorText}</p> : null}
       </div>
     );
   }
 
   return (
-    <aside className="studio-buy" aria-label="Your poster">
-      <p className="store-eyebrow">{isEditing ? "Editing cart item" : "Your poster"}</p>
+    <aside className="studio-buy" aria-label={t("buy.yourPoster")}>
+      <p className="store-eyebrow">{isEditing ? t("buy.editing") : t("buy.yourPoster")}</p>
       <h2 className="studio-buy__title">{title}</h2>
       <p className="studio-buy__subtitle">
         {[state.form.displayCountry, effectiveTheme.name].filter(Boolean).join(" · ")}
@@ -78,27 +73,28 @@ export default function PurchasePanel({ isMobile }: { isMobile: boolean }) {
 
       <dl className="studio-buy__specs">
         <div>
-          <dt>Size</dt>
+          <dt>{t("buy.size")}</dt>
           <dd>
-            {size.label} · {product.orientation === "landscape" ? "Landscape" : "Portrait"}
+            {sizeLabel(product.sizeId)} ·{" "}
+            {t(product.orientation === "landscape" ? "orientation.landscape" : "orientation.portrait")}
           </dd>
         </div>
         <div>
-          <dt>Frame</dt>
-          <dd>{frame.label}</dd>
+          <dt>{t("buy.frame")}</dt>
+          <dd>{frameLabel(product.frameId)}</dd>
         </div>
         <div>
-          <dt>Paper</dt>
-          <dd>Matte, 200 g/m²</dd>
+          <dt>{t("buy.paper")}</dt>
+          <dd>{t("buy.paperValue")}</dd>
         </div>
       </dl>
 
       <div className="studio-buy__price">
-        <span className="studio-buy__amount">{formatMoney(price)}</span>
+        <span className="studio-buy__amount">{money(price)}</span>
         <span className="studio-buy__note">
           {price >= FREE_SHIPPING_THRESHOLD
-            ? "Free shipping included"
-            : `Free shipping over ${formatMoney(FREE_SHIPPING_THRESHOLD)}`}
+            ? t("buy.freeIncluded")
+            : t("buy.freeFrom", { amount: money(FREE_SHIPPING_THRESHOLD) })}
         </span>
       </div>
 
@@ -112,15 +108,15 @@ export default function PurchasePanel({ isMobile }: { isMobile: boolean }) {
             navigate("/cart");
           }}
         >
-          Cancel editing
+          {t("buy.cancel")}
         </button>
       ) : null}
-      {error ? <p className="store-error" role="alert">{error}</p> : null}
+      {errorText ? <p className="store-error" role="alert">{errorText}</p> : null}
 
       <ul className="studio-buy__trust">
-        <li><LuPrinter aria-hidden="true" /> Printed with pigment inks</li>
-        <li><LuTruck aria-hidden="true" /> Ships in 3–5 business days</li>
-        <li><LuBanknote aria-hidden="true" /> Pay on delivery</li>
+        <li><LuPrinter aria-hidden="true" /> {t("buy.trust1")}</li>
+        <li><LuTruck aria-hidden="true" /> {t("buy.trust2")}</li>
+        <li><LuBanknote aria-hidden="true" /> {t("buy.trust3")}</li>
       </ul>
     </aside>
   );

@@ -3,8 +3,6 @@ import { Link, useRouter } from "@/core/router/router";
 import {
   FREE_SHIPPING_THRESHOLD,
   MAX_QUANTITY_PER_ITEM,
-  describeProduct,
-  formatMoney,
   resolveDimensions,
   unitPrice,
 } from "../domain/catalog";
@@ -13,10 +11,12 @@ import StoreFooter from "./StoreFooter";
 import StoreHeader from "./StoreHeader";
 import { useStore } from "./StoreContext";
 import OrderTotalsList from "./OrderTotalsList";
+import { useStoreText } from "./storeText";
 
 export default function CartPage() {
   const { cart, totals, removeItem, setQuantity } = useStore();
   const { navigate } = useRouter();
+  const { t, money, describe } = useStoreText();
   const remaining = FREE_SHIPPING_THRESHOLD - totals.subtotal;
 
   return (
@@ -24,20 +24,20 @@ export default function CartPage() {
       <StoreHeader variant="site" />
       <main className="store-container">
         <div className="page-head">
-          <h1 className="page-title">Your cart</h1>
+          <h1 className="page-title">{t("cart.title")}</h1>
           {cart.length > 0 ? (
             <Link to="/create" className="store-link">
-              Design another poster
+              {t("cart.another")}
             </Link>
           ) : null}
         </div>
 
         {cart.length === 0 ? (
           <div className="empty-state">
-            <h2>Your cart is empty</h2>
-            <p>Design a poster of a place you love. It only takes a few minutes.</p>
+            <h2>{t("cart.empty")}</h2>
+            <p>{t("cart.emptyText")}</p>
             <Link to="/create" className="store-btn store-btn--primary store-btn--lg">
-              Create your map <LuArrowRight aria-hidden="true" />
+              {t("cart.create")} <LuArrowRight className="rtl-flip" aria-hidden="true" />
             </Link>
           </div>
         ) : (
@@ -51,7 +51,7 @@ export default function CartPage() {
                     <div className="cart-line__visual">
                       <FramedPoster
                         src={item.previewDataUrl}
-                        alt={`${item.summary.title} poster preview`}
+                        alt={t("cart.previewAlt", { title: item.summary.title })}
                         frameId={item.product.frameId}
                         ratio={widthCm / heightCm}
                         size="sm"
@@ -61,20 +61,20 @@ export default function CartPage() {
                       <div className="cart-line__head">
                         <div>
                           <h2 className="cart-line__title">{item.summary.title}</h2>
-                          <p className="cart-line__meta">{describeProduct(item.product)}</p>
+                          <p className="cart-line__meta">{describe(item.product)}</p>
                           <p className="cart-line__meta cart-line__meta--soft">
                             {item.summary.themeName} · {item.summary.fontFamily}
                           </p>
                         </div>
-                        <p className="cart-line__price">{formatMoney(price * item.quantity)}</p>
+                        <p className="cart-line__price">{money(price * item.quantity)}</p>
                       </div>
                       <div className="cart-line__actions">
-                        <div className="qty" role="group" aria-label={`Quantity for ${item.summary.title}`}>
+                        <div className="qty" role="group" aria-label={t("cart.qtyFor", { title: item.summary.title })}>
                           <button
                             type="button"
                             onClick={() => setQuantity(item.id, item.quantity - 1)}
                             disabled={item.quantity <= 1}
-                            aria-label="Decrease quantity"
+                            aria-label={t("cart.decrease")}
                           >
                             <LuMinus />
                           </button>
@@ -83,7 +83,7 @@ export default function CartPage() {
                             type="button"
                             onClick={() => setQuantity(item.id, item.quantity + 1)}
                             disabled={item.quantity >= MAX_QUANTITY_PER_ITEM}
-                            aria-label="Increase quantity"
+                            aria-label={t("cart.increase")}
                           >
                             <LuPlus />
                           </button>
@@ -93,14 +93,14 @@ export default function CartPage() {
                           className="store-btn store-btn--ghost store-btn--sm"
                           onClick={() => navigate(`/create?edit=${encodeURIComponent(item.id)}`)}
                         >
-                          <LuPencil aria-hidden="true" /> Edit design
+                          <LuPencil aria-hidden="true" /> {t("cart.edit")}
                         </button>
                         <button
                           type="button"
                           className="store-btn store-btn--ghost store-btn--sm store-btn--danger"
                           onClick={() => removeItem(item.id)}
                         >
-                          <LuTrash2 aria-hidden="true" /> Remove
+                          <LuTrash2 aria-hidden="true" /> {t("cart.remove")}
                         </button>
                       </div>
                     </div>
@@ -110,11 +110,11 @@ export default function CartPage() {
             </ul>
 
             <aside className="summary-card">
-              <h2 className="summary-card__title">Order summary</h2>
+              <h2 className="summary-card__title">{t("cart.summary")}</h2>
               {remaining > 0 ? (
                 <div className="ship-progress">
                   <p>
-                    <LuTruck aria-hidden="true" /> Add {formatMoney(remaining)} more for free shipping
+                    <LuTruck aria-hidden="true" /> {t("cart.addMore", { amount: money(remaining) })}
                   </p>
                   <div className="ship-progress__bar">
                     <span style={{ width: `${Math.min(100, (totals.subtotal / FREE_SHIPPING_THRESHOLD) * 100)}%` }} />
@@ -122,14 +122,14 @@ export default function CartPage() {
                 </div>
               ) : (
                 <p className="ship-progress ship-progress--done">
-                  <LuTruck aria-hidden="true" /> Your order ships free
+                  <LuTruck aria-hidden="true" /> {t("cart.free")}
                 </p>
               )}
               <OrderTotalsList totals={totals} />
               <Link to="/checkout" className="store-btn store-btn--primary store-btn--block store-btn--lg">
-                Checkout <LuArrowRight aria-hidden="true" />
+                {t("cart.checkout")} <LuArrowRight className="rtl-flip" aria-hidden="true" />
               </Link>
-              <p className="summary-card__note">Pay on delivery. Nothing to pay online.</p>
+              <p className="summary-card__note">{t("cart.note")}</p>
             </aside>
           </div>
         )}

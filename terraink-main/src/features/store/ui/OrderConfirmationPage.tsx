@@ -8,7 +8,7 @@ import OrderTotalsList from "./OrderTotalsList";
 import StoreFooter from "./StoreFooter";
 import StoreHeader from "./StoreHeader";
 import { useStore } from "./StoreContext";
-import { formatMoney } from "../domain/catalog";
+import { useStoreText } from "./storeText";
 
 export default function OrderConfirmationPage({ number }: { number: string }) {
   const { search } = useRouter();
@@ -17,10 +17,11 @@ export default function OrderConfirmationPage({ number }: { number: string }) {
     search.get("key") ?? (lastOrder?.number === number ? lastOrder.accessKey : "");
   const [order, setOrder] = useState<PublicOrder | null>(null);
   const [error, setError] = useState("");
+  const { t, money, language, describe } = useStoreText();
 
   useEffect(() => {
     if (!accessKey) {
-      setError("This order link is incomplete. Use the link from your confirmation.");
+      setError("incomplete");
       return;
     }
     let cancelled = false;
@@ -34,7 +35,7 @@ export default function OrderConfirmationPage({ number }: { number: string }) {
   }, [number, accessKey]);
 
   const placedAt = order
-    ? new Date(order.createdAt).toLocaleString(undefined, { dateStyle: "long", timeStyle: "short" })
+    ? new Date(order.createdAt).toLocaleString(language === "ar" ? "ar-MA" : language === "fr" ? "fr-MA" : "en-GB", { dateStyle: "long", timeStyle: "short" })
     : "";
 
   return (
@@ -43,14 +44,14 @@ export default function OrderConfirmationPage({ number }: { number: string }) {
       <main className="store-container store-container--narrow">
         {!order && !error ? (
           <p className="loading-line">
-            <LuLoader className="store-spin" aria-hidden="true" /> Loading your order…
+            <LuLoader className="store-spin" aria-hidden="true" /> {t("confirm.loading")}
           </p>
         ) : null}
         {error ? (
           <div className="empty-state">
-            <h1>We couldn't show this order</h1>
-            <p>{error}</p>
-            <Link to="/" className="store-btn store-btn--outline">Back to the shop</Link>
+            <h1>{t("confirm.error")}</h1>
+            <p>{error === "incomplete" ? t("confirm.incomplete") : error}</p>
+            <Link to="/" className="store-btn store-btn--outline">{t("confirm.back")}</Link>
           </div>
         ) : null}
 
@@ -60,27 +61,26 @@ export default function OrderConfirmationPage({ number }: { number: string }) {
               <span className="confirm-hero__check" aria-hidden="true">
                 <LuCheck />
               </span>
-              <p className="store-eyebrow">Order confirmed</p>
+              <p className="store-eyebrow">{t("confirm.eyebrow")}</p>
               <h1 className="confirm-hero__title">
-                Thank you, {order.customer.fullName.split(" ")[0]}!
+                {t("confirm.thanks", { name: order.customer.fullName.split(" ")[0] })}
               </h1>
               <p className="confirm-hero__lede">
-                Your order <strong>{order.number}</strong> is in. We'll contact you on{" "}
-                {order.customer.phone} or at {order.customer.email} to confirm it before it goes to print.
+                {t("confirm.lede", { number: order.number, phone: order.customer.phone })}
               </p>
-              <p className="confirm-hero__meta">Placed {placedAt}</p>
+              <p className="confirm-hero__meta">{t("confirm.placed", { date: placedAt })}</p>
             </section>
 
-            <ol className="timeline" aria-label="What happens next">
-              <li className="is-done"><span>Order received</span></li>
-              <li><span>We confirm with you</span></li>
-              <li><span>Printed to order</span></li>
-              <li><span>Delivered, pay on arrival</span></li>
+            <ol className="timeline" aria-label={t("confirm.next")}>
+              <li className="is-done"><span>{t("confirm.step1")}</span></li>
+              <li><span>{t("confirm.step2")}</span></li>
+              <li><span>{t("confirm.step3")}</span></li>
+              <li><span>{t("confirm.step4")}</span></li>
             </ol>
 
             <section className="confirm-grid">
               <div className="confirm-card">
-                <h2>Your posters</h2>
+                <h2>{t("confirm.posters")}</h2>
                 <ul className="mini-lines">
                   {order.items.map((item) => (
                     <li key={item.id} className="mini-line">
@@ -98,24 +98,24 @@ export default function OrderConfirmationPage({ number }: { number: string }) {
                       </div>
                       <div className="mini-line__text">
                         <p className="mini-line__title">{item.summary.title}</p>
-                        <p className="mini-line__meta">{item.productLabel}</p>
+                        <p className="mini-line__meta">{describe(item.product)}</p>
                         <p className="mini-line__meta">{item.summary.themeName}</p>
                       </div>
-                      <p className="mini-line__price">{formatMoney(item.lineTotal, order.totals.currency)}</p>
+                      <p className="mini-line__price">{money(item.lineTotal, order.totals.currency)}</p>
                     </li>
                   ))}
                 </ul>
                 <OrderTotalsList totals={order.totals} />
-                <p className="summary-card__note">Payment: on delivery</p>
+                <p className="summary-card__note">{t("confirm.payment")}</p>
               </div>
               <div className="confirm-card">
-                <h2>Delivery</h2>
+                <h2>{t("confirm.delivery")}</h2>
                 <address className="address-block">
                   {order.customer.fullName}
                   <br />
                   {order.customer.address}
                   <br />
-                  {order.customer.postalCode} {order.customer.city}
+                  {[order.customer.postalCode, order.customer.city].filter(Boolean).join(" ")}
                   <br />
                   {order.customer.country}
                 </address>
@@ -123,14 +123,14 @@ export default function OrderConfirmationPage({ number }: { number: string }) {
                   <p className="confirm-card__notes">“{order.customer.notes}”</p>
                 ) : null}
                 <p className="summary-card__note">
-                  Keep this page's link to check your order later.
+                  {t("confirm.keep")}
                 </p>
               </div>
             </section>
 
             <div className="confirm-actions">
               <Link to="/create" className="store-btn store-btn--primary store-btn--lg">
-                Design another poster <LuArrowRight aria-hidden="true" />
+                {t("cart.another")} <LuArrowRight className="rtl-flip" aria-hidden="true" />
               </Link>
             </div>
           </>

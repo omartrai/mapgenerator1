@@ -9,12 +9,12 @@ and produces print-ready files from it for an external print-and-ship service.
 
 | Route | Page | What happens |
 | --- | --- | --- |
-| `/` | Storefront | Hero, featured designs, how it works, sizes and prices, FAQ |
+| `/` | Storefront | Hero slider, shop by frame, offers, popular designs (Morocco / World), sizes and prices, FAQ |
 | `/create` | Studio | The map editor with guided steps: Place → Style → Text → Size & frame, plus optional extras (map details, markers, routes). A live framed preview and the buy box show the price. |
 | `/create?preset=<id>` | Studio | Starts from a featured design (`src/features/store/domain/presets.ts`) |
 | `/create?edit=<cartItemId>` | Studio | Reopens a cart item for editing ("Update cart item") |
 | `/cart` | Cart | Quantities, edit/remove, free-shipping progress, totals |
-| `/checkout` | Checkout | Name, email, phone, address, city, postal code, country, delivery instructions; pay on delivery |
+| `/checkout` | Checkout | Name, phone (Moroccan format when the country is Morocco), email, address, city, optional postal code, country, delivery instructions; cash on delivery |
 | `/order/<number>?key=<accessKey>` | Confirmation | Order summary; the key in the link is the customer's private access key |
 
 ## Admin
@@ -47,6 +47,16 @@ and produces print-ready files from it for an external print-and-ship service.
 Prices, sizes, frames, shipping and currency are all in
 `src/features/store/domain/catalog.ts`. The server recalculates every price
 from that file, so the browser can't change them.
+
+Prices are in Moroccan dirhams (MAD, stored in centimes) and display as
+"199 DH" (or "199 درهم" in Arabic).
+
+### Languages
+
+The shop is available in French (default), Arabic (right-to-left) and English,
+using the same language setting as the editor. Shop copy lives in
+`src/features/store/ui/storeText.ts`; add a key to all three dictionaries
+when you add text. The admin pages stay in English.
 
 ## Architecture
 

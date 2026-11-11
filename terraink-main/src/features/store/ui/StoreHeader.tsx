@@ -1,22 +1,31 @@
 import { useState, type FormEvent } from "react";
 import { LuSearch, LuShoppingBag } from "react-icons/lu";
 import { Link, useRouter } from "@/core/router/router";
+import { useLanguage, type AppLanguage } from "@/shared/i18n/LanguageContext";
 import { useStore } from "./StoreContext";
+import { useStoreText, type StoreTextKey } from "./storeText";
 
 interface StoreHeaderProps {
   variant?: "site" | "studio" | "checkout";
 }
 
-const NAV = [
-  { to: "/", label: "Home" },
-  { to: "/create", label: "Design poster" },
-  { to: "/#designs", label: "Designs" },
-  { to: "/#pricing", label: "Sizes" },
-  { to: "/#faq", label: "FAQ" },
+const NAV: { to: string; label: StoreTextKey }[] = [
+  { to: "/", label: "nav.home" },
+  { to: "/create", label: "nav.design" },
+  { to: "/#designs", label: "nav.designs" },
+  { to: "/#pricing", label: "nav.sizes" },
+  { to: "/#faq", label: "nav.faq" },
+];
+
+const LANGUAGES: { code: AppLanguage; label: string; name: string }[] = [
+  { code: "fr", label: "FR", name: "Français" },
+  { code: "ar", label: "ع", name: "العربية" },
+  { code: "en", label: "EN", name: "English" },
 ];
 
 export default function StoreHeader({ variant = "site" }: StoreHeaderProps) {
   const { cartCount } = useStore();
+  const { t } = useStoreText();
   const { path, navigate } = useRouter();
   const [query, setQuery] = useState("");
 
@@ -37,22 +46,22 @@ export default function StoreHeader({ variant = "site" }: StoreHeaderProps) {
         </Link>
 
         {variant === "site" ? (
-          <nav className="store-nav" aria-label="Main">
+          <nav className="store-nav" aria-label={t("nav.main")}>
             {NAV.map((item) => (
               <Link
                 key={item.to}
                 to={item.to}
                 className={`store-nav__link${item.to === "/create" ? " store-nav__link--design" : ""}${item.to === "/" && path === "/" ? " is-active" : ""}`}
               >
-                {item.label}
+                {t(item.label)}
               </Link>
             ))}
           </nav>
         ) : variant === "studio" ? (
-          <p className="store-header__context">Poster studio</p>
+          <p className="store-header__context">{t("header.studio")}</p>
         ) : (
           <p className="store-header__context">
-            <LockGlyph /> Secure checkout
+            <LockGlyph /> {t("header.secure")}
           </p>
         )}
 
@@ -63,19 +72,20 @@ export default function StoreHeader({ variant = "site" }: StoreHeaderProps) {
                 type="search"
                 value={query}
                 onChange={(event) => setQuery(event.target.value)}
-                placeholder="Search a city…"
-                aria-label="Search a city to map"
+                placeholder={t("header.search")}
+                aria-label={t("header.searchLabel")}
               />
-              <button type="submit" aria-label="Search">
+              <button type="submit" aria-label={t("header.searchButton")}>
                 <LuSearch aria-hidden="true" />
               </button>
             </form>
           ) : null}
+          <LanguagePicker />
           {variant !== "checkout" ? (
             <Link
               to="/cart"
               className={`store-cart-btn${path === "/cart" ? " is-active" : ""}`}
-              aria-label={`Cart, ${cartCount} item${cartCount === 1 ? "" : "s"}`}
+              aria-label={t("header.cart", { count: cartCount })}
             >
               <LuShoppingBag aria-hidden="true" />
               {cartCount > 0 ? <span className="store-cart-btn__count">{cartCount}</span> : null}
@@ -84,6 +94,29 @@ export default function StoreHeader({ variant = "site" }: StoreHeaderProps) {
         </div>
       </div>
     </header>
+  );
+}
+
+function LanguagePicker() {
+  const { language, setLanguage } = useLanguage();
+  const { t } = useStoreText();
+  return (
+    <div className="lang-pick" role="group" aria-label={t("header.language")}>
+      {LANGUAGES.map((entry) => (
+        <button
+          key={entry.code}
+          type="button"
+          lang={entry.code}
+          className={language === entry.code ? "is-active" : ""}
+          aria-pressed={language === entry.code}
+          aria-label={entry.name}
+          title={entry.name}
+          onClick={() => setLanguage(entry.code)}
+        >
+          {entry.label}
+        </button>
+      ))}
+    </div>
   );
 }
 

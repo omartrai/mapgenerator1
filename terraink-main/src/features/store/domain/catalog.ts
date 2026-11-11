@@ -4,12 +4,12 @@
  * API (authoritative pricing), so it must stay free of React, DOM and
  * path-alias imports.
  *
- * All money values are integer minor units (cents).
+ * All money values are integer minor units (centimes of a dirham).
  */
 
 export const STORE_NAME = "Maploom";
-export const STORE_CURRENCY = "EUR";
-export const STORE_LOCALE = "en-IE";
+export const STORE_CURRENCY = "MAD";
+export const STORE_LOCALE = "fr-MA";
 
 export type Orientation = "portrait" | "landscape";
 export type FrameId = "none" | "black" | "white" | "oak";
@@ -34,10 +34,10 @@ export interface FrameOption {
 }
 
 export const PRINT_SIZES: PrintSize[] = [
-  { id: "a4", label: "A4", widthCm: 21, heightCm: 29.7, price: 2900, framePrice: 2500 },
-  { id: "30x40", label: "30 × 40 cm", widthCm: 30, heightCm: 40, price: 3900, framePrice: 3500, popular: true },
-  { id: "a3", label: "A3", widthCm: 29.7, heightCm: 42, price: 4500, framePrice: 3900 },
-  { id: "50x70", label: "50 × 70 cm", widthCm: 50, heightCm: 70, price: 5900, framePrice: 5900 },
+  { id: "a4", label: "A4", widthCm: 21, heightCm: 29.7, price: 14900, framePrice: 14900 },
+  { id: "30x40", label: "30 × 40 cm", widthCm: 30, heightCm: 40, price: 19900, framePrice: 17900, popular: true },
+  { id: "a3", label: "A3", widthCm: 29.7, heightCm: 42, price: 22900, framePrice: 19900 },
+  { id: "50x70", label: "50 × 70 cm", widthCm: 50, heightCm: 70, price: 29900, framePrice: 29900 },
 ];
 
 export const FRAME_OPTIONS: FrameOption[] = [
@@ -49,8 +49,8 @@ export const FRAME_OPTIONS: FrameOption[] = [
 
 export const PAPER_DESCRIPTION = "200 g/m² matte paper, printed with pigment inks.";
 
-export const SHIPPING_FLAT = 495;
-export const FREE_SHIPPING_THRESHOLD = 7500;
+export const SHIPPING_FLAT = 3500;
+export const FREE_SHIPPING_THRESHOLD = 40000;
 export const MAX_QUANTITY_PER_ITEM = 10;
 export const MAX_ITEMS_PER_ORDER = 10;
 
@@ -126,14 +126,32 @@ export function computeTotals(lines: { product: ProductOptions; quantity: number
   return { subtotal, shipping, total: subtotal + shipping, currency: STORE_CURRENCY };
 }
 
-export function formatMoney(amount: number, currency: string = STORE_CURRENCY): string {
+/**
+ * Formats minor units for display. Dirhams read "1 299 DH" (or "1 299 درهم"
+ * in Arabic), the way prices are written in Morocco; other currencies, such
+ * as older orders, fall back to Intl.
+ */
+export function formatMoney(
+  amount: number,
+  currency: string = STORE_CURRENCY,
+  language: "en" | "fr" | "ar" = "fr",
+): string {
+  const value = amount / 100;
+  if (currency === "MAD") {
+    const digits = amount % 100 === 0 ? 0 : 2;
+    const number = new Intl.NumberFormat("fr-MA", {
+      minimumFractionDigits: digits,
+      maximumFractionDigits: digits,
+    }).format(value);
+    return language === "ar" ? `${number} درهم` : `${number} DH`;
+  }
   try {
-    return new Intl.NumberFormat(STORE_LOCALE, {
+    return new Intl.NumberFormat(language === "en" ? "en-IE" : "fr-FR", {
       style: "currency",
       currency,
       minimumFractionDigits: amount % 100 === 0 ? 0 : 2,
-    }).format(amount / 100);
+    }).format(value);
   } catch {
-    return `${(amount / 100).toFixed(2)} ${currency}`;
+    return `${value.toFixed(2)} ${currency}`;
   }
 }

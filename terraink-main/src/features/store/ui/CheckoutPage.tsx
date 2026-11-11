@@ -2,41 +2,57 @@ import { useEffect, type FormEvent } from "react";
 import { LuArrowLeft, LuBanknote, LuLoader, LuLock } from "react-icons/lu";
 import { Link, useRouter } from "@/core/router/router";
 import { useCheckout } from "../application/useCheckout";
-import { describeProduct, formatMoney, resolveDimensions, unitPrice } from "../domain/catalog";
+import { resolveDimensions, unitPrice } from "../domain/catalog";
 import type { CustomerInfo } from "../domain/order";
 import FramedPoster from "./FramedPoster";
 import OrderTotalsList from "./OrderTotalsList";
 import StoreHeader from "./StoreHeader";
 import { useStore } from "./StoreContext";
+import { useStoreText, type StoreTextKey } from "./storeText";
 
 interface FieldConfig {
   name: keyof CustomerInfo;
-  label: string;
+  label: StoreTextKey;
   type?: string;
   autoComplete: string;
-  placeholder?: string;
+  placeholder?: StoreTextKey;
+  list?: string;
   wide?: boolean;
   optional?: boolean;
   inputMode?: "text" | "email" | "tel" | "numeric";
 }
 
 const CONTACT_FIELDS: FieldConfig[] = [
-  { name: "fullName", label: "Full name", autoComplete: "name", wide: true },
-  { name: "email", label: "Email address", type: "email", autoComplete: "email", inputMode: "email" },
-  { name: "phone", label: "Phone number", type: "tel", autoComplete: "tel", inputMode: "tel" },
+  { name: "fullName", label: "checkout.fullName", autoComplete: "name", wide: true },
+  { name: "phone", label: "checkout.phone", type: "tel", autoComplete: "tel", inputMode: "tel", placeholder: "checkout.phoneHint" },
+  { name: "email", label: "checkout.email", type: "email", autoComplete: "email", inputMode: "email" },
 ];
 
 const ADDRESS_FIELDS: FieldConfig[] = [
-  { name: "address", label: "Street address", autoComplete: "street-address", placeholder: "Street, number, apartment", wide: true },
-  { name: "city", label: "City", autoComplete: "address-level2" },
-  { name: "postalCode", label: "Postal code", autoComplete: "postal-code" },
-  { name: "country", label: "Country", autoComplete: "country-name", wide: true },
+  { name: "address", label: "checkout.street", autoComplete: "street-address", placeholder: "checkout.streetHint", wide: true },
+  { name: "city", label: "checkout.city", autoComplete: "address-level2", list: "checkout-cities" },
+  { name: "postalCode", label: "checkout.postalCode", autoComplete: "postal-code", optional: true, inputMode: "numeric" },
+  { name: "country", label: "checkout.country", autoComplete: "country-name", wide: true },
+];
+
+const MOROCCAN_CITIES = [
+  "Casablanca", "Rabat", "Marrakech", "Fès", "Tanger", "Agadir", "Meknès", "Oujda",
+  "Kénitra", "Tétouan", "Salé", "Témara", "Mohammedia", "El Jadida", "Safi", "Nador",
+  "Béni Mellal", "Khouribga", "Settat", "Larache", "Ksar El Kébir", "Essaouira",
+  "Chefchaouen", "Ouarzazate", "Errachidia", "Taza", "Guelmim", "Laâyoune", "Dakhla",
+  "Al Hoceïma", "Ifrane", "Berrechid", "Khémisset", "Taroudant", "Tiznit",
 ];
 
 export default function CheckoutPage() {
   const { cart, totals } = useStore();
   const { navigate } = useRouter();
   const checkout = useCheckout();
+  const { t, money, describe, language } = useStoreText();
+
+  useEffect(() => {
+    if (!checkout.customer.country) checkout.setField("country", t("checkout.defaultCountry"));
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, []);
 
   useEffect(() => {
     if (cart.length === 0 && !checkout.isSubmitting) navigate("/cart", { replace: true });
@@ -61,14 +77,19 @@ export default function CheckoutPage() {
     const id = `checkout-${field.name}`;
     return (
       <div key={field.name} className={`field${field.wide ? " field--wide" : ""}${error ? " has-error" : ""}`}>
-        <label htmlFor={id}>{field.label}</label>
+        <label htmlFor={id}>
+          {t(field.label)}
+          {field.optional ? <span className="field__optional"> {t("checkout.optional")}</span> : null}
+        </label>
         <input
           id={id}
           name={field.name}
           type={field.type ?? "text"}
           inputMode={field.inputMode}
           autoComplete={field.autoComplete}
-          placeholder={field.placeholder}
+          placeholder={field.placeholder ? t(field.placeholder) : undefined}
+          list={field.list}
+          dir={field.name === "phone" || field.name === "email" ? "ltr" : undefined}
           value={checkout.customer[field.name]}
           onChange={(event) => checkout.setField(field.name, event.target.value)}
           onBlur={() => checkout.customer[field.name] && checkout.validateField(field.name)}
@@ -78,7 +99,7 @@ export default function CheckoutPage() {
         />
         {error ? (
           <p id={`${id}-error`} className="field__error">
-            {error}
+            {t(`error.${field.name}` as StoreTextKey)}
           </p>
         ) : null}
       </div>
@@ -90,33 +111,38 @@ export default function CheckoutPage() {
       <StoreHeader variant="checkout" />
       <main className="store-container">
         <Link to="/cart" className="store-link store-link--back">
-          <LuArrowLeft aria-hidden="true" /> Back to cart
+          <LuArrowLeft className="rtl-flip" aria-hidden="true" /> {t("checkout.back")}
         </Link>
-        <h1 className="page-title">Checkout</h1>
+        <h1 className="page-title">{t("checkout.title")}</h1>
 
         <form className="checkout-layout" onSubmit={onSubmit} noValidate>
           <div className="checkout-form">
             <fieldset className="checkout-block">
               <legend>
-                <span className="checkout-block__num">1</span> Contact
+                <span className="checkout-block__num">1</span> {t("checkout.contact")}
               </legend>
               <div className="field-grid">{CONTACT_FIELDS.map(renderField)}</div>
             </fieldset>
 
             <fieldset className="checkout-block">
               <legend>
-                <span className="checkout-block__num">2</span> Delivery address
+                <span className="checkout-block__num">2</span> {t("checkout.address")}
               </legend>
               <div className="field-grid">{ADDRESS_FIELDS.map(renderField)}</div>
+              <datalist id="checkout-cities">
+                {MOROCCAN_CITIES.map((city) => (
+                  <option key={city} value={city} />
+                ))}
+              </datalist>
               <div className="field field--wide">
                 <label htmlFor="checkout-notes">
-                  Delivery instructions <span className="field__optional">(optional)</span>
+                  {t("checkout.notes")} <span className="field__optional">{t("checkout.optional")}</span>
                 </label>
                 <textarea
                   id="checkout-notes"
                   name="notes"
                   rows={3}
-                  placeholder="Door code, best time to deliver, a gift message…"
+                  placeholder={t("checkout.notesHint")}
                   value={checkout.customer.notes}
                   onChange={(event) => checkout.setField("notes", event.target.value)}
                 />
@@ -135,21 +161,21 @@ export default function CheckoutPage() {
 
             <fieldset className="checkout-block">
               <legend>
-                <span className="checkout-block__num">3</span> Payment
+                <span className="checkout-block__num">3</span> {t("checkout.payment")}
               </legend>
               <label className="pay-option is-selected">
                 <input type="radio" name="payment" value="cash_on_delivery" checked readOnly />
                 <LuBanknote aria-hidden="true" />
                 <span>
-                  <strong>Pay on delivery</strong>
-                  <span>Pay in cash or by card when your poster arrives. We'll contact you to confirm the order first.</span>
+                  <strong>{t("checkout.cod")}</strong>
+                  <span>{t("checkout.codText")}</span>
                 </span>
               </label>
             </fieldset>
           </div>
 
           <aside className="summary-card summary-card--sticky">
-            <h2 className="summary-card__title">Your order</h2>
+            <h2 className="summary-card__title">{t("checkout.yourOrder")}</h2>
             <ul className="mini-lines">
               {cart.map((item) => {
                 const { widthCm, heightCm } = resolveDimensions(item.product);
@@ -167,9 +193,9 @@ export default function CheckoutPage() {
                     </div>
                     <div className="mini-line__text">
                       <p className="mini-line__title">{item.summary.title}</p>
-                      <p className="mini-line__meta">{describeProduct(item.product)}</p>
+                      <p className="mini-line__meta">{describe(item.product)}</p>
                     </div>
-                    <p className="mini-line__price">{formatMoney(unitPrice(item.product) * item.quantity)}</p>
+                    <p className="mini-line__price">{money(unitPrice(item.product) * item.quantity)}</p>
                   </li>
                 );
               })}
@@ -177,7 +203,7 @@ export default function CheckoutPage() {
             <OrderTotalsList totals={totals} />
             {checkout.submitError ? (
               <p className="store-error" role="alert">
-                {checkout.submitError}
+                {language === "en" ? checkout.submitError : t("checkout.failed")}
               </p>
             ) : null}
             <button
@@ -188,16 +214,16 @@ export default function CheckoutPage() {
             >
               {checkout.isSubmitting ? (
                 <>
-                  <LuLoader className="store-spin" aria-hidden="true" /> Placing your order…
+                  <LuLoader className="store-spin" aria-hidden="true" /> {t("checkout.placing")}
                 </>
               ) : (
                 <>
-                  <LuLock aria-hidden="true" /> Place order · {formatMoney(totals.total)}
+                  <LuLock aria-hidden="true" /> {t("checkout.place", { amount: money(totals.total) })}
                 </>
               )}
             </button>
             <p className="summary-card__note">
-              By placing your order you agree to pay {formatMoney(totals.total)} on delivery.
+              {t("checkout.agree", { amount: money(totals.total) })}
             </p>
           </aside>
         </form>
