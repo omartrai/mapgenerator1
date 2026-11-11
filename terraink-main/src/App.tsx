@@ -1,10 +1,10 @@
 import { AppProviders } from "@/core/AppProviders";
-import AppShell from "@/shared/ui/AppShell";
+import AppRouter from "@/shared/ui/AppRouter";
 
 export default function App() {
   return (
     <AppProviders>
-      <AppShell />
+      <AppRouter />
     </AppProviders>
   );
 }

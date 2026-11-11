@@ -13,6 +13,8 @@ import "@fontsource/instrument-sans/700.css";
 import "@fontsource/spline-sans-mono/400.css";
 import "@fontsource/spline-sans-mono/500.css";
 import "@fontsource/bebas-neue/400.css";
+import "@fontsource/instrument-serif/400.css";
+import "@fontsource/instrument-serif/400-italic.css";
 
 // Default poster typefaces. Every poster falls back to these when no custom
 // font is chosen, but nothing ever loaded them — until now they silently

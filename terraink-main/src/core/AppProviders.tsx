@@ -1,6 +1,8 @@
 import type { ReactNode } from "react";
 import { PosterProvider } from "@/features/poster/ui/PosterContext";
+import { StoreProvider } from "@/features/store/ui/StoreContext";
 import { LanguageProvider } from "@/shared/i18n/LanguageContext";
+import { RouterProvider } from "@/core/router/router";
 
 interface AppProvidersProps {
   children: ReactNode;
@@ -12,8 +14,12 @@ interface AppProvidersProps {
  */
 export function AppProviders({ children }: AppProvidersProps) {
   return (
-    <LanguageProvider>
-      <PosterProvider>{children}</PosterProvider>
-    </LanguageProvider>
+    <RouterProvider>
+      <LanguageProvider>
+        <PosterProvider>
+          <StoreProvider>{children}</StoreProvider>
+        </PosterProvider>
+      </LanguageProvider>
+    </RouterProvider>
   );
 }

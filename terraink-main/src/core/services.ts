@@ -63,3 +63,8 @@ export { fetchMarkdownDoc } from "@/features/legal/infrastructure/legalDocsAdapt
 
 export { gpxParser } from "@/features/routes/infrastructure/gpxParser";
 export { drawRoutesOnCanvas } from "@/features/routes/infrastructure/rendering";
+
+/* ── Store: cart persistence and order API ── */
+
+export { cartStorage } from "@/features/store/infrastructure/cartStorage";
+export { ordersApi, adminApi, ApiError } from "@/features/store/infrastructure/ordersApi";

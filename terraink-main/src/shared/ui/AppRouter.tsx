@@ -1,0 +1,45 @@
+import { lazy, Suspense, useEffect } from "react";
+import { matchPath, useRouter } from "@/core/router/router";
+import StorefrontPage from "@/features/store/ui/StorefrontPage";
+
+const StudioPage = lazy(() => import("@/features/store/ui/StudioPage"));
+const CartPage = lazy(() => import("@/features/store/ui/CartPage"));
+const CheckoutPage = lazy(() => import("@/features/store/ui/CheckoutPage"));
+const OrderConfirmationPage = lazy(() => import("@/features/store/ui/OrderConfirmationPage"));
+const AdminOrdersPage = lazy(() => import("@/features/store/ui/AdminOrdersPage"));
+const AdminOrderPage = lazy(() => import("@/features/store/ui/AdminOrderPage"));
+
+const TITLES: [RegExp, string][] = [
+  [/^\/create/, "Design your poster — Maploom"],
+  [/^\/cart/, "Your cart — Maploom"],
+  [/^\/checkout/, "Checkout — Maploom"],
+  [/^\/order\//, "Order confirmed — Maploom"],
+  [/^\/admin/, "Orders — Maploom admin"],
+];
+
+function PageFallback() {
+  return <div className="page-fallback" aria-busy="true" />;
+}
+
+export default function AppRouter() {
+  const { path } = useRouter();
+
+  useEffect(() => {
+    document.title =
+      TITLES.find(([pattern]) => pattern.test(path))?.[1] ??
+      "Maploom — Personalised map posters";
+    document.documentElement.dataset.route = path === "/create" ? "studio" : "store";
+  }, [path]);
+
+  let page = <StorefrontPage />;
+  let params: Record<string, string> | null;
+
+  if (path === "/create") page = <StudioPage />;
+  else if (path === "/cart") page = <CartPage />;
+  else if (path === "/checkout") page = <CheckoutPage />;
+  else if ((params = matchPath("/order/:number", path))) page = <OrderConfirmationPage number={params.number} />;
+  else if (path === "/admin") page = <AdminOrdersPage />;
+  else if ((params = matchPath("/admin/orders/:number", path))) page = <AdminOrderPage number={params.number} />;
+
+  return <Suspense fallback={<PageFallback />}>{page}</Suspense>;
+}
