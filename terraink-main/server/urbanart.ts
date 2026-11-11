@@ -14,6 +14,10 @@ import {
 const DEFAULT_BASE_URL = "https://urbanart.ma/wp-json/urbanart/v1";
 const CACHE_MS = 10 * 60 * 1000;
 const TIMEOUT_MS = 8000;
+/** Mockups shown on each card: the cover and the hover view. */
+const CARD_MOCKUPS = 2;
+/** Parallel mockup requests while building the list (rate limit: 120/min). */
+const MOCKUP_CONCURRENCY = 4;
 
 interface Cached<T> {
   at: number;
@@ -49,10 +53,11 @@ export function createUrbanArtCatalog(env: Record<string, string | undefined>): 
   async function listProducts(): Promise<CollectionProduct[]> {
     if (products && Date.now() - products.at < CACHE_MS) return products.value;
     pending ??= call("/products")
-      .then((data) => {
+      .then(async (data) => {
         const value = (Array.isArray(data) ? data : [])
           .map(toCollectionProduct)
           .filter((product): product is CollectionProduct => product !== null);
+        await attachCardMockups(value);
         products = { at: Date.now(), value };
         return value;
       })
@@ -79,6 +84,21 @@ export function createUrbanArtCatalog(env: Record<string, string | undefined>): 
       console.warn("[urbanart] mockups unavailable", error);
       return [];
     }
+  }
+
+  /** Adds the first mockups to each product, a few requests at a time. */
+  async function attachCardMockups(list: CollectionProduct[]) {
+    let next = 0;
+    const worker = async () => {
+      while (next < list.length) {
+        const product = list[next++];
+        const all = (await getMockups(product.id)).map((mockup) => mockup.url);
+        // Cover = first mockup; hover = one from the middle of the set, which is
+        // usually a different room (neighbouring mockups often only change the frame).
+        product.mockups = all.length > 2 ? [all[0], all[Math.floor(all.length / 2)]] : all.slice(0, CARD_MOCKUPS);
+      }
+    };
+    await Promise.all(Array.from({ length: Math.min(MOCKUP_CONCURRENCY, list.length) }, worker));
   }
 
   return {

@@ -14,11 +14,24 @@ export default function CollectionCard({
 }) {
   const { t, money } = useStoreText();
   const inSize = product.variants.filter((variant) => variant.size === size);
+  // Room mockup first; on hover, the next mockup (or the flat artwork).
+  const [firstMockup, secondMockup] = product.mockups ?? [];
+  const cover = firstMockup || product.image;
+  const hover = firstMockup ? secondMockup || product.image : "";
   const startingPrice = inSize.length ? Math.min(...inSize.map((variant) => variant.price)) : product.fromPrice;
   return (
     <Link to={`/collection/${product.id}${size ? `?size=${encodeURIComponent(size)}` : ""}`} className="collection-card">
-      <div className="collection-card__visual">
-        <img src={product.image} alt={product.title} loading="lazy" decoding="async" />
+      <div className={`collection-card__visual${hover ? " has-hover" : ""}`}>
+        <img
+          className="collection-card__cover"
+          src={cover}
+          alt={product.title}
+          loading="lazy"
+          decoding="async"
+        />
+        {hover ? (
+          <img className="collection-card__alt" src={hover} alt="" loading="lazy" decoding="async" aria-hidden="true" />
+        ) : null}
       </div>
       <div className="collection-card__body">
         <h3 className="collection-card__title">{product.title}</h3>

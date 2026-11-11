@@ -25,6 +25,8 @@ export interface CollectionProduct {
   /** Lowest variant price, in centimes. */
   fromPrice: number;
   variants: CollectionVariant[];
+  /** First room mockups (for the card and its hover view); may be empty. */
+  mockups?: string[];
 }
 
 export interface CollectionMockup {
