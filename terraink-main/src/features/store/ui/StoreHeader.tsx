@@ -14,7 +14,7 @@ const NAV: { to: string; label: StoreTextKey }[] = [
   { to: "/", label: "nav.home" },
   { to: "/create", label: "nav.design" },
   { to: "/#designs", label: "nav.designs" },
-  { to: "/#pricing", label: "nav.sizes" },
+  { to: "/collection", label: "nav.collection" },
   { to: "/#faq", label: "nav.faq" },
 ];
 
@@ -28,7 +28,8 @@ export default function StoreHeader({ variant = "site" }: StoreHeaderProps) {
   const { cartCount } = useStore();
   const { t } = useStoreText();
   const { path } = useRouter();
-  const isActive = (to: string) => (to === "/" ? path === "/" : to === "/create" && path === "/create");
+  const isActive = (to: string) =>
+    to === "/" ? path === "/" : to.startsWith("/#") ? false : path === to || path.startsWith(`${to}/`);
 
   return (
     <header

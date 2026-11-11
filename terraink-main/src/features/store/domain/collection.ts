@@ -1,0 +1,100 @@
+/**
+ * Ready-made posters from the print partner's catalogue (UrbanArt), as shown
+ * in the shop. Only customer-facing fields are kept: reseller cost, product
+ * cost and shipping cost never leave the server.
+ */
+
+export interface CollectionVariant {
+  /** Position in the partner's variant list (needed to order it later). */
+  index: number;
+  /** e.g. "40x60". */
+  size: string;
+  withMat: boolean;
+  /** Frame moulding depth in cm (1.5 or 3). */
+  frameDepthCm: number;
+  /** Suggested retail price, in centimes (MAD). */
+  price: number;
+}
+
+export interface CollectionProduct {
+  id: number;
+  title: string;
+  category: string;
+  image: string;
+  sizes: string[];
+  /** Lowest variant price, in centimes. */
+  fromPrice: number;
+  variants: CollectionVariant[];
+}
+
+export interface CollectionMockup {
+  id: number;
+  url: string;
+}
+
+const text = (value: unknown) => (typeof value === "string" ? value.trim() : "");
+const httpsUrl = (value: unknown) => {
+  const url = text(value);
+  return /^https:\/\//i.test(url) ? url : "";
+};
+
+/** Maps one raw catalogue product; returns null when it can't be shown. */
+export function toCollectionProduct(raw: unknown): CollectionProduct | null {
+  if (!raw || typeof raw !== "object") return null;
+  const source = raw as Record<string, unknown>;
+  const id = Number(source.id);
+  const title = text(source.title);
+  const image = httpsUrl(source.image);
+  if (!Number.isInteger(id) || id <= 0 || !title || !image) return null;
+
+  const variants: CollectionVariant[] = [];
+  (Array.isArray(source.variants) ? source.variants : []).forEach((entry, index) => {
+    if (!entry || typeof entry !== "object") return;
+    const variant = entry as Record<string, unknown>;
+    const price = Math.round(Number(variant.retail_price) * 100);
+    const size = text(variant.size);
+    if (!size || !Number.isFinite(price) || price <= 0) return;
+    variants.push({
+      index,
+      size,
+      withMat: Number(variant.with_mat) === 1,
+      frameDepthCm: Number(variant.frame_weight) || 0,
+      price,
+    });
+  });
+  if (variants.length === 0) return null;
+
+  const sizes = [...new Set(variants.map((variant) => variant.size))].sort(
+    (a, b) => sizeArea(a) - sizeArea(b),
+  );
+
+  return {
+    id,
+    title,
+    category: text(source.category),
+    image,
+    sizes,
+    fromPrice: Math.min(...variants.map((variant) => variant.price)),
+    variants,
+  };
+}
+
+export function toCollectionMockups(raw: unknown): CollectionMockup[] {
+  const list = (raw as { mockups?: unknown })?.mockups;
+  if (!Array.isArray(list)) return [];
+  return list
+    .map((entry) => ({ id: Number(entry?.id), url: httpsUrl(entry?.url) }))
+    .filter((mockup) => Number.isInteger(mockup.id) && mockup.url);
+}
+
+/** "40x60" → 2400, used to sort sizes from small to large. */
+export function sizeArea(size: string): number {
+  const [width, height] = size.split(/x/i).map(Number);
+  return (width || 0) * (height || 0);
+}
+
+/** "40x60" → "40 × 60 cm". */
+export function formatCollectionSize(size: string): string {
+  const [width, height] = size.split(/x/i);
+  return height ? `${width} × ${height} cm` : size;
+}

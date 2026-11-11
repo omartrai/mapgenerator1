@@ -16,7 +16,7 @@ export default function StoreFooter() {
             <h3>{t("footer.shop")}</h3>
             <Link to="/create">{t("nav.design")}</Link>
             <Link to="/#designs">{t("grid.title")}</Link>
-            <Link to="/#pricing">{t("pricing.title")}</Link>
+            <Link to="/collection">{t("nav.collection")}</Link>
           </div>
           <div>
             <h3>{t("footer.help")}</h3>

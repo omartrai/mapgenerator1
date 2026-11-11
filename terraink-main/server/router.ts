@@ -5,6 +5,7 @@ import { toPublicOrder, toSummaryRow } from "../src/features/store/domain/order.
 import { createBlobStorage } from "./storage/blobStorage.js";
 import { createFsStorage } from "./storage/fsStorage.js";
 import { createFulfillmentProvider } from "./fulfillment/index.js";
+import { createUrbanArtCatalog } from "./urbanart.js";
 import {
   HttpError,
   assertFileName,
@@ -109,6 +110,10 @@ export function createApiHandler(options: RouterOptions) {
     });
   }
 
+  const catalog = createUrbanArtCatalog(options.env);
+  // Public catalogue data: let the CDN cache it briefly.
+  const cached = { "Cache-Control": "public, max-age=60, s-maxage=600, stale-while-revalidate=3600" };
+
   async function route(request: Request): Promise<Response> {
     const url = new URL(request.url);
     const rawPath = url.searchParams.get("path") ?? url.pathname.replace(/^\/api\/?/, "");
@@ -124,6 +129,32 @@ export function createApiHandler(options: RouterOptions) {
         storage: storage?.kind ?? "unconfigured",
         adminConfigured: !!adminPassword(),
       });
+    }
+
+    // GET /api/collection — ready-made posters from UrbanArt
+    if (head === "collection" && method === "GET") {
+      if (!catalog) return json(200, { products: [], configured: false });
+      if (rest.length === 0) {
+        try {
+          return json(200, { products: await catalog.listProducts(), configured: true }, cached);
+        } catch (error) {
+          console.warn("[urbanart] catalogue unavailable", error);
+          throw new HttpError(502, "The collection is unavailable right now.");
+        }
+      }
+      if (rest.length === 1) {
+        const id = Number(rest[0]);
+        if (!Number.isInteger(id) || id <= 0) throw new HttpError(404, "Product not found.");
+        let found;
+        try {
+          found = await catalog.getProduct(id);
+        } catch (error) {
+          console.warn("[urbanart] catalogue unavailable", error);
+          throw new HttpError(502, "The collection is unavailable right now.");
+        }
+        if (!found) throw new HttpError(404, "Product not found.");
+        return json(200, found, cached);
+      }
     }
 
     // POST /api/orders — place an order

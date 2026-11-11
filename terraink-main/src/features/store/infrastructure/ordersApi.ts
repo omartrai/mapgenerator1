@@ -4,6 +4,7 @@ import type {
   OrderSummaryRow,
   PublicOrder,
 } from "../domain/order";
+import type { CollectionMockup, CollectionProduct } from "../domain/collection";
 
 const API_BASE = "/api";
 const ADMIN_TOKEN_KEY = "maploom.admin.token";
@@ -41,6 +42,14 @@ async function request<T>(path: string, init: RequestInit = {}): Promise<T> {
   }
   return body as T;
 }
+
+/* ── Collection (ready-made posters from the print partner) ── */
+
+export const collectionApi = {
+  list: () => request<{ products: CollectionProduct[]; configured: boolean }>("/collection"),
+  get: (id: number) =>
+    request<{ product: CollectionProduct; mockups: CollectionMockup[] }>(`/collection/${id}`),
+};
 
 /* ── Customer ── */
 

@@ -27,6 +27,7 @@ import {
   type ProductOptions,
 } from "../domain/catalog";
 import { DESIGN_PRESETS, MOROCCAN_PRESET_IDS, type DesignPreset } from "../domain/presets";
+import CollectionSection from "./CollectionSection";
 import FramedPoster from "./FramedPoster";
 import StoreFooter from "./StoreFooter";
 import StoreHeader from "./StoreHeader";
@@ -89,6 +90,8 @@ export default function StorefrontPage() {
         <HeroSlider />
 
         <ProductGrid choice={choice} />
+
+        <CollectionSection />
 
         <Configurator choice={choice} onChange={setChoice} />
 

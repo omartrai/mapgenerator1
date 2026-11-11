@@ -42,6 +42,8 @@ and produces print-ready files from it for an external print-and-ship service.
 | `BLOB_READ_WRITE_TOKEN` | yes | Added automatically when a Vercel Blob store is connected to the project. All order data is stored in it as **private** blobs. |
 | `ADMIN_PASSWORD` | yes | Password for `/admin`. Use a long random value. Without it the admin API refuses every request. |
 | `ORDER_WEBHOOK_URL` | no | Incoming webhook (Slack, Discord, Zapier, Make, n8n…) that gets a message for every new order. |
+| `URBANART_API_KEY` | no | UrbanArt reseller API key. When set, the shop shows your UrbanArt catalogue at `/collection` and on the homepage (cached 10 minutes; reseller and shipping costs are never sent to the browser). |
+| `URBANART_API_URL` | no | Override for the UrbanArt API base URL (default `https://urbanart.ma/wp-json/urbanart/v1`). |
 | `FULFILLMENT_PROVIDER` | no | Defaults to `manual`. Reserved for future print-on-demand integrations. |
 
 Prices, sizes, frames, shipping and currency are all in
