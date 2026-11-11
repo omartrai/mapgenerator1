@@ -3503,7 +3503,16 @@ button.store-btn--dark[type="submit"] {
   }
 
   .store-nav {
-    display: none !important;
+    justify-content: flex-end;
+  }
+
+  .store-nav__link:not(.store-nav__link--design) {
+    display: none;
+  }
+
+  .store-nav__link--design {
+    color: var(--s-accent) !important;
+    font-size: 0.82rem;
   }
 
   .store-brand__name {

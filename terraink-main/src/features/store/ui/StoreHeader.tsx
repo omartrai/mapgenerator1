@@ -9,6 +9,7 @@ interface StoreHeaderProps {
 
 const NAV = [
   { to: "/", label: "Home" },
+  { to: "/create", label: "Design poster" },
   { to: "/#designs", label: "Designs" },
   { to: "/#pricing", label: "Sizes" },
   { to: "/#faq", label: "FAQ" },
@@ -41,7 +42,7 @@ export default function StoreHeader({ variant = "site" }: StoreHeaderProps) {
               <Link
                 key={item.to}
                 to={item.to}
-                className={`store-nav__link${item.to === "/" && path === "/" ? " is-active" : ""}`}
+                className={`store-nav__link${item.to === "/create" ? " store-nav__link--design" : ""}${item.to === "/" && path === "/" ? " is-active" : ""}`}
               >
                 {item.label}
               </Link>
