@@ -98,3 +98,63 @@ export function formatCollectionSize(size: string): string {
   const [width, height] = size.split(/x/i);
   return height ? `${width} × ${height} cm` : size;
 }
+
+/* ── Shop categories ── */
+
+/**
+ * UrbanArt files every product under "Posters", so the shop groups them by
+ * rules on the title. Add keywords here as the catalogue grows; any extra
+ * category UrbanArt sends is added automatically (see categoriesFor).
+ */
+const MAP_WORDS = /\b(map|carte|plan)\b/i;
+const MOROCCO_WORDS =
+  /maroc|morocco|marrakech|marrakesh|casablanca|rabat|f[eè]s\b|tanger|tangier|chefchaouen|essaouira|agadir|kasbah|blue city|palmeraie|maghreb|azure|atlas|nazar|riad|medina|zellige/i;
+
+export const RULE_CATEGORIES = [
+  { id: "maps", match: (product: CollectionProduct) => MAP_WORDS.test(product.title) },
+  { id: "morocco", match: (product: CollectionProduct) => MOROCCO_WORDS.test(product.title) },
+  { id: "art", match: (product: CollectionProduct) => !MAP_WORDS.test(product.title) },
+] as const;
+
+export type RuleCategoryId = (typeof RULE_CATEGORIES)[number]["id"];
+
+export interface ShopCategory {
+  id: string;
+  /** Translation key for rule categories; raw label for partner categories. */
+  label: string;
+  isRule: boolean;
+  count: number;
+}
+
+const slug = (value: string) =>
+  value.toLowerCase().normalize("NFD").replace(/[̀-ͯ]/g, "").replace(/[^a-z0-9]+/g, "-").replace(/^-|-$/g, "");
+
+export function matchesCategory(product: CollectionProduct, categoryId: string): boolean {
+  if (!categoryId || categoryId === "all") return true;
+  const rule = RULE_CATEGORIES.find((entry) => entry.id === categoryId);
+  if (rule) return rule.match(product);
+  return `cat-${slug(product.category)}` === categoryId;
+}
+
+/** Non-empty categories, rule ones first, then the partner's own if it uses several. */
+export function categoriesFor(products: CollectionProduct[]): ShopCategory[] {
+  const result: ShopCategory[] = RULE_CATEGORIES.map((rule) => ({
+    id: rule.id,
+    label: `cat.${rule.id}`,
+    isRule: true,
+    count: products.filter(rule.match).length,
+  })).filter((category) => category.count > 0);
+
+  const partner = [...new Set(products.map((product) => product.category).filter(Boolean))];
+  if (partner.length > 1) {
+    for (const name of partner) {
+      result.push({
+        id: `cat-${slug(name)}`,
+        label: name,
+        isRule: false,
+        count: products.filter((product) => product.category === name).length,
+      });
+    }
+  }
+  return result;
+}

@@ -1,6 +1,6 @@
 import { useEffect, useMemo, useState } from "react";
 import { LuArrowLeft, LuBanknote, LuFrame, LuTruck } from "react-icons/lu";
-import { Link } from "@/core/router/router";
+import { Link, useRouter } from "@/core/router/router";
 import { useCollectionProduct } from "../application/useCollection";
 import { formatCollectionSize, type CollectionVariant } from "../domain/collection";
 import { FREE_SHIPPING_THRESHOLD } from "../domain/catalog";
@@ -29,6 +29,8 @@ function pickVariant(variants: CollectionVariant[], selection: Selection): Colle
 export default function CollectionProductPage({ id }: { id: number }) {
   const { t, money, language } = useStoreText();
   const { product, mockups, status } = useCollectionProduct(id);
+  const { search } = useRouter();
+  const wantedSize = search.get("size") ?? "";
   const [photo, setPhoto] = useState(0);
   const [selection, setSelection] = useState<Selection | null>(null);
 
@@ -40,9 +42,11 @@ export default function CollectionProductPage({ id }: { id: number }) {
   // Start on the cheapest option.
   useEffect(() => {
     if (!product) return;
-    const cheapest = product.variants.reduce((best, v) => (v.price < best.price ? v : best));
+    const pool = product.variants.filter((v) => v.size === wantedSize);
+    const cheapest = (pool.length ? pool : product.variants).reduce((best, v) => (v.price < best.price ? v : best));
     setSelection({ size: cheapest.size, withMat: cheapest.withMat, depth: cheapest.frameDepthCm });
     setPhoto(0);
+    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [product]);
 
   useEffect(() => {
