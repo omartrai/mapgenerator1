@@ -47,7 +47,7 @@ export default function StoreHeader({ variant = "site" }: StoreHeaderProps) {
           <span className="store-brand__name">Maploom</span>
         </Link>
 
-        {variant === "site" ? (
+        {variant !== "checkout" ? (
           <nav className="store-nav" aria-label={t("nav.main")}>
             {NAV.map((item) => (
               <Link
@@ -59,8 +59,6 @@ export default function StoreHeader({ variant = "site" }: StoreHeaderProps) {
               </Link>
             ))}
           </nav>
-        ) : variant === "studio" ? (
-          <p className="store-header__context">{t("header.studio")}</p>
         ) : (
           <p className="store-header__context">
             <LockGlyph /> {t("header.secure")}

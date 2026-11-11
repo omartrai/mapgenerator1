@@ -8,6 +8,7 @@ import { DESIGN_PRESETS, getPreset } from "../domain/presets";
 import AddedToCartDialog from "./AddedToCartDialog";
 import AdminExportPanel from "./AdminExportPanel";
 import PurchasePanel from "./PurchasePanel";
+import RoomDecor from "./RoomDecor";
 import SizeFrameSection from "./SizeFrameSection";
 import StoreHeader from "./StoreHeader";
 import StudioStepHeader from "./StudioStepHeader";
@@ -166,7 +167,12 @@ export default function StudioPage() {
           <PurchasePanel isMobile={isMobile} />
         )
       }
-      belowPoster={<StudioViewToggle />}
+      belowPoster={
+        <>
+          <RoomDecor />
+          <StudioViewToggle />
+        </>
+      }
       showStartupModal={showStartup}
       initialTab={showStartup ? "theme" : "location"}
       locationAsTab
