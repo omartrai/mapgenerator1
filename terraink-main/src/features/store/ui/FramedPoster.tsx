@@ -5,6 +5,8 @@ interface FramedPosterProps {
   src: string;
   alt: string;
   frameId: FrameId;
+  /** White passe-partout around the print (framed posters only). */
+  mat?: boolean;
   /** width / height of the print. */
   ratio: number;
   size?: "sm" | "md" | "lg";
@@ -17,6 +19,7 @@ export default function FramedPoster({
   src,
   alt,
   frameId,
+  mat = false,
   ratio,
   size = "md",
   className = "",
@@ -24,7 +27,7 @@ export default function FramedPoster({
 }: FramedPosterProps) {
   return (
     <figure
-      className={`framed-poster framed-poster--${frameId} framed-poster--${size} ${className}`}
+      className={`framed-poster framed-poster--${frameId} framed-poster--${size}${mat && frameId !== "none" ? " has-mat" : ""} ${className}`}
       style={{ "--poster-ratio": String(ratio) } as CSSProperties}
     >
       <div className="framed-poster__frame">

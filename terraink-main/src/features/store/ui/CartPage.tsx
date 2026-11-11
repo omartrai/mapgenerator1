@@ -52,7 +52,7 @@ export default function CartPage() {
                       <FramedPoster
                         src={item.previewDataUrl}
                         alt={t("cart.previewAlt", { title: item.summary.title })}
-                        frameId={item.product.frameId}
+                        frameId={item.product.frameId} mat={item.product.mat === true}
                         ratio={widthCm / heightCm}
                         size="sm"
                       />

@@ -89,7 +89,7 @@ export default function OrderConfirmationPage({ number }: { number: string }) {
                           <FramedPoster
                             src={ordersApi.previewUrl(order.number, item.preview.name, accessKey)}
                             alt={`${item.summary.title} poster`}
-                            frameId={item.product.frameId}
+                            frameId={item.product.frameId} mat={item.product.mat === true}
                             ratio={item.widthCm / item.heightCm}
                             size="sm"
                           />

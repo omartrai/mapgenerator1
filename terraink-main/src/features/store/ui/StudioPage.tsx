@@ -4,7 +4,7 @@ import { useRouter } from "@/core/router/router";
 import { adminApi, geocodeLocation } from "@/core/services";
 import { useDesignSnapshot } from "../application/useDesignSnapshot";
 import { useProductSync } from "../application/useProductSync";
-import { FRAME_OPTIONS, PRINT_SIZES, type FrameId } from "../domain/catalog";
+import { FRAME_OPTIONS, PRINT_SIZES, hasMat, type FrameId } from "../domain/catalog";
 import { DESIGN_PRESETS, getPreset } from "../domain/presets";
 import AddedToCartDialog from "./AddedToCartDialog";
 import AdminExportPanel from "./AdminExportPanel";
@@ -191,6 +191,7 @@ export default function StudioPage() {
       dataAttributes={{
         "data-store-studio": "true",
         "data-frame": store.product.frameId,
+        "data-mat": hasMat(store.product) ? "true" : "false",
         "data-scene": store.scene,
         "data-orientation": store.product.orientation,
       }}

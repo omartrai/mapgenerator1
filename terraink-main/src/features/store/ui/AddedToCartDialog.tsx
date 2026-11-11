@@ -36,7 +36,7 @@ export default function AddedToCartDialog() {
           <FramedPoster
             src={lastAdded.previewDataUrl}
             alt={`${lastAdded.summary.title} poster`}
-            frameId={lastAdded.product.frameId}
+            frameId={lastAdded.product.frameId} mat={lastAdded.product.mat === true}
             ratio={widthCm / heightCm}
             size="md"
             loading="eager"

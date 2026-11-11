@@ -213,7 +213,7 @@ function OrderItemCard({
       <div className="admin-item__body">
         <div className="admin-item__visual">
           {preview ? (
-            <FramedPoster src={preview} alt={`${item.summary.title} preview`} frameId={item.product.frameId} ratio={item.widthCm / item.heightCm} size="md" />
+            <FramedPoster src={preview} alt={`${item.summary.title} preview`} frameId={item.product.frameId} mat={item.product.mat === true} ratio={item.widthCm / item.heightCm} size="md" />
           ) : (
             <div className="admin-item__placeholder">Preview loading…</div>
           )}

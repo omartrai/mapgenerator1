@@ -124,6 +124,7 @@ export function createOrderService(storage: IOrderStorage, fulfillment: IFulfill
           sizeId: raw.product.sizeId,
           orientation: raw.product.orientation,
           frameId: raw.product.frameId,
+          mat: raw.product.frameId !== "none" && raw.product.mat === true,
         };
         const preview = decodeDataUrl(raw.previewDataUrl);
         const previewName = `item-${index + 1}-preview.${extensionFor(preview.contentType)}`;

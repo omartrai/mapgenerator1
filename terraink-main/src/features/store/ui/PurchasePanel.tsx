@@ -166,6 +166,35 @@ export default function PurchasePanel({ isMobile }: { isMobile: boolean }) {
         </div>
       </section>
 
+      {product.frameId !== "none" ? (
+        <section className="studio-buy__group" aria-labelledby="buy-mat">
+          <h3 id="buy-mat">{t("mat.title")}</h3>
+          <div className="studio-buy__mats" role="radiogroup" aria-labelledby="buy-mat">
+            {[true, false].map((mat) => {
+              const selected = (product.mat === true) === mat;
+              const extra = unitPrice({ ...product, mat: true }) - unitPrice({ ...product, mat: false });
+              return (
+                <button
+                  key={String(mat)}
+                  type="button"
+                  role="radio"
+                  aria-checked={selected}
+                  className={`buy-frame buy-mat${selected ? " is-selected" : ""}`}
+                  onClick={() => setProduct({ mat })}
+                >
+                  <span
+                    className={`buy-frame__swatch buy-frame__swatch--${product.frameId}${mat ? " has-mat" : ""}`}
+                    aria-hidden="true"
+                  />
+                  <span className="buy-frame__label">{t(mat ? "mat.with" : "mat.without")}</span>
+                  {mat ? <span className="buy-mat__price">+ {money(extra)}</span> : null}
+                </button>
+              );
+            })}
+          </div>
+        </section>
+      ) : null}
+
       <section className="studio-buy__group" aria-labelledby="buy-paper">
         <h3 id="buy-paper">
           {t("buy.paper")}

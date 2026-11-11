@@ -185,7 +185,7 @@ export default function CheckoutPage() {
                       <FramedPoster
                         src={item.previewDataUrl}
                         alt=""
-                        frameId={item.product.frameId}
+                        frameId={item.product.frameId} mat={item.product.mat === true}
                         ratio={widthCm / heightCm}
                         size="sm"
                       />

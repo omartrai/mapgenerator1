@@ -83,7 +83,8 @@ export default function SizeFrameSection() {
         <div className="size-frame__frames" role="radiogroup" aria-labelledby="size-frame-frame">
           {FRAME_OPTIONS.map((frame) => {
             const selected = product.frameId === frame.id;
-            const extra = unitPrice({ ...product, frameId: frame.id }) - unitPrice({ ...product, frameId: "none" });
+            const extra =
+              unitPrice({ ...product, frameId: frame.id, mat: false }) - unitPrice({ ...product, frameId: "none" });
             return (
               <button
                 key={frame.id}
@@ -104,6 +105,36 @@ export default function SizeFrameSection() {
           })}
         </div>
       </section>
+
+      {product.frameId !== "none" ? (
+        <section className="size-frame__group" aria-labelledby="size-frame-mat">
+          <h3 id="size-frame-mat" className="size-frame__title">{t("mat.title")}</h3>
+          <p className="size-frame__note">{t("mat.note")}</p>
+          <div className="size-frame__mats" role="radiogroup" aria-labelledby="size-frame-mat">
+            {[true, false].map((mat) => {
+              const selected = (product.mat === true) === mat;
+              const extra = unitPrice({ ...product, mat: true }) - unitPrice({ ...product, mat: false });
+              return (
+                <button
+                  key={String(mat)}
+                  type="button"
+                  role="radio"
+                  aria-checked={selected}
+                  className={`buy-frame buy-mat${selected ? " is-selected" : ""}`}
+                  onClick={() => setProduct({ mat })}
+                >
+                  <span
+                    className={`buy-frame__swatch buy-frame__swatch--${product.frameId}${mat ? " has-mat" : ""}`}
+                    aria-hidden="true"
+                  />
+                  <span className="buy-frame__label">{t(mat ? "mat.with" : "mat.without")}</span>
+                  {mat ? <span className="buy-mat__price">+ {money(extra)}</span> : null}
+                </button>
+              );
+            })}
+          </div>
+        </section>
+      ) : null}
 
       <p className="size-frame__paper">{t("paper")}</p>
     </div>
