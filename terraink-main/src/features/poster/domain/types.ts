@@ -26,6 +26,7 @@ export interface ExportOptions {
   fontFamily: string;
   showPosterText: boolean;
   customMessage?: string;
+  textParts?: import("./textLayout").PosterTextParts;
   showOverlay?: boolean;
   includeCredits?: boolean;
   markers?: MarkerItem[];

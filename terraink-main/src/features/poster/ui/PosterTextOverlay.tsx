@@ -15,6 +15,8 @@ import {
   formatCityLabel,
   computeCityFontScale,
   computeAttributionColor,
+  ALL_TEXT_PARTS,
+  type PosterTextParts,
 } from "@/features/poster/domain/textLayout";
 
 interface PosterTextOverlayProps {
@@ -27,6 +29,7 @@ interface PosterTextOverlayProps {
   landColor: string;
   showPosterText: boolean;
   message?: string;
+  textParts?: PosterTextParts;
   includeCredits: boolean;
   showOverlay: boolean;
 }
@@ -46,6 +49,7 @@ export default function PosterTextOverlay({
   landColor,
   showPosterText,
   message = "",
+  textParts = ALL_TEXT_PARTS,
   includeCredits,
   showOverlay,
 }: PosterTextOverlayProps) {
@@ -70,7 +74,7 @@ export default function PosterTextOverlay({
     <div className="poster-text-overlay" style={{ color: textColor }}>
       {showPosterText && (
         <>
-          <p
+          {textParts.city ? <p
             className="poster-city"
             style={{
               fontFamily: titleFont,
@@ -79,15 +83,15 @@ export default function PosterTextOverlay({
             }}
           >
             {cityLabel}
-          </p>
-          <hr
+          </p> : null}
+          {textParts.divider ? <hr
             className="poster-divider"
             style={{
               borderColor: textColor,
               top: `${TEXT_DIVIDER_Y_RATIO * 100}%`,
             }}
-          />
-          <p
+          /> : null}
+          {textParts.country ? <p
             className="poster-country"
             style={{
               fontFamily: titleFont,
@@ -96,8 +100,8 @@ export default function PosterTextOverlay({
             }}
           >
             {country.toUpperCase()}
-          </p>
-          <p
+          </p> : null}
+          {textParts.coordinates ? <p
             className="poster-coords"
             style={{
               fontFamily: bodyFont,
@@ -106,8 +110,8 @@ export default function PosterTextOverlay({
             }}
           >
             {formatCoordinates(lat, lon)}
-          </p>
-          {message.trim() ? (
+          </p> : null}
+          {textParts.message && message.trim() ? (
             <p
               className="poster-message"
               style={{

@@ -1450,3 +1450,74 @@
 .framed-poster.has-mat .framed-poster__img {
   box-shadow: 0 0 0 1px rgba(0, 0, 0, 0.12), inset 0 0 0 1px rgba(0, 0, 0, 0.1);
 }
+
+/* ── Text panel: show or hide each line of the poster text ── */
+
+.text-parts {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 6px;
+  margin: 2px 0 6px;
+  padding: 0;
+  border: 0;
+  min-width: 0;
+}
+
+.text-parts legend {
+  width: 100%;
+  margin-bottom: 6px;
+  padding: 0;
+  color: var(--s-muted, #6b6b66);
+  font-size: 0.78rem;
+  font-weight: 600;
+}
+
+.text-parts__chip {
+  position: relative;
+  display: inline-flex !important;
+  align-items: center;
+  margin: 0 !important;
+  cursor: pointer;
+}
+
+.text-parts__chip input {
+  position: absolute;
+  inset: 0;
+  width: 100%;
+  height: 100%;
+  margin: 0;
+  opacity: 0;
+  cursor: pointer;
+}
+
+.text-parts__chip span {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  padding: 6px 12px;
+  border: 1px solid var(--s-line, #e2dccf);
+  border-radius: 999px;
+  background: #fff;
+  color: var(--s-muted, #6b6b66);
+  font-size: 0.8rem;
+  font-weight: 600;
+  text-decoration: line-through;
+  transition: background 0.2s, border-color 0.2s, color 0.2s;
+}
+
+.text-parts__chip input:checked + span {
+  border-color: var(--s-green, #1f3b33);
+  background: var(--s-green, #1f3b33);
+  color: #fff;
+  text-decoration: none;
+}
+
+.text-parts__chip input:checked + span::before {
+  content: "✓";
+  font-size: 0.72rem;
+}
+
+.text-parts__chip input:focus-visible + span {
+  outline: 2px solid var(--s-accent, #e4572e);
+  outline-offset: 2px;
+}

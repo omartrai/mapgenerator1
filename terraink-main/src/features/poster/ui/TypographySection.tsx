@@ -9,6 +9,15 @@ import {
 } from "@/features/location/ui/constants";
 import { useLanguage } from "@/shared/i18n/LanguageContext";
 
+/** Lines of the poster text that can each be hidden on their own. */
+const TEXT_PARTS = [
+  { name: "showCity", label: "style.part.city" },
+  { name: "showDivider", label: "style.part.divider" },
+  { name: "showCountry", label: "style.part.country" },
+  { name: "showCoordinates", label: "style.part.coordinates" },
+  { name: "showMessage", label: "style.part.message" },
+] as const;
+
 interface TypographySectionProps {
   form: PosterForm;
   onChange: (
@@ -57,6 +66,22 @@ export default function TypographySection({
             <span className="theme-switch-track" aria-hidden="true" />
           </span>
         </label>
+        {form.showPosterText ? (
+          <fieldset className="text-parts">
+            <legend>{t("style.parts")}</legend>
+            {TEXT_PARTS.map(({ name, label }) => (
+              <label key={name} className="text-parts__chip">
+                <input
+                  type="checkbox"
+                  name={name}
+                  checked={form[name] !== false}
+                  onChange={onChange}
+                />
+                <span>{t(label)}</span>
+              </label>
+            ))}
+          </fieldset>
+        ) : null}
         <label className="toggle-field">
           <span>{t("style.overlay")}</span>
           <span className="theme-switch">

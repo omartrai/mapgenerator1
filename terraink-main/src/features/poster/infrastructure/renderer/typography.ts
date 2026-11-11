@@ -17,6 +17,8 @@ import {
   formatCityLabel,
   computeCityFontScale,
   computeAttributionColor,
+  ALL_TEXT_PARTS,
+  type PosterTextParts,
 } from "@/features/poster/domain/textLayout";
 
 /** Largest share of the poster width a text line may take. */
@@ -54,6 +56,7 @@ export function drawPosterText(
   showOverlay: boolean,
   includeCredits: boolean = true,
   customMessage: string = "",
+  textParts: PosterTextParts = ALL_TEXT_PARTS,
 ): void {
   const textColor = theme.ui?.text || "#111111";
   const landColor = theme.map?.land || "#808080";
@@ -87,29 +90,37 @@ export function drawPosterText(
     ctx.textAlign = "center";
     ctx.textBaseline = "middle";
     const maxTextWidth = width * MAX_TEXT_WIDTH_RATIO;
-    setFittedFont(ctx, cityLabel, 700, cityFontSize, titleFontFamily, maxTextWidth);
-    ctx.fillText(cityLabel, width * 0.5, cityY);
+    if (textParts.city) {
+      setFittedFont(ctx, cityLabel, 700, cityFontSize, titleFontFamily, maxTextWidth);
+      ctx.fillText(cityLabel, width * 0.5, cityY);
+    }
 
-    ctx.strokeStyle = textColor;
-    ctx.lineWidth = 3 * dimScale;
-    ctx.beginPath();
-    ctx.moveTo(width * 0.4, lineY);
-    ctx.lineTo(width * 0.6, lineY);
-    ctx.stroke();
+    if (textParts.divider) {
+      ctx.strokeStyle = textColor;
+      ctx.lineWidth = 3 * dimScale;
+      ctx.beginPath();
+      ctx.moveTo(width * 0.4, lineY);
+      ctx.lineTo(width * 0.6, lineY);
+      ctx.stroke();
+    }
 
-    setFittedFont(ctx, country.toUpperCase(), 300, countryFontSize, titleFontFamily, maxTextWidth);
-    ctx.fillText(country.toUpperCase(), width * 0.5, countryY);
+    if (textParts.country) {
+      setFittedFont(ctx, country.toUpperCase(), 300, countryFontSize, titleFontFamily, maxTextWidth);
+      ctx.fillText(country.toUpperCase(), width * 0.5, countryY);
+    }
 
-    ctx.globalAlpha = 0.75;
-    ctx.font = `400 ${coordinateFontSize}px ${bodyFontFamily}`;
-    ctx.fillText(
-      formatCoordinates(center.lat, center.lon),
-      width * 0.5,
-      coordinatesY,
-    );
-    ctx.globalAlpha = 1;
+    if (textParts.coordinates) {
+      ctx.globalAlpha = 0.75;
+      ctx.font = `400 ${coordinateFontSize}px ${bodyFontFamily}`;
+      ctx.fillText(
+        formatCoordinates(center.lat, center.lon),
+        width * 0.5,
+        coordinatesY,
+      );
+      ctx.globalAlpha = 1;
+    }
 
-    const message = customMessage.trim();
+    const message = textParts.message ? customMessage.trim() : "";
     if (message) {
       setFittedFont(
         ctx,

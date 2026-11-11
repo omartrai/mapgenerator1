@@ -14,6 +14,40 @@ export const TEXT_MESSAGE_Y_RATIO = 0.958;
 export const MESSAGE_FONT_BASE_PX = 66;
 export const MESSAGE_MAX_LENGTH = 60;
 
+/** Which lines of the poster text are printed; each can be switched off alone. */
+export interface PosterTextParts {
+  city: boolean;
+  divider: boolean;
+  country: boolean;
+  coordinates: boolean;
+  message: boolean;
+}
+
+export const ALL_TEXT_PARTS: PosterTextParts = {
+  city: true,
+  divider: true,
+  country: true,
+  coordinates: true,
+  message: true,
+};
+
+/** Reads the per-line switches from a form; missing switches (older designs) mean shown. */
+export function textPartsFromForm(form: {
+  showCity?: boolean;
+  showDivider?: boolean;
+  showCountry?: boolean;
+  showCoordinates?: boolean;
+  showMessage?: boolean;
+}): PosterTextParts {
+  return {
+    city: form.showCity !== false,
+    divider: form.showDivider !== false,
+    country: form.showCountry !== false,
+    coordinates: form.showCoordinates !== false,
+    message: form.showMessage !== false,
+  };
+}
+
 /** Margin from the edges for attribution/credits. */
 export const TEXT_EDGE_MARGIN_RATIO = 0.02;
 

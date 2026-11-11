@@ -35,6 +35,12 @@ export interface PosterForm {
   displayContinent: string;
   fontFamily: string;
   showPosterText: boolean;
+  /** Per-line switches inside the poster text (all on by default). */
+  showCity?: boolean;
+  showDivider?: boolean;
+  showCountry?: boolean;
+  showCoordinates?: boolean;
+  showMessage?: boolean;
   /** Personal message printed under the coordinates; empty hides it. */
   customMessage: string;
   includeCredits: boolean;

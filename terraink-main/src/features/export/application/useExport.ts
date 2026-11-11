@@ -1,5 +1,6 @@
 import { useCallback, useMemo } from "react";
 import { usePosterContext } from "@/features/poster/ui/PosterContext";
+import { textPartsFromForm } from "@/features/poster/domain/textLayout";
 import { localStorageCache } from "@/core/cache/localStorageCache";
 import type { ExportFormat } from "@/features/export/domain/types";
 import { captureMapAsCanvas } from "@/features/export/infrastructure/mapExporter";
@@ -164,6 +165,7 @@ export function useExport() {
         showOverlay: form.showMarkers,
         includeCredits: form.includeCredits,
         customMessage: form.customMessage || "",
+        textParts: textPartsFromForm(form),
         markers: hasVisibleMarkers ? state.markers : [],
         markerIcons: hasVisibleOverlays
           ? getAllMarkerIcons(state.customMarkerIcons)
@@ -232,6 +234,7 @@ export function useExport() {
           showOverlay: form.showMarkers,
           includeCredits: form.includeCredits,
           customMessage: form.customMessage || "",
+        textParts: textPartsFromForm(form),
           markers: hasVisibleMarkers ? state.markers : [],
           markerIcons: hasVisibleOverlays
             ? getAllMarkerIcons(state.customMarkerIcons)

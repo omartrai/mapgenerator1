@@ -1,3 +1,4 @@
+import { textPartsFromForm } from "@/features/poster/domain/textLayout";
 import {
   useCallback,
   useEffect,
@@ -480,6 +481,7 @@ export default function PreviewPanel({ sidePanel, belowPoster }: PreviewPanelPro
             landColor={effectiveTheme.map.land}
             showPosterText={form.showPosterText}
             message={form.customMessage}
+            textParts={textPartsFromForm(form)}
             includeCredits={form.includeCredits}
             showOverlay={form.showMarkers}
           />
