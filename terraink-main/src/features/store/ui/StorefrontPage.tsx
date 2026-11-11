@@ -1,10 +1,19 @@
 import { useEffect, useState } from "react";
+import type { ComponentType } from "react";
 import {
   LuArrowRight,
   LuBanknote,
+  LuChevronLeft,
   LuChevronRight,
   LuFrame,
-  LuPrinter,
+  LuHeart,
+  LuImage,
+  LuLayers,
+  LuLayoutGrid,
+  LuMapPin,
+  LuPencil,
+  LuPlane,
+  LuRuler,
   LuTruck,
 } from "react-icons/lu";
 import { Link } from "@/core/router/router";
@@ -18,17 +27,14 @@ import {
 } from "../domain/catalog";
 import { DESIGN_PRESETS, MOROCCAN_PRESET_IDS, type DesignPreset } from "../domain/presets";
 import FramedPoster from "./FramedPoster";
+import HeroScene from "./HeroScene";
 import StoreFooter from "./StoreFooter";
 import StoreHeader from "./StoreHeader";
 import { useStoreText, type StoreTextKey } from "./storeText";
 
 const preset = (id: string) => DESIGN_PRESETS.find((entry) => entry.id === id)!;
 
-const SLIDES = [
-  { preset: "marrakech", n: 1 },
-  { preset: "chefchaouen", n: 2 },
-  { preset: "casablanca", n: 3 },
-];
+const SLIDES = ["marrakech", "chefchaouen", "fes"];
 
 const FRAME_TILES: { frame: FrameId; preset: string }[] = [
   { frame: "black", preset: "casablanca" },
@@ -36,10 +42,21 @@ const FRAME_TILES: { frame: FrameId; preset: string }[] = [
   { frame: "oak", preset: "fes" },
 ];
 
-const TABS: { id: string; label: StoreTextKey; match: (p: DesignPreset) => boolean }[] = [
-  { id: "morocco", label: "grid.morocco", match: (p) => MOROCCAN_PRESET_IDS.has(p.id) },
-  { id: "world", label: "grid.world", match: (p) => !MOROCCAN_PRESET_IDS.has(p.id) },
-  { id: "all", label: "grid.all", match: () => true },
+const LIGHT_THEMES = new Set([
+  "carrara", "sandstone", "rustic", "ocean", "japanese_ink", "blush", "sage",
+  "copper_patina", "terracotta",
+]);
+const DARK_THEMES = new Set(["midnight_blue", "noir"]);
+const PICKS = new Set(["marrakech", "chefchaouen", "fes", "casablanca", "paris", "tokyo"]);
+
+type Icon = ComponentType<{ "aria-hidden"?: boolean }>;
+const FILTERS: { id: string; label: StoreTextKey; Icon: Icon; match: (p: DesignPreset) => boolean }[] = [
+  { id: "all", label: "chip.all", Icon: LuLayoutGrid, match: () => true },
+  { id: "morocco", label: "chip.morocco", Icon: LuMapPin, match: (p) => MOROCCAN_PRESET_IDS.has(p.id) },
+  { id: "travel", label: "chip.travel", Icon: LuPlane, match: (p) => !MOROCCAN_PRESET_IDS.has(p.id) },
+  { id: "minimal", label: "chip.minimal", Icon: LuLayers, match: (p) => LIGHT_THEMES.has(p.theme) },
+  { id: "classic", label: "chip.classic", Icon: LuImage, match: (p) => DARK_THEMES.has(p.theme) },
+  { id: "picks", label: "chip.picks", Icon: LuHeart, match: (p) => PICKS.has(p.id) },
 ];
 
 const FAQ_COUNT = 5;
@@ -55,6 +72,8 @@ export default function StorefrontPage() {
 
       <main>
         <HeroSlider />
+
+        <ProductGrid />
 
         <section className="home-block home-cats" aria-labelledby="cats-title">
           <div className="home-cats__intro">
@@ -117,30 +136,6 @@ export default function StorefrontPage() {
               <span className="promo__btn">{t("promo.cta")}</span>
             </div>
           </Link>
-        </section>
-
-        <ProductGrid />
-
-        <section className="home-block service-row" aria-label={t("service.label")}>
-          <div>
-            <LuPrinter aria-hidden="true" />
-            <p><strong>{t("service.print")}</strong><span>{t("service.printNote")}</span></p>
-          </div>
-          <div>
-            <LuFrame aria-hidden="true" />
-            <p><strong>{t("service.frame")}</strong><span>{t("service.frameNote")}</span></p>
-          </div>
-          <div>
-            <LuTruck aria-hidden="true" />
-            <p>
-              <strong>{t("service.ship")}</strong>
-              <span>{t("service.shipNote", { amount: money(FREE_SHIPPING_THRESHOLD) })}</span>
-            </p>
-          </div>
-          <div>
-            <LuBanknote aria-hidden="true" />
-            <p><strong>{t("service.cod")}</strong><span>{t("service.codNote")}</span></p>
-          </div>
         </section>
 
         <section className="home-block" id="pricing" aria-labelledby="pricing-title">
@@ -207,128 +202,108 @@ function HeroSlider() {
   const { t, lines, cityName } = useStoreText();
   const [index, setIndex] = useState(0);
   const [paused, setPaused] = useState(false);
+  const posters = SLIDES.map(preset);
+  const [line1, line2] = lines("hero.title");
+  const go = (step: number) => setIndex((current) => (current + step + SLIDES.length) % SLIDES.length);
 
   useEffect(() => {
     if (paused) return undefined;
-    const timer = window.setTimeout(() => setIndex((current) => (current + 1) % SLIDES.length), 6000);
+    const timer = window.setTimeout(() => go(1), 6000);
     return () => window.clearTimeout(timer);
+    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [index, paused]);
 
   return (
     <section
-      className="hero"
+      className="home-hero"
       aria-roledescription="carousel"
       aria-label={t("hero.label")}
       onMouseEnter={() => setPaused(true)}
       onMouseLeave={() => setPaused(false)}
     >
-      <span className="hero__pattern" aria-hidden="true" />
-      {SLIDES.map((slide, slideIndex) => {
-        const design = preset(slide.preset);
-        const { widthCm, heightCm } = resolveDimensions(design.product);
-        const isActive = slideIndex === index;
-        const [line1, line2] = lines(`hero.${slide.n}.title` as StoreTextKey);
-        return (
-          <div
-            key={slide.preset}
-            className={`hero__slide${isActive ? " is-active" : ""}`}
-            aria-hidden={!isActive}
-            role="group"
-            aria-roledescription="slide"
-            aria-label={t("hero.slide", { n: slideIndex + 1, total: SLIDES.length })}
-          >
-            <div className="hero__copy">
-              <p className="hero__brand">
-                Maploom
-                <span>{t(`hero.${slide.n}.note` as StoreTextKey)}</span>
-              </p>
-              <p className="hero__kicker">{t(`hero.${slide.n}.kicker` as StoreTextKey)}</p>
-              {slideIndex === 0 ? (
-                <h1 className="hero__title">
-                  {line1}
-                  <br />
-                  {line2}
-                </h1>
-              ) : (
-                <p className="hero__title">
-                  {line1}
-                  <br />
-                  {line2}
-                </p>
-              )}
-              <Link
-                to={`/create?preset=${design.id}`}
-                className="store-btn store-btn--primary"
-                tabIndex={isActive ? 0 : -1}
-              >
-                {t("hero.shop")} <LuArrowRight className="rtl-flip" aria-hidden="true" />
-              </Link>
-              <span className="hero__numeral" aria-hidden="true">
-                {String(slideIndex + 1).padStart(2, "0")}
-              </span>
-            </div>
-            <div className="hero__art">
-              <span className="hero__disc" aria-hidden="true" />
-              <div className="hero__poster">
-                <FramedPoster
-                  src={design.image}
-                  alt={cityName(design)}
-                  frameId={design.product.frameId}
-                  ratio={widthCm / heightCm}
-                  size="lg"
-                  loading={slideIndex === 0 ? "eager" : "lazy"}
-                />
-              </div>
-            </div>
-          </div>
-        );
-      })}
-      <div className="hero__dots">
-        {SLIDES.map((slide, slideIndex) => (
-          <button
-            key={slide.preset}
-            type="button"
-            className={slideIndex === index ? "is-active" : ""}
-            aria-label={t("hero.show", { n: slideIndex + 1 })}
-            aria-current={slideIndex === index}
-            onClick={() => setIndex(slideIndex)}
-          />
-        ))}
+      <div className="home-hero__copy">
+        <p className="home-hero__eyebrow">{t("hero.eyebrow")}</p>
+        <h1 className="home-hero__title">
+          {line1}
+          <br />
+          {line2}
+        </h1>
+        <p className="home-hero__lede">{t("hero.lede")}</p>
+        <div className="home-hero__actions">
+          <Link to="/create" className="store-btn store-btn--primary store-btn--lg">
+            <LuPencil aria-hidden="true" /> {t("hero.cta")}{" "}
+            <LuArrowRight className="rtl-flip" aria-hidden="true" />
+          </Link>
+          <Link to="/#designs" className="store-btn store-btn--outline store-btn--lg">
+            <LuLayoutGrid aria-hidden="true" /> {t("hero.explore")}
+          </Link>
+        </div>
+        <ul className="home-hero__features">
+          <li>
+            <LuTruck aria-hidden="true" />
+            <span><strong>{t("hero.feat1")}</strong>{t("hero.feat1Note")}</span>
+          </li>
+          <li>
+            <LuBanknote aria-hidden="true" />
+            <span><strong>{t("hero.feat2")}</strong>{t("hero.feat2Note")}</span>
+          </li>
+          <li>
+            <LuRuler aria-hidden="true" />
+            <span><strong>{t("hero.feat3")}</strong>{t("hero.feat3Note")}</span>
+          </li>
+        </ul>
       </div>
+
+      <div className="home-hero__visual">
+        <HeroScene posters={posters} active={index} altFor={(p) => t("grid.alt", { city: cityName(p), theme: p.themeLabel })} />
+        <div className="home-hero__dots">
+          {SLIDES.map((id, slideIndex) => (
+            <button
+              key={id}
+              type="button"
+              className={slideIndex === index ? "is-active" : ""}
+              aria-label={t("hero.show", { n: slideIndex + 1 })}
+              aria-current={slideIndex === index}
+              onClick={() => setIndex(slideIndex)}
+            />
+          ))}
+        </div>
+      </div>
+
+      <button type="button" className="home-hero__arrow home-hero__arrow--prev" aria-label={t("hero.prev")} onClick={() => go(-1)}>
+        <LuChevronLeft className="rtl-flip" aria-hidden="true" />
+      </button>
+      <button type="button" className="home-hero__arrow home-hero__arrow--next" aria-label={t("hero.next")} onClick={() => go(1)}>
+        <LuChevronRight className="rtl-flip" aria-hidden="true" />
+      </button>
     </section>
   );
 }
 
 function ProductGrid() {
-  const { t, money, frameLabel, sizeLabel, cityName } = useStoreText();
-  const [tab, setTab] = useState("morocco");
-  const active = TABS.find((entry) => entry.id === tab) ?? TABS[0];
-  const items = DESIGN_PRESETS.filter(active.match);
+  const { t, money, cityName } = useStoreText();
+  const [filter, setFilter] = useState("all");
+  const active = FILTERS.find((entry) => entry.id === filter) ?? FILTERS[0];
+  // Two full rows of six on desktop.
+  const items = DESIGN_PRESETS.filter(active.match).slice(0, 12);
 
   return (
-    <section className="home-block" id="designs" aria-labelledby="designs-title">
-      <div className="home-head">
-        <div>
-          <h2 id="designs-title" className="home-heading">{t("grid.title")}</h2>
-          <span className="home-rule" aria-hidden="true" />
-        </div>
-        <div className="home-tabs" role="tablist" aria-label={t("grid.filter")}>
-          {TABS.map((entry) => (
-            <button
-              key={entry.id}
-              type="button"
-              role="tab"
-              aria-selected={entry.id === tab}
-              className={entry.id === tab ? "is-active" : ""}
-              onClick={() => setTab(entry.id)}
-            >
-              {t(entry.label)}
-            </button>
-          ))}
-        </div>
-        <Link to="/create" className="store-btn store-btn--outline store-btn--sm">
-          {t("grid.scratch")} <LuArrowRight className="rtl-flip" aria-hidden="true" />
+    <section className="home-block home-styles" id="designs" aria-labelledby="designs-title">
+      <div className="home-head home-head--center">
+        <h2 id="designs-title" className="home-heading">{t("style.title")}</h2>
+        <span className="home-rule" aria-hidden="true" />
+      </div>
+
+      <div className="chips" role="toolbar" aria-label={t("grid.filter")}>
+        {FILTERS.slice(0, 3).map((entry) => (
+          <FilterChip key={entry.id} entry={entry} active={filter === entry.id} onSelect={setFilter} />
+        ))}
+        <Link to="/create" className="chip">
+          <LuPencil aria-hidden="true" /> {t("chip.custom")}
         </Link>
+        {FILTERS.slice(3).map((entry) => (
+          <FilterChip key={entry.id} entry={entry} active={filter === entry.id} onSelect={setFilter} />
+        ))}
       </div>
 
       <div className="product-grid">
@@ -338,7 +313,6 @@ function ProductGrid() {
           return (
             <Link key={design.id} to={`/create?preset=${design.id}`} className="product-card">
               <div className="product-card__visual">
-                <span className="badge">{sizeLabel(design.product.sizeId)}</span>
                 <FramedPoster
                   src={design.image}
                   alt={t("grid.alt", { city, theme: design.themeLabel })}
@@ -348,15 +322,37 @@ function ProductGrid() {
                 />
                 <span className="product-card__hover">{t("grid.customise")}</span>
               </div>
-              <p className="product-card__meta">
-                {design.themeLabel} · {frameLabel(design.product.frameId)}
-              </p>
-              <h3 className="product-card__title">{city}</h3>
-              <p className="product-card__price">{money(unitPrice(design.product))}</p>
+              <div className="product-card__body">
+                <h3 className="product-card__title">{city}</h3>
+                <p className="product-card__price">{money(unitPrice(design.product))}</p>
+              </div>
             </Link>
           );
         })}
       </div>
     </section>
+  );
+}
+
+function FilterChip({
+  entry,
+  active,
+  onSelect,
+}: {
+  entry: (typeof FILTERS)[number];
+  active: boolean;
+  onSelect: (id: string) => void;
+}) {
+  const { t } = useStoreText();
+  const { Icon } = entry;
+  return (
+    <button
+      type="button"
+      className={`chip${active ? " is-active" : ""}`}
+      aria-pressed={active}
+      onClick={() => onSelect(entry.id)}
+    >
+      <Icon aria-hidden={true} /> {t(entry.label)}
+    </button>
   );
 }

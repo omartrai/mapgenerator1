@@ -1,5 +1,5 @@
-import { useState, type FormEvent } from "react";
-import { LuSearch, LuShoppingBag } from "react-icons/lu";
+import { useEffect, useRef, useState, type FormEvent } from "react";
+import { LuChevronDown, LuSearch, LuShoppingCart } from "react-icons/lu";
 import { Link, useRouter } from "@/core/router/router";
 import { useLanguage, type AppLanguage } from "@/shared/i18n/LanguageContext";
 import { useStore } from "./StoreContext";
@@ -35,13 +35,15 @@ export default function StoreHeader({ variant = "site" }: StoreHeaderProps) {
     navigate(place ? `/create?place=${encodeURIComponent(place)}` : "/create");
   };
 
+  const isActive = (to: string) => (to === "/" ? path === "/" : to === "/create" && path === "/create");
+
   return (
     <header
       className={`store-header store-header--${variant}${variant === "studio" ? " general-header" : ""}`}
     >
       <div className="store-header__inner">
-        <Link to="/" className="store-brand" aria-label="Maploom home">
-          <img src="/assets/logo.svg" alt="" className="store-brand__logo" />
+        <Link to="/" className="store-brand" aria-label="Maploom">
+          <BrandMark />
           <span className="store-brand__name">Maploom</span>
         </Link>
 
@@ -51,7 +53,7 @@ export default function StoreHeader({ variant = "site" }: StoreHeaderProps) {
               <Link
                 key={item.to}
                 to={item.to}
-                className={`store-nav__link${item.to === "/create" ? " store-nav__link--design" : ""}${item.to === "/" && path === "/" ? " is-active" : ""}`}
+                className={`store-nav__link${item.to === "/create" ? " store-nav__link--design" : ""}${isActive(item.to) ? " is-active" : ""}`}
               >
                 {t(item.label)}
               </Link>
@@ -68,6 +70,9 @@ export default function StoreHeader({ variant = "site" }: StoreHeaderProps) {
         <div className="store-header__actions">
           {variant === "site" ? (
             <form className="store-search" role="search" onSubmit={onSearch}>
+              <button type="submit" aria-label={t("header.searchButton")}>
+                <LuSearch aria-hidden="true" />
+              </button>
               <input
                 type="search"
                 value={query}
@@ -75,20 +80,17 @@ export default function StoreHeader({ variant = "site" }: StoreHeaderProps) {
                 placeholder={t("header.search")}
                 aria-label={t("header.searchLabel")}
               />
-              <button type="submit" aria-label={t("header.searchButton")}>
-                <LuSearch aria-hidden="true" />
-              </button>
             </form>
           ) : null}
-          <LanguagePicker />
+          <LanguageMenu />
           {variant !== "checkout" ? (
             <Link
               to="/cart"
               className={`store-cart-btn${path === "/cart" ? " is-active" : ""}`}
               aria-label={t("header.cart", { count: cartCount })}
             >
-              <LuShoppingBag aria-hidden="true" />
-              {cartCount > 0 ? <span className="store-cart-btn__count">{cartCount}</span> : null}
+              <LuShoppingCart aria-hidden="true" />
+              <span className="store-cart-btn__count">{cartCount}</span>
             </Link>
           ) : null}
         </div>
@@ -97,25 +99,80 @@ export default function StoreHeader({ variant = "site" }: StoreHeaderProps) {
   );
 }
 
-function LanguagePicker() {
+/** Map-pin logo in the brand red. */
+function BrandMark() {
+  return (
+    <svg className="store-brand__logo" viewBox="0 0 32 32" aria-hidden="true">
+      <path
+        d="M16 2.5c-6.1 0-11 4.8-11 10.8 0 7.6 9 15.3 10.2 16.3.5.4 1.1.4 1.6 0C18 28.6 27 20.9 27 13.3 27 7.3 22.1 2.5 16 2.5Z"
+        fill="var(--s-accent)"
+      />
+      <path
+        d="M10.5 18.5v-7.2l3.6 3.4 1.9-3.7 1.9 3.7 3.6-3.4v7.2"
+        fill="none"
+        stroke="#fff"
+        strokeWidth="2.2"
+        strokeLinecap="round"
+        strokeLinejoin="round"
+      />
+    </svg>
+  );
+}
+
+function LanguageMenu() {
   const { language, setLanguage } = useLanguage();
   const { t } = useStoreText();
+  const [open, setOpen] = useState(false);
+  const ref = useRef<HTMLDivElement>(null);
+  const current = LANGUAGES.find((entry) => entry.code === language) ?? LANGUAGES[0];
+
+  useEffect(() => {
+    if (!open) return undefined;
+    const close = (event: MouseEvent) => {
+      if (!ref.current?.contains(event.target as Node)) setOpen(false);
+    };
+    const escape = (event: KeyboardEvent) => event.key === "Escape" && setOpen(false);
+    document.addEventListener("mousedown", close);
+    document.addEventListener("keydown", escape);
+    return () => {
+      document.removeEventListener("mousedown", close);
+      document.removeEventListener("keydown", escape);
+    };
+  }, [open]);
+
   return (
-    <div className="lang-pick" role="group" aria-label={t("header.language")}>
-      {LANGUAGES.map((entry) => (
-        <button
-          key={entry.code}
-          type="button"
-          lang={entry.code}
-          className={language === entry.code ? "is-active" : ""}
-          aria-pressed={language === entry.code}
-          aria-label={entry.name}
-          title={entry.name}
-          onClick={() => setLanguage(entry.code)}
-        >
-          {entry.label}
-        </button>
-      ))}
+    <div className="lang-menu" ref={ref}>
+      <button
+        type="button"
+        className="lang-menu__trigger"
+        aria-haspopup="menu"
+        aria-expanded={open}
+        aria-label={`${t("header.language")}: ${current.name}`}
+        onClick={() => setOpen((value) => !value)}
+      >
+        <span lang={current.code}>{current.label}</span>
+        <LuChevronDown aria-hidden="true" />
+      </button>
+      {open ? (
+        <div className="lang-menu__list" role="menu">
+          {LANGUAGES.map((entry) => (
+            <button
+              key={entry.code}
+              type="button"
+              role="menuitemradio"
+              aria-checked={language === entry.code}
+              className={language === entry.code ? "is-active" : ""}
+              lang={entry.code}
+              onClick={() => {
+                setLanguage(entry.code);
+                setOpen(false);
+              }}
+            >
+              {entry.name}
+            </button>
+          ))}
+        </div>
+      ) : null}
     </div>
   );
 }

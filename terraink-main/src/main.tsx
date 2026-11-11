@@ -14,11 +14,12 @@ import "@fontsource/spline-sans-mono/400.css";
 import "@fontsource/spline-sans-mono/500.css";
 import "@fontsource/bebas-neue/400.css";
 // Storefront typeface.
-import "@fontsource/poppins/300.css";
-import "@fontsource/poppins/400.css";
-import "@fontsource/poppins/500.css";
-import "@fontsource/poppins/600.css";
-// Arabic storefront text (Poppins has no Arabic glyphs).
+import "@fontsource/plus-jakarta-sans/400.css";
+import "@fontsource/plus-jakarta-sans/500.css";
+import "@fontsource/plus-jakarta-sans/600.css";
+import "@fontsource/plus-jakarta-sans/700.css";
+import "@fontsource/plus-jakarta-sans/800.css";
+// Arabic storefront text (Plus Jakarta Sans has no Arabic glyphs).
 import "@fontsource/cairo/arabic-400.css";
 import "@fontsource/cairo/arabic-500.css";
 import "@fontsource/cairo/arabic-600.css";
