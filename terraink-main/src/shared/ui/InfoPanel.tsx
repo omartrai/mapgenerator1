@@ -72,7 +72,7 @@ function HelpUsGrowSection({
     <section className="info-panel-section">
       <h3>Help Us Grow</h3>
       <p className="hug-copy">
-        Maploom is a private, browser-based studio: your poster is designed on
+        Noria is a private, browser-based studio: your poster is designed on
         your device. It is built from the open-source Terraink project under
         the GNU AGPL-3.0 license.
       </p>

@@ -1,4 +1,5 @@
 import { Link } from "@/core/router/router";
+import BrandMark, { BrandWordmark } from "@/shared/ui/BrandMark";
 import { useStoreText } from "./storeText";
 
 export default function StoreFooter() {
@@ -8,7 +9,10 @@ export default function StoreFooter() {
     <footer className="store-footer">
       <div className="store-footer__inner">
         <div className="store-footer__brand">
-          <span className="store-brand__name">Maploom</span>
+          <span className="store-brand store-footer__logo">
+            <BrandMark />
+            <BrandWordmark />
+          </span>
           <p>{t("footer.about")}</p>
         </div>
         <nav className="store-footer__links" aria-label="Footer">
@@ -27,7 +31,7 @@ export default function StoreFooter() {
         </nav>
       </div>
       <div className="store-footer__base">
-        <span>© {year} Maploom</span>
+        <span>© {year} Noria</span>
         <span>
           {t("footer.mapData")}{" "}
           <a href="https://www.openstreetmap.org/copyright" target="_blank" rel="noreferrer">

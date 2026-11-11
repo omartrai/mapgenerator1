@@ -1,6 +1,6 @@
-# Maploom store — architecture and operations
+# Noria store — architecture and operations
 
-Maploom is a shop for personalised map posters. Customers design a poster in
+Noria is a shop for personalised map posters. Customers design a poster in
 the studio, add it to the cart, check out with their delivery details and pay
 on delivery. The owner receives each order with the customer's exact design
 and produces print-ready files from it for an external print-and-ship service.

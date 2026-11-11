@@ -1,6 +1,7 @@
 import { useState, type FormEvent, type ReactNode } from "react";
 import { LuLoader, LuLock, LuLogOut } from "react-icons/lu";
 import { Link } from "@/core/router/router";
+import BrandMark, { BrandWordmark } from "@/shared/ui/BrandMark";
 import { useAdminSession } from "../application/useAdmin";
 
 /** Shared chrome and password gate for the admin pages. */
@@ -20,8 +21,8 @@ export default function AdminLayout({ children }: { children: (info: { storage: 
     <div className="store-page admin-page">
       <header className="admin-header">
         <Link to="/admin" className="store-brand">
-          <img src="/assets/logo.svg" alt="" className="store-brand__logo" />
-          <span className="store-brand__name">Maploom</span>
+          <BrandMark />
+          <BrandWordmark />
           <span className="admin-header__tag">Orders</span>
         </Link>
         <div className="admin-header__actions">

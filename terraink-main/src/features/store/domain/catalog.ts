@@ -7,7 +7,7 @@
  * All money values are integer minor units (centimes of a dirham).
  */
 
-export const STORE_NAME = "Maploom";
+export const STORE_NAME = "Noria";
 export const STORE_CURRENCY = "MAD";
 export const STORE_LOCALE = "fr-MA";
 

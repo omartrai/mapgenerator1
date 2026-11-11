@@ -12,10 +12,10 @@ export default function GeneralHeader() {
           <img
             className="desktop-brand-logo brand-logo"
             src="/assets/logo.svg"
-            alt="Maploom logo"
+            alt="Noria logo"
           />
           <div className="desktop-brand-copy brand-copy">
-            <h1 className="desktop-brand-title">Maploom</h1>
+            <h1 className="desktop-brand-title">Noria</h1>
             <p className="desktop-brand-kicker app-kicker">
               {t("header.tagline")}
             </p>

@@ -101,7 +101,7 @@ function OrderDetail({ number }: { number: string }) {
               <div><dt>Name</dt><dd>{customer.fullName}</dd></div>
               <div>
                 <dt>Email</dt>
-                <dd><a href={`mailto:${customer.email}?subject=${encodeURIComponent(`Your Maploom order ${order.number}`)}`}>{customer.email}</a></dd>
+                <dd><a href={`mailto:${customer.email}?subject=${encodeURIComponent(`Your Noria order ${order.number}`)}`}>{customer.email}</a></dd>
               </div>
               <div><dt>Phone</dt><dd><a href={`tel:${customer.phone}`}>{customer.phone}</a></dd></div>
             </dl>

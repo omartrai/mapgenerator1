@@ -150,7 +150,7 @@ export function getGeolocationFailureMessage(
   const baseMessage =
     reason === "denied"
       ? isNativePlatform()
-        ? "Location access is blocked. Enable location for Maploom in your device settings, then try again."
+        ? "Location access is blocked. Enable location for Noria in your device settings, then try again."
         : "Location access is blocked. Enable location permission in your browser settings, then try again."
       : reason === "unsupported"
         ? "Location is not supported in this browser."

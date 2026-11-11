@@ -50,7 +50,7 @@ export default function CollectionProductPage({ id }: { id: number }) {
   }, [product]);
 
   useEffect(() => {
-    if (product) document.title = `${product.title} — Maploom`;
+    if (product) document.title = `${product.title} — Noria`;
   }, [product]);
 
   const variant = product && selection ? pickVariant(product.variants, selection) : undefined;

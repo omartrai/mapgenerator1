@@ -1,6 +1,6 @@
-# Maploom
+# Noria
 
-Maploom turns any location into customizable, print-ready map art. Search for a
+Noria turns any location into customizable, print-ready map art. Search for a
 place, pick a visual theme, refine map layers and typography, add markers, and
 export the finished poster as PNG, PDF, or layered SVG.
 
@@ -38,7 +38,7 @@ npm run build
 
 ## License and attribution
 
-Maploom is derived from [Terraink](https://github.com/yousifamanuel/terraink)
+Noria is derived from [Terraink](https://github.com/yousifamanuel/terraink)
 by Yousuf Amanuel. The source is distributed under the GNU AGPL-3.0 license;
 see [LICENSE](./LICENSE). The Terraink name, logo, and visual identity are not
 used by this project.

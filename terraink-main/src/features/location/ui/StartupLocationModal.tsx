@@ -14,7 +14,7 @@ import {
 } from "@/features/location/infrastructure";
 import { LuArrowRight, LuLandmark, LuMapPin, LuMapPinned, LuScan } from "react-icons/lu";
 import { MyLocationIcon, SearchIcon } from "@/shared/ui/Icons";
-import BrandMark from "@/shared/ui/BrandMark";
+import BrandMark, { BrandWordmark } from "@/shared/ui/BrandMark";
 import { usePosterDispatch } from "@/features/poster/ui/PosterContext";
 import { useLocationAutocomplete } from "@/features/location/application/useLocationAutocomplete";
 import {
@@ -259,7 +259,7 @@ export default function StartupLocationModal({
       <div className="startup-modal__card">
         <div className="startup-modal__brand">
           <BrandMark className="startup-modal__logo" />
-          <span>Maploom</span>
+          <BrandWordmark className="startup-modal__word" />
         </div>
         <p className="startup-modal__eyebrow">{t("startup.eyebrow")}</p>
         <h1 className="startup-modal__title" id="startup-location-title">

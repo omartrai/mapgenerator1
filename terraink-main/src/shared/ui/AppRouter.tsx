@@ -12,12 +12,12 @@ const AdminOrdersPage = lazy(() => import("@/features/store/ui/AdminOrdersPage")
 const AdminOrderPage = lazy(() => import("@/features/store/ui/AdminOrderPage"));
 
 const TITLES: [RegExp, string][] = [
-  [/^\/create/, "Design your poster — Maploom"],
-  [/^\/cart/, "Your cart — Maploom"],
-  [/^\/checkout/, "Checkout — Maploom"],
-  [/^\/order\//, "Order confirmed — Maploom"],
-  [/^\/admin/, "Orders — Maploom admin"],
-  [/^\/collection$/, "The collection — Maploom"],
+  [/^\/create/, "Design your poster — Noria"],
+  [/^\/cart/, "Your cart — Noria"],
+  [/^\/checkout/, "Checkout — Noria"],
+  [/^\/order\//, "Order confirmed — Noria"],
+  [/^\/admin/, "Orders — Noria admin"],
+  [/^\/collection$/, "The collection — Noria"],
 ];
 
 function PageFallback() {
@@ -30,7 +30,7 @@ export default function AppRouter() {
   useEffect(() => {
     document.title =
       TITLES.find(([pattern]) => pattern.test(path))?.[1] ??
-      "Maploom — Personalised map posters";
+      "Noria — Personalised map posters";
     document.documentElement.dataset.route = path === "/create" ? "studio" : "store";
   }, [path]);
 

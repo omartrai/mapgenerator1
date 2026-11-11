@@ -1,7 +1,7 @@
 import { useEffect, useRef, useState } from "react";
 import { LuChevronDown, LuShoppingCart } from "react-icons/lu";
 import { Link, useRouter } from "@/core/router/router";
-import BrandMark from "@/shared/ui/BrandMark";
+import BrandMark, { BrandWordmark } from "@/shared/ui/BrandMark";
 import { useLanguage, type AppLanguage } from "@/shared/i18n/LanguageContext";
 import { useStore } from "./StoreContext";
 import { useStoreText, type StoreTextKey } from "./storeText";
@@ -36,9 +36,9 @@ export default function StoreHeader({ variant = "site" }: StoreHeaderProps) {
       className={`store-header store-header--${variant}${variant === "studio" ? " general-header" : ""}`}
     >
       <div className="store-header__inner">
-        <Link to="/" className="store-brand" aria-label="Maploom">
+        <Link to="/" className="store-brand" aria-label="Noria">
           <BrandMark />
-          <span className="store-brand__name">Maploom</span>
+          <BrandWordmark />
         </Link>
 
         {variant !== "checkout" ? (

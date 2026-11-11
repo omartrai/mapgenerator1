@@ -1153,3 +1153,50 @@
     transform: none !important;
   }
 }
+
+/* ── Noria logo: stroke mark + drawn wordmark (both use currentColor) ── */
+
+.store-brand {
+  gap: 9px;
+}
+
+.store-brand__word {
+  display: block;
+  width: auto;
+  height: 22px;
+  flex-shrink: 0;
+}
+
+.store-footer__logo {
+  color: var(--s-ink) !important;
+}
+
+.store-footer__logo .store-brand__logo {
+  width: 30px;
+  height: 30px;
+}
+
+.store-footer__logo .store-brand__word {
+  height: 20px;
+}
+
+.startup-modal__word {
+  display: block;
+  width: auto;
+  height: 28px;
+}
+
+@media (max-width: 640px) {
+  .store-brand__word {
+    height: 19px;
+  }
+
+  .store-brand .store-brand__logo {
+    width: 28px;
+    height: 28px;
+  }
+
+  .startup-modal__word {
+    height: 23px;
+  }
+}

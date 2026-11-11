@@ -17,7 +17,7 @@ export default function AboutModal({ onClose }: AboutModalProps) {
         className="about-modal"
         role="dialog"
         aria-modal="true"
-        aria-label="About Maploom"
+        aria-label="About Noria"
         onClick={(e) => e.stopPropagation()}
       >
         <button

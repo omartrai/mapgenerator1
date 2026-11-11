@@ -16,7 +16,7 @@ function createManualProvider(webhookUrl: string): IFulfillmentProvider {
       if (!webhookUrl) return;
       const itemCount = order.items.reduce((sum, item) => sum + item.quantity, 0);
       const text =
-        `New Maploom order ${order.number}: ${itemCount} poster(s), ` +
+        `New Noria order ${order.number}: ${itemCount} poster(s), ` +
         `${formatMoney(order.totals.total, order.totals.currency)} — ` +
         `${order.customer.fullName}, ${order.customer.city}`;
       try {

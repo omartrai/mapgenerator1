@@ -1,6 +1,6 @@
 {
-  "name": "Maploom",
-  "short_name": "Maploom",
+  "name": "Noria",
+  "short_name": "Noria",
   "description": "Design print-ready map art for any place.",
   "id": "/",
   "start_url": "/",
@@ -8,13 +8,31 @@
   "display": "standalone",
   "orientation": "any",
   "background_color": "#0d120f",
-  "theme_color": "#101612",
+  "theme_color": "#1f3b33",
   "icons": [
     {
-      "src": "/assets/logo.svg",
+      "src": "/assets/favicon.svg",
       "sizes": "any",
       "type": "image/svg+xml",
-      "purpose": "any maskable"
+      "purpose": "any"
+    },
+    {
+      "src": "/assets/icon-192.png",
+      "sizes": "192x192",
+      "type": "image/png",
+      "purpose": "any"
+    },
+    {
+      "src": "/assets/icon-512.png",
+      "sizes": "512x512",
+      "type": "image/png",
+      "purpose": "any"
+    },
+    {
+      "src": "/assets/icon-maskable.png",
+      "sizes": "512x512",
+      "type": "image/png",
+      "purpose": "maskable"
     }
   ]
 }

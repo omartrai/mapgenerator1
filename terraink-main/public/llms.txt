@@ -1,6 +1,6 @@
-# Maploom
+# Noria
 
-> Maploom is a browser-based studio for turning any location into custom,
+> Noria is a browser-based studio for turning any location into custom,
 > print-ready map art.
 
 ## Features
@@ -14,6 +14,6 @@
 ## Data and source
 
 Map data is provided by OpenStreetMap contributors and rendered with MapLibre.
-Maploom is derived from the open-source Terraink project and distributed under
+Noria is derived from the open-source Terraink project and distributed under
 the GNU AGPL-3.0 license. The original project is available at
 https://github.com/yousifamanuel/terraink.
