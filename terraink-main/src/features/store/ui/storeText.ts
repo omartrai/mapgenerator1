@@ -6,6 +6,7 @@ import {
   formatMoney,
   formatRatio,
   getPrintSize,
+  frameDepthOf,
   hasMat,
   type FrameId,
   type Orientation,
@@ -288,6 +289,7 @@ const en = {
   "collection.depth": "Frame depth",
   "collection.frame": "Wooden frame included.",
   "collection.color": "Frame colour",
+  "depth.title": "Frame depth",
   "collection.keep": "Keep shopping",
   "collection.alt": "{title}, view {n}",
   "collection.count": "{count} posters",
@@ -610,6 +612,7 @@ const fr: Dictionary = {
   "collection.depth": "Épaisseur du cadre",
   "collection.frame": "Cadre en bois inclus.",
   "collection.color": "Couleur du cadre",
+  "depth.title": "Épaisseur du cadre",
   "collection.keep": "Continuer mes achats",
   "collection.alt": "{title}, vue {n}",
   "collection.count": "{count} affiches",
@@ -929,6 +932,7 @@ const ar: Dictionary = {
   "collection.depth": "سُمك الإطار",
   "collection.frame": "إطار خشبي مرفق.",
   "collection.color": "لون الإطار",
+  "depth.title": "سُمك الإطار",
   "collection.keep": "متابعة التسوق",
   "collection.alt": "{title}، صورة {n}",
   "collection.count": "{count} ملصقات",
@@ -1009,18 +1013,23 @@ export function useStoreText() {
     /** "3:2 Paysage large" */
     const formatName = (sizeId: string, orientation: Orientation) =>
       `${formatRatio(sizeId, orientation)} ${shapeName(sizeId, orientation)}`;
+    /** "1,5 cm" / "3 cm" in the reader's number format. */
+    const depthLabel = (depth: string | number) =>
+      `${String(depth).replace(".", language === "en" ? "." : ",")} cm`;
     const describe = (product: ProductOptions) =>
       [
         formatName(product.sizeId, product.orientation),
         sizeLabel(product.sizeId),
-        frameLabel(product.frameId),
+        product.frameId === "none"
+          ? frameLabel(product.frameId)
+          : `${frameLabel(product.frameId)} ${depthLabel(frameDepthOf(product))}`,
         ...(hasMat(product) ? [t("mat.short")] : []),
       ].join(" · ");
     /** Options line for a cart/order item (studio map or collection poster). */
     const describeItem = (item: { product: ProductOptions; collection?: CollectionLine | null }) => {
       const line = item.collection;
       if (!line) return describe(item.product);
-      const depth = `${String(line.frameDepthCm).replace(".", language === "en" ? "." : ",")} cm`;
+      const depth = depthLabel(line.frameDepthCm);
       return [
         formatCollectionSize(line.size),
         `${frameLabel(line.frameColor)} ${depth}`,
@@ -1032,6 +1041,6 @@ export function useStoreText() {
       preset.city;
     /** Two-line headings are written "line one|line two". */
     const lines = (key: StoreTextKey) => t(key).split("|");
-    return { t, language, money, sizeLabel, shapeName, formatName, frameLabel, describe, describeItem, cityName, lines };
+    return { t, language, money, sizeLabel, shapeName, formatName, frameLabel, depthLabel, describe, describeItem, cityName, lines };
   }, [language, t]);
 }

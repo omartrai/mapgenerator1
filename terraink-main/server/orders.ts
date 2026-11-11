@@ -222,6 +222,7 @@ export function createOrderService(
           orientation: raw.product.orientation,
           frameId: raw.product.frameId,
           mat: raw.product.frameId !== "none" && raw.product.mat === true,
+          ...(raw.product.frameId !== "none" ? { frameDepth: raw.product.frameDepth === "3" ? ("3" as const) : ("1.5" as const) } : {}),
         };
         const preview = decodeDataUrl(raw.previewDataUrl);
         const previewName = `item-${index + 1}-preview.${extensionFor(preview.contentType)}`;

@@ -1521,3 +1521,14 @@
 .collection-add {
   margin: 24px 0 18px;
 }
+
+/* Frame depth swatches: the same frame corner, thin (1.5 cm) or thick (3 cm). */
+.buy-depth .buy-frame__swatch.buy-depth__swatch--thin::before {
+  border-top-width: 5px;
+  border-left-width: 5px;
+}
+
+.buy-depth .buy-frame__swatch.buy-depth__swatch--thick::before {
+  border-top-width: 14px;
+  border-left-width: 14px;
+}

@@ -23,6 +23,8 @@ import {
   resolveDimensions,
   unitPrice,
   type Orientation,
+  FRAME_DEPTHS,
+  frameDepthOf,
 } from "../domain/catalog";
 import { useStore } from "./StoreContext";
 import { useStoreText, type StoreTextKey } from "./storeText";
@@ -34,7 +36,7 @@ export default function PurchasePanel({ isMobile }: { isMobile: boolean }) {
   const { navigate } = useRouter();
   const { addToCart, isAdding, error, isEditing } = useAddToCart();
 
-  const { t, money, sizeLabel, shapeName, frameLabel, language } = useStoreText();
+  const { t, money, sizeLabel, shapeName, frameLabel, depthLabel, language } = useStoreText();
   const price = unitPrice(product);
   const title = (state.form.displayCity || state.form.location || t("buy.yourMap")).trim();
   const buttonLabel = isEditing ? t("buy.update") : t("buy.add");
@@ -188,6 +190,32 @@ export default function PurchasePanel({ isMobile }: { isMobile: boolean }) {
                   />
                   <span className="buy-frame__label">{t(mat ? "mat.with" : "mat.without")}</span>
                   {mat ? <span className="buy-mat__price">+ {money(extra)}</span> : null}
+                </button>
+              );
+            })}
+          </div>
+        </section>
+      ) : null}
+
+      {product.frameId !== "none" ? (
+        <section className="studio-buy__group" aria-labelledby="buy-depth">
+          <h3 id="buy-depth">{t("depth.title")}</h3>
+          <div className="studio-buy__mats" role="radiogroup" aria-labelledby="buy-depth">
+            {FRAME_DEPTHS.map((depth) => {
+              const selected = frameDepthOf(product) === depth;
+              const extra = unitPrice({ ...product, frameDepth: depth }) - unitPrice({ ...product, frameDepth: "1.5" });
+              return (
+                <button
+                  key={depth}
+                  type="button"
+                  role="radio"
+                  aria-checked={selected}
+                  className={`buy-frame buy-depth${selected ? " is-selected" : ""}`}
+                  onClick={() => setProduct({ frameDepth: depth })}
+                >
+                  <span className={`buy-frame__swatch buy-frame__swatch--${product.frameId} buy-depth__swatch--${depth === "3" ? "thick" : "thin"}`} aria-hidden="true" />
+                  <span className="buy-frame__label">{depthLabel(depth)}</span>
+                  {extra > 0 ? <span className="buy-mat__price">+ {money(extra)}</span> : null}
                 </button>
               );
             })}

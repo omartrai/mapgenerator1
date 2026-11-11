@@ -1,6 +1,8 @@
 import { LuRectangleHorizontal, LuRectangleVertical } from "react-icons/lu";
 import {
+  FRAME_DEPTHS,
   FRAME_OPTIONS,
+  frameDepthOf,
   PRINT_SIZES,
   formatRatio,
   resolveDimensions,
@@ -15,7 +17,7 @@ const formatCm = (value: number) => String(Math.round(value * 10) / 10);
 /** Step 4 of the studio: print size, orientation and frame, with live prices. */
 export default function SizeFrameSection() {
   const { product, setProduct } = useStore();
-  const { t, money, frameLabel, shapeName } = useStoreText();
+  const { t, money, frameLabel, shapeName, depthLabel } = useStoreText();
 
   return (
     <div className="size-frame">
@@ -129,6 +131,32 @@ export default function SizeFrameSection() {
                   />
                   <span className="buy-frame__label">{t(mat ? "mat.with" : "mat.without")}</span>
                   {mat ? <span className="buy-mat__price">+ {money(extra)}</span> : null}
+                </button>
+              );
+            })}
+          </div>
+        </section>
+      ) : null}
+
+      {product.frameId !== "none" ? (
+        <section className="size-frame__group" aria-labelledby="size-frame-depth">
+          <h3 id="size-frame-depth" className="size-frame__title">{t("depth.title")}</h3>
+          <div className="size-frame__mats" role="radiogroup" aria-labelledby="size-frame-depth">
+            {FRAME_DEPTHS.map((depth) => {
+              const selected = frameDepthOf(product) === depth;
+              const extra = unitPrice({ ...product, frameDepth: depth }) - unitPrice({ ...product, frameDepth: "1.5" });
+              return (
+                <button
+                  key={depth}
+                  type="button"
+                  role="radio"
+                  aria-checked={selected}
+                  className={`buy-frame buy-depth${selected ? " is-selected" : ""}`}
+                  onClick={() => setProduct({ frameDepth: depth })}
+                >
+                  <span className={`buy-frame__swatch buy-frame__swatch--${product.frameId} buy-depth__swatch--${depth === "3" ? "thick" : "thin"}`} aria-hidden="true" />
+                  <span className="buy-frame__label">{depthLabel(depth)}</span>
+                  {extra > 0 ? <span className="buy-mat__price">+ {money(extra)}</span> : null}
                 </button>
               );
             })}
