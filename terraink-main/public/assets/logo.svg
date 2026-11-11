@@ -1,0 +1,9 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 96 96" role="img" aria-labelledby="title desc">
+  <title id="title">Maploom</title>
+  <desc id="desc">An abstract folded map monogram</desc>
+  <rect x="4" y="4" width="88" height="88" rx="18" fill="#F5EFDF" stroke="#213A32" stroke-width="4"/>
+  <path d="M21 27 39 20l18 7 18-7v49l-18 7-18-7-18 7V27Z" fill="#FFF9EC" stroke="#213A32" stroke-width="4" stroke-linejoin="round"/>
+  <path d="M39 20v49m18-42v49" fill="none" stroke="#2C4778" stroke-width="4"/>
+  <path d="m21 52 18-8 18 10 18-9" fill="none" stroke="#D25338" stroke-width="6" stroke-linecap="round" stroke-linejoin="round"/>
+  <circle cx="57" cy="54" r="6" fill="#D25338" stroke="#FFF9EC" stroke-width="3"/>
+</svg>

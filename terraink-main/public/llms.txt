@@ -1,0 +1,19 @@
+# Maploom
+
+> Maploom is a browser-based studio for turning any location into custom,
+> print-ready map art.
+
+## Features
+
+- Search for any city, region, landmark, or coordinate
+- Choose a curated visual theme or edit map colors
+- Style roads, water, parks, buildings, typography, and markers
+- Export high-resolution PNG, PDF, or layered SVG files
+- Works client-side without an account
+
+## Data and source
+
+Map data is provided by OpenStreetMap contributors and rendered with MapLibre.
+Maploom is derived from the open-source Terraink project and distributed under
+the GNU AGPL-3.0 license. The original project is available at
+https://github.com/yousifamanuel/terraink.

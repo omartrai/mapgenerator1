@@ -1,0 +1,20 @@
+{
+  "name": "Maploom",
+  "short_name": "Maploom",
+  "description": "Design print-ready map art for any place.",
+  "id": "/",
+  "start_url": "/",
+  "scope": "/",
+  "display": "standalone",
+  "orientation": "any",
+  "background_color": "#0d120f",
+  "theme_color": "#101612",
+  "icons": [
+    {
+      "src": "/assets/logo.svg",
+      "sizes": "any",
+      "type": "image/svg+xml",
+      "purpose": "any maskable"
+    }
+  ]
+}
