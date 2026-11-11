@@ -36,62 +36,10 @@ export function DecorPlant({ className }: { className: string }) {
 }
 
 /**
- * The room around the studio preview: a sunlit plaster wall, a trailing
- * plant, a mushroom lamp on books, a stoneware vase with an olive branch and
- * a wooden shelf. Purely decorative.
+ * Backdrop behind the studio preview: plain in "Studio", a furnished room
+ * photo in "Au mur" (the poster is placed over the photo's empty frame).
  */
 export default function RoomDecor() {
   const { scene } = useStore();
-  return (
-    <div className={`room-decor room-decor--${scene}`} aria-hidden="true">
-      <span className="room-decor__light" />
-      <DecorPlant className="room-decor__plant" />
-      <div className="room-decor__lamp">
-        <span className="room-decor__shade" />
-        <span className="room-decor__glow" />
-        <span className="room-decor__base" />
-        <span className="room-decor__book room-decor__book--1" />
-        <span className="room-decor__book room-decor__book--2" />
-        <span className="room-decor__book room-decor__book--3" />
-      </div>
-      <svg className="room-decor__vase" viewBox="0 0 160 340">
-        <g fill="none" stroke="#6f6a3c" strokeWidth="2" strokeLinecap="round">
-          <path d="M80 190C78 140 70 90 52 30" />
-          <path d="M82 190c4-50 14-96 34-150" />
-          <path d="M80 160c-14-20-30-30-48-34" />
-        </g>
-        {[
-          [52, 32, -70], [58, 52, 200], [60, 74, -60], [66, 96, 210], [70, 120, -50],
-          [114, 42, 250], [110, 64, -20], [104, 88, 240], [98, 112, -10], [92, 136, 230],
-          [34, 126, 180], [44, 132, 20], [62, 146, 200],
-        ].map(([x, y, rotate], index) => (
-          <ellipse
-            key={index}
-            cx={x}
-            cy={y}
-            rx="15"
-            ry="4.2"
-            fill={index % 2 ? "#7d8450" : "#5f6a3a"}
-            transform={`rotate(${rotate} ${x} ${y})`}
-          />
-        ))}
-        <defs>
-          <radialGradient id="room-vase" cx="0.38" cy="0.4" r="0.75">
-            <stop offset="0" stopColor="#f3ebde" />
-            <stop offset="0.65" stopColor="#e2d5c2" />
-            <stop offset="1" stopColor="#bfae96" />
-          </radialGradient>
-          <pattern id="room-speckle" width="14" height="14" patternUnits="userSpaceOnUse">
-            <circle cx="3" cy="4" r="0.9" fill="#8c7a63" opacity="0.5" />
-            <circle cx="10" cy="9" r="0.7" fill="#8c7a63" opacity="0.45" />
-            <circle cx="6" cy="12" r="0.5" fill="#8c7a63" opacity="0.4" />
-          </pattern>
-        </defs>
-        <path d="M62 180h36c0 18 46 40 46 92 0 38-26 62-64 62s-64-24-64-62c0-52 46-74 46-92z" fill="url(#room-vase)" />
-        <path d="M62 180h36c0 18 46 40 46 92 0 38-26 62-64 62s-64-24-64-62c0-52 46-74 46-92z" fill="url(#room-speckle)" />
-        <ellipse cx="80" cy="181" rx="18" ry="3.5" fill="#cbbba4" />
-      </svg>
-      <span className="room-decor__shelf" />
-    </div>
-  );
+  return <div className={`room-decor room-decor--${scene}`} aria-hidden="true" />;
 }

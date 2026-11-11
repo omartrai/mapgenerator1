@@ -4109,126 +4109,18 @@ button.store-btn--dark[type="submit"] {
   line-height: 1.45;
 }
 
-/* Room decor around the preview */
+/* Preview backdrop: plain studio, or the room photo for "Au mur". */
 .room-decor {
   position: absolute;
   inset: 0;
   z-index: 0;
-  overflow: hidden;
   pointer-events: none;
-  background:
-    radial-gradient(ellipse 60% 50% at 62% 34%, rgba(255, 249, 240, 0.9), rgba(255, 249, 240, 0) 70%),
-    linear-gradient(180deg, #ebdccb 0%, #e6d5c2 100%);
+  background: #efebe5;
+  transition: background-color 0.3s ease;
 }
 
-.room-decor__light {
-  position: absolute;
-  inset: -10% -20% 0 30%;
-  background: repeating-linear-gradient(
-    115deg,
-    rgba(255, 255, 255, 0) 0 70px,
-    rgba(255, 250, 240, 0.32) 70px 120px,
-    rgba(255, 255, 255, 0) 120px 160px
-  );
-  filter: blur(14px);
-  -webkit-mask-image: linear-gradient(90deg, transparent, #000 30%, #000 70%, transparent);
-  mask-image: linear-gradient(90deg, transparent, #000 30%, #000 70%, transparent);
-}
-
-.room-decor__plant {
-  position: absolute;
-  top: -6px;
-  inset-inline-start: -10px;
-  width: clamp(110px, 13vw, 190px);
-  height: auto;
-  filter: drop-shadow(10px 18px 14px rgba(70, 50, 30, 0.18));
-}
-
-.room-decor__shelf {
-  position: absolute;
-  inset-inline: 0;
-  bottom: 0;
-  height: 54px;
-  background: linear-gradient(180deg, #c99d6c 0, #b78756 10px, #a97b4c 100%);
-  box-shadow: 0 -6px 18px rgba(70, 45, 20, 0.16);
-}
-
-.room-decor__lamp {
-  position: absolute;
-  bottom: 54px;
-  inset-inline-start: 4%;
-  width: clamp(110px, 11vw, 160px);
-  aspect-ratio: 1 / 1.25;
-}
-
-.room-decor__shade {
-  position: absolute;
-  top: 0;
-  left: 6%;
-  right: 6%;
-  height: 40%;
-  border-radius: 50% 50% 8% 8% / 90% 90% 10% 10%;
-  background: radial-gradient(ellipse at 35% 30%, #d68a4e, #a85a2a 60%, #7e3f1b);
-  box-shadow: inset 0 -6px 10px rgba(0, 0, 0, 0.18);
-}
-
-.room-decor__glow {
-  position: absolute;
-  top: 26%;
-  left: -20%;
-  right: -20%;
-  height: 60%;
-  border-radius: 50%;
-  background: radial-gradient(ellipse, rgba(255, 196, 120, 0.55), rgba(255, 196, 120, 0) 70%);
-}
-
-.room-decor__base {
-  position: absolute;
-  top: 38%;
-  left: 38%;
-  right: 38%;
-  height: 26%;
-  border-radius: 30% 30% 10% 10%;
-  background: linear-gradient(90deg, #8a4a22, #c0773f 40%, #8f4c22);
-}
-
-.room-decor__book {
-  position: absolute;
-  left: 0;
-  right: 0;
-  height: 12%;
-  border-radius: 2px;
-  box-shadow: 0 2px 4px rgba(0, 0, 0, 0.12);
-}
-
-.room-decor__book--1 { bottom: 0; background: linear-gradient(180deg, #efe6d6, #d7c9b2); }
-.room-decor__book--2 { bottom: 12%; left: 6%; right: 2%; background: linear-gradient(180deg, #cdbb9c, #b49f7e); }
-.room-decor__book--3 { bottom: 24%; left: 2%; right: 8%; background: linear-gradient(180deg, #f3ece0, #ddd0bc); }
-
-.room-decor__vase {
-  position: absolute;
-  bottom: 50px;
-  inset-inline-end: 3%;
-  width: clamp(110px, 11vw, 170px);
-  height: auto;
-  filter: drop-shadow(-8px 12px 12px rgba(70, 50, 30, 0.18));
-}
-
-[dir="rtl"] .room-decor__plant,
-[dir="rtl"] .room-decor__vase {
-  transform: scaleX(-1);
-}
-
-/* "Au mur": a calmer, larger wall with less clutter around the frame. */
 .room-decor--wall {
-  background:
-    radial-gradient(ellipse 70% 55% at 50% 30%, rgba(255, 252, 245, 0.95), rgba(255, 252, 245, 0) 70%),
-    linear-gradient(180deg, #e9e2d6 0%, #e3dbcd 100%);
-}
-
-.room-decor--wall .room-decor__plant,
-.room-decor--wall .room-decor__light {
-  display: none;
+  background: #dcd7d0 url("/assets/wall-room.webp") center 40% / cover no-repeat;
 }
 
 @media (min-width: 769px) and (hover: hover) and (pointer: fine) {
@@ -4239,7 +4131,7 @@ button.store-btn--dark[type="submit"] {
     grid-template-columns: var(--st-rail) var(--st-panel) minmax(0, 1fr) var(--st-buy) !important;
   }
 
-  /* Map credits and legal links sit on the shelf under the poster. */
+  /* Map credits and legal links sit under the poster. */
   .app-shell[data-store-studio] > .desktop-footer {
     left: calc(var(--st-rail) + var(--st-panel));
     right: var(--st-buy);
@@ -4255,7 +4147,7 @@ button.store-btn--dark[type="submit"] {
 
   .app-shell[data-store-studio] > .desktop-footer,
   .app-shell[data-store-studio] > .desktop-footer :is(p, a, span, button) {
-    color: rgba(255, 248, 238, 0.82) !important;
+    color: rgba(40, 36, 32, 0.55) !important;
   }
 
   .app-shell[data-store-studio] > .preview-panel,
@@ -4727,13 +4619,6 @@ button.store-btn--dark[type="submit"] {
       calc((100vh - 230px) * var(--poster-aspect, 0.6666667))
     ) !important;
   }
-
-  .room-decor__lamp,
-  .room-decor__vase {
-    opacity: 0.85;
-    transform: scale(0.8);
-    transform-origin: bottom center;
-  }
 }
 
 @media (min-width: 769px) and (max-width: 1180px) and (hover: hover) and (pointer: fine) {
@@ -4747,18 +4632,6 @@ button.store-btn--dark[type="submit"] {
   }
 }
 
-@media (max-width: 768px), (hover: none) and (pointer: coarse) {
-  .room-decor__plant,
-  .room-decor__lamp,
-  .room-decor__vase,
-  .room-decor__light {
-    display: none;
-  }
-
-  .room-decor__shelf {
-    height: 0;
-  }
-}
 
 @media (max-width: 768px), (hover: none) and (pointer: coarse) {
   /* Phones keep the logo, language and cart; the shop nav lives on the homepage. */
@@ -5066,4 +4939,40 @@ button.store-btn--dark[type="submit"] {
 
 .app-shell[data-store-studio] .desktop-settings-slide input {
   font-family: var(--s-sans) !important;
+}
+
+/* "Au mur" on desktop: the room photo is scaled to the panel and the poster
+   hangs centred above the sideboard (42% down the photo, ~62% of its
+   height for portrait formats, capped in width for landscape ones). */
+@media (min-width: 769px) and (hover: hover) and (pointer: fine) {
+  .app-shell[data-store-studio] > .preview-panel {
+    container-type: size;
+  }
+
+  .app-shell[data-store-studio][data-scene="wall"] {
+    --wall-h: max(100cqh, 100cqw * 0.6711);
+  }
+
+  .app-shell[data-store-studio][data-scene="wall"] .room-decor--wall {
+    background-size: auto var(--wall-h);
+    background-position: center calc(42cqh - var(--wall-h) * 0.42);
+  }
+
+  .app-shell[data-store-studio][data-scene="wall"] .poster-frame {
+    position: absolute !important;
+    top: 42cqh;
+    left: 50%;
+    width: min(
+      calc(var(--wall-h) * 0.6 * var(--poster-aspect, 0.7071)),
+      calc(var(--wall-h) * 0.72),
+      calc(100cqw - 96px)
+    ) !important;
+    max-height: none !important;
+    margin: 0 !important;
+    transform: translate(-50%, -50%);
+  }
+
+  .app-shell[data-store-studio][data-scene="wall"][data-frame="none"] .poster-frame {
+    box-shadow: 0 2px 4px rgba(26, 26, 24, 0.12), 0 14px 30px rgba(26, 26, 24, 0.2) !important;
+  }
 }
