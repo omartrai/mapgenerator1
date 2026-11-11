@@ -2,18 +2,18 @@ import { useEffect, useState } from "react";
 import type { ComponentType } from "react";
 import {
   LuArrowRight,
+  LuBan,
   LuBanknote,
-  LuChevronLeft,
-  LuChevronRight,
-  LuFrame,
+  LuCheck,
+  LuEye,
+  LuGem,
   LuHeart,
-  LuImage,
   LuLayers,
   LuLayoutGrid,
-  LuMapPin,
+  LuMoon,
   LuPencil,
   LuPlane,
-  LuRuler,
+  LuStar,
   LuTruck,
 } from "react-icons/lu";
 import { Link } from "@/core/router/router";
@@ -24,23 +24,39 @@ import {
   resolveDimensions,
   unitPrice,
   type FrameId,
+  type ProductOptions,
 } from "../domain/catalog";
 import { DESIGN_PRESETS, MOROCCAN_PRESET_IDS, type DesignPreset } from "../domain/presets";
 import FramedPoster from "./FramedPoster";
-import HeroScene from "./HeroScene";
 import StoreFooter from "./StoreFooter";
 import StoreHeader from "./StoreHeader";
 import { useStoreText, type StoreTextKey } from "./storeText";
 
-const preset = (id: string) => DESIGN_PRESETS.find((entry) => entry.id === id)!;
-
-const SLIDES = ["marrakech", "chefchaouen", "fes"];
-
-const FRAME_TILES: { frame: FrameId; preset: string }[] = [
-  { frame: "black", preset: "casablanca" },
-  { frame: "white", preset: "rabat" },
-  { frame: "oak", preset: "fes" },
+/** Hero photos (an arch looking out over each city, the poster on a ledge). */
+const SLIDES = [
+  { id: "marrakech", image: "/assets/hero/marrakech.webp" },
+  { id: "chefchaouen", image: "/assets/hero/chefchaouen.webp" },
+  { id: "casablanca", image: "/assets/hero/casablanca.webp" },
 ];
+
+/** Frame and format picked in "Personnalisez votre affiche"; unset keeps each design's own. */
+interface Choice {
+  frameId?: FrameId;
+  sizeId?: string;
+}
+
+const withChoice = (product: ProductOptions, choice: Choice): ProductOptions => ({
+  ...product,
+  ...(choice.frameId ? { frameId: choice.frameId } : {}),
+  ...(choice.sizeId ? { sizeId: choice.sizeId } : {}),
+});
+
+const designLink = (id: string, choice: Choice) => {
+  const params = new URLSearchParams({ preset: id });
+  if (choice.sizeId) params.set("size", choice.sizeId);
+  if (choice.frameId) params.set("frame", choice.frameId);
+  return `/create?${params.toString()}`;
+};
 
 const LIGHT_THEMES = new Set([
   "carrara", "sandstone", "rustic", "ocean", "japanese_ink", "blush", "sage",
@@ -52,19 +68,18 @@ const PICKS = new Set(["marrakech", "chefchaouen", "fes", "casablanca", "paris",
 type Icon = ComponentType<{ "aria-hidden"?: boolean }>;
 const FILTERS: { id: string; label: StoreTextKey; Icon: Icon; match: (p: DesignPreset) => boolean }[] = [
   { id: "all", label: "chip.all", Icon: LuLayoutGrid, match: () => true },
-  { id: "morocco", label: "chip.morocco", Icon: LuMapPin, match: (p) => MOROCCAN_PRESET_IDS.has(p.id) },
+  { id: "morocco", label: "chip.morocco", Icon: LuStar, match: (p) => MOROCCAN_PRESET_IDS.has(p.id) },
   { id: "travel", label: "chip.travel", Icon: LuPlane, match: (p) => !MOROCCAN_PRESET_IDS.has(p.id) },
   { id: "minimal", label: "chip.minimal", Icon: LuLayers, match: (p) => LIGHT_THEMES.has(p.theme) },
-  { id: "classic", label: "chip.classic", Icon: LuImage, match: (p) => DARK_THEMES.has(p.theme) },
+  { id: "classic", label: "chip.classic", Icon: LuMoon, match: (p) => DARK_THEMES.has(p.theme) },
   { id: "picks", label: "chip.picks", Icon: LuHeart, match: (p) => PICKS.has(p.id) },
 ];
 
 const FAQ_COUNT = 5;
 
 export default function StorefrontPage() {
-  const { t, money, frameLabel, sizeLabel, lines } = useStoreText();
-  const minPrice = Math.min(...PRINT_SIZES.map((size) => size.price));
-  const [catsLine1, catsLine2] = lines("cats.title");
+  const { t } = useStoreText();
+  const [choice, setChoice] = useState<Choice>({});
 
   return (
     <div className="store-page store-page--home">
@@ -73,108 +88,11 @@ export default function StorefrontPage() {
       <main>
         <HeroSlider />
 
-        <ProductGrid />
+        <ProductGrid choice={choice} />
 
-        <section className="home-block home-cats" aria-labelledby="cats-title">
-          <div className="home-cats__intro">
-            <h2 id="cats-title" className="home-heading">
-              {catsLine1}{" "}
-              <br />
-              {catsLine2}
-            </h2>
-            <span className="home-rule" aria-hidden="true" />
-            <div className="home-cats__count">
-              <LuFrame aria-hidden="true" />
-              <p>
-                <strong>{t("cats.count")}</strong>
-                <span>{t("cats.countNote")}</span>
-              </p>
-            </div>
-            <Link to="/create" className="home-textlink">
-              {t("cats.all")} <LuChevronRight className="rtl-flip" aria-hidden="true" />
-            </Link>
-          </div>
-          {FRAME_TILES.map((tile) => {
-            const design = preset(tile.preset);
-            return (
-              <Link key={tile.frame} to={`/create?preset=${design.id}`} className="cat-tile">
-                <div className="cat-tile__visual">
-                  <FramedPoster src={design.image} alt="" frameId={tile.frame} ratio={0.75} size="sm" />
-                </div>
-                <span className="cat-tile__label">{frameLabel(tile.frame)}</span>
-              </Link>
-            );
-          })}
-        </section>
+        <Configurator choice={choice} onChange={setChoice} />
 
-        <section className="home-block home-promos" aria-label={t("promo.label")}>
-          <Link to="/create" className="promo promo--wall">
-            <div className="promo__scene" aria-hidden="true">
-              <div className="promo__poster promo__poster--a">
-                <FramedPoster src={preset("tangier").image} alt="" frameId="oak" ratio={0.707} size="sm" />
-              </div>
-              <div className="promo__shelf" />
-            </div>
-            <div className="promo__box">
-              <p className="promo__kicker">{t("promo.free.kicker", { amount: money(FREE_SHIPPING_THRESHOLD) })}</p>
-              <p className="promo__title">{t("promo.free.title")}</p>
-              <span className="promo__btn">{t("promo.cta")}</span>
-            </div>
-          </Link>
-          <Link to="/create" className="promo promo--sage">
-            <div className="promo__scene" aria-hidden="true">
-              <div className="promo__poster promo__poster--b">
-                <FramedPoster src={preset("chefchaouen").image} alt="" frameId="white" ratio={0.707} size="sm" />
-              </div>
-              <div className="promo__poster promo__poster--c">
-                <FramedPoster src={preset("marrakech").image} alt="" frameId="black" ratio={0.707} size="sm" />
-              </div>
-            </div>
-            <div className="promo__box">
-              <p className="promo__kicker">{t("promo.cod.kicker")}</p>
-              <p className="promo__title">{t("promo.cod.title")}</p>
-              <span className="promo__btn">{t("promo.cta")}</span>
-            </div>
-          </Link>
-        </section>
-
-        <section className="home-block" id="pricing" aria-labelledby="pricing-title">
-          <div className="home-head">
-            <div>
-              <h2 id="pricing-title" className="home-heading">{t("pricing.title")}</h2>
-              <span className="home-rule" aria-hidden="true" />
-            </div>
-            <p className="home-head__note">{t("pricing.note", { amount: money(minPrice) })}</p>
-          </div>
-          <div className="size-table">
-            {PRINT_SIZES.map((size) => (
-              <div key={size.id} className="size-cell">
-                {size.popular ? <span className="badge badge--accent">{t("pricing.popular")}</span> : null}
-                <div className="size-cell__shape" aria-hidden="true">
-                  <span style={{ width: `${size.widthCm * 1.4}px`, height: `${size.heightCm * 1.4}px` }} />
-                </div>
-                <p className="size-cell__name">{sizeLabel(size.id)}</p>
-                <p className="size-cell__dims">
-                  {size.id.startsWith("a") ? `${size.widthCm} × ${size.heightCm} cm` : t("pricing.posterSize")}
-                </p>
-                <p className="size-cell__price">
-                  {money(size.price)}
-                  <span>{t("pricing.framed", { amount: money(size.price + size.framePrice) })}</span>
-                </p>
-              </div>
-            ))}
-          </div>
-          <ul className="frame-list">
-            {FRAME_OPTIONS.filter((frame) => frame.id !== "none").map((frame) => (
-              <li key={frame.id}>
-                <span className={`frame-card__swatch frame-card__swatch--${frame.id}`} aria-hidden="true" />
-                <span>
-                  <strong>{frameLabel(frame.id)}.</strong> {t(`frame.${frame.id}.desc` as StoreTextKey)}
-                </span>
-              </li>
-            ))}
-          </ul>
-        </section>
+        <TrustBar />
 
         <section className="home-block home-faq" id="faq" aria-labelledby="faq-title">
           <div>
@@ -199,67 +117,54 @@ export default function StorefrontPage() {
 }
 
 function HeroSlider() {
-  const { t, lines, cityName } = useStoreText();
+  const { t, lines } = useStoreText();
   const [index, setIndex] = useState(0);
   const [paused, setPaused] = useState(false);
-  const posters = SLIDES.map(preset);
   const [line1, line2] = lines("hero.title");
-  const go = (step: number) => setIndex((current) => (current + step + SLIDES.length) % SLIDES.length);
 
   useEffect(() => {
     if (paused) return undefined;
-    const timer = window.setTimeout(() => go(1), 6000);
+    const timer = window.setTimeout(() => setIndex((current) => (current + 1) % SLIDES.length), 7000);
     return () => window.clearTimeout(timer);
-    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [index, paused]);
 
   return (
     <section
-      className="home-hero"
+      className="photo-hero"
       aria-roledescription="carousel"
       aria-label={t("hero.label")}
       onMouseEnter={() => setPaused(true)}
       onMouseLeave={() => setPaused(false)}
     >
-      <div className="home-hero__copy">
-        <p className="home-hero__eyebrow">{t("hero.eyebrow")}</p>
-        <h1 className="home-hero__title">
+      <div className="photo-hero__slides" aria-hidden="true">
+        {SLIDES.map((slide, slideIndex) => (
+          <img
+            key={slide.id}
+            src={slide.image}
+            alt=""
+            className={`photo-hero__slide${slideIndex === index ? " is-active" : ""}`}
+            loading={slideIndex === 0 ? "eager" : "lazy"}
+            decoding="async"
+            onError={(event) => event.currentTarget.classList.add("is-missing")}
+          />
+        ))}
+      </div>
+
+      <div className="photo-hero__copy">
+        <p className="photo-hero__eyebrow">{t("hero.eyebrow")}</p>
+        <h1 className="photo-hero__title">
           {line1}
           <br />
           {line2}
         </h1>
-        <p className="home-hero__lede">{t("hero.lede")}</p>
-        <div className="home-hero__actions">
-          <Link to="/create" className="store-btn store-btn--primary store-btn--lg">
-            <LuPencil aria-hidden="true" /> {t("hero.cta")}{" "}
-            <LuArrowRight className="rtl-flip" aria-hidden="true" />
-          </Link>
-          <Link to="/#designs" className="store-btn store-btn--outline store-btn--lg">
-            <LuLayoutGrid aria-hidden="true" /> {t("hero.explore")}
-          </Link>
-        </div>
-        <ul className="home-hero__features">
-          <li>
-            <LuTruck aria-hidden="true" />
-            <span><strong>{t("hero.feat1")}</strong>{t("hero.feat1Note")}</span>
-          </li>
-          <li>
-            <LuBanknote aria-hidden="true" />
-            <span><strong>{t("hero.feat2")}</strong>{t("hero.feat2Note")}</span>
-          </li>
-          <li>
-            <LuRuler aria-hidden="true" />
-            <span><strong>{t("hero.feat3")}</strong>{t("hero.feat3Note")}</span>
-          </li>
-        </ul>
-      </div>
-
-      <div className="home-hero__visual">
-        <HeroScene posters={posters} active={index} altFor={(p) => t("grid.alt", { city: cityName(p), theme: p.themeLabel })} />
-        <div className="home-hero__dots">
-          {SLIDES.map((id, slideIndex) => (
+        <p className="photo-hero__lede">{t("hero.lede")}</p>
+        <Link to="/#designs" className="photo-hero__cta">
+          {t("hero.explore")} <LuArrowRight className="rtl-flip" aria-hidden="true" />
+        </Link>
+        <div className="photo-hero__dots">
+          {SLIDES.map((slide, slideIndex) => (
             <button
-              key={id}
+              key={slide.id}
               type="button"
               className={slideIndex === index ? "is-active" : ""}
               aria-label={t("hero.show", { n: slideIndex + 1 })}
@@ -269,18 +174,11 @@ function HeroSlider() {
           ))}
         </div>
       </div>
-
-      <button type="button" className="home-hero__arrow home-hero__arrow--prev" aria-label={t("hero.prev")} onClick={() => go(-1)}>
-        <LuChevronLeft className="rtl-flip" aria-hidden="true" />
-      </button>
-      <button type="button" className="home-hero__arrow home-hero__arrow--next" aria-label={t("hero.next")} onClick={() => go(1)}>
-        <LuChevronRight className="rtl-flip" aria-hidden="true" />
-      </button>
     </section>
   );
 }
 
-function ProductGrid() {
+function ProductGrid({ choice }: { choice: Choice }) {
   const { t, money, cityName } = useStoreText();
   const [filter, setFilter] = useState("all");
   const active = FILTERS.find((entry) => entry.id === filter) ?? FILTERS[0];
@@ -288,11 +186,8 @@ function ProductGrid() {
   const items = DESIGN_PRESETS.filter(active.match).slice(0, 12);
 
   return (
-    <section className="home-block home-styles" id="designs" aria-labelledby="designs-title">
-      <div className="home-head home-head--center">
-        <h2 id="designs-title" className="home-heading">{t("style.title")}</h2>
-        <span className="home-rule" aria-hidden="true" />
-      </div>
+    <section className="home-styles" id="designs" aria-labelledby="designs-title">
+      <h2 id="designs-title" className="visually-hidden">{t("style.title")}</h2>
 
       <div className="chips" role="toolbar" aria-label={t("grid.filter")}>
         {FILTERS.slice(0, 3).map((entry) => (
@@ -308,15 +203,16 @@ function ProductGrid() {
 
       <div className="product-grid">
         {items.map((design) => {
-          const { widthCm, heightCm } = resolveDimensions(design.product);
+          const product = withChoice(design.product, choice);
+          const { widthCm, heightCm } = resolveDimensions(product);
           const city = cityName(design);
           return (
-            <Link key={design.id} to={`/create?preset=${design.id}`} className="product-card">
+            <Link key={design.id} to={designLink(design.id, choice)} className="product-card">
               <div className="product-card__visual">
                 <FramedPoster
                   src={design.image}
                   alt={t("grid.alt", { city, theme: design.themeLabel })}
-                  frameId={design.product.frameId}
+                  frameId={product.frameId}
                   ratio={widthCm / heightCm}
                   size="md"
                 />
@@ -324,12 +220,111 @@ function ProductGrid() {
               </div>
               <div className="product-card__body">
                 <h3 className="product-card__title">{city}</h3>
-                <p className="product-card__price">{money(unitPrice(design.product))}</p>
+                <p className="product-card__price">
+                  {money(unitPrice(product))} <LuArrowRight className="rtl-flip" aria-hidden="true" />
+                </p>
               </div>
             </Link>
           );
         })}
       </div>
+    </section>
+  );
+}
+
+function Configurator({ choice, onChange }: { choice: Choice; onChange: (choice: Choice) => void }) {
+  const { t, lines, sizeLabel } = useStoreText();
+  const [line1, line2] = lines("custom.title");
+  const formatCm = (value: number) => String(Math.round(value * 10) / 10).replace(".", ",");
+
+  return (
+    <section className="home-block configurator" id="pricing" aria-labelledby="custom-title">
+      <div className="configurator__intro">
+        <h2 id="custom-title" className="home-heading">
+          {line1}
+          <br />
+          {line2}
+        </h2>
+        <span className="home-rule" aria-hidden="true" />
+        <p>{t("custom.text")}</p>
+        {choice.frameId || choice.sizeId ? (
+          <button type="button" className="configurator__reset" onClick={() => onChange({})}>
+            {t("custom.reset")}
+          </button>
+        ) : null}
+      </div>
+
+      <div className="configurator__panel">
+        <div className="configurator__group">
+          <h3 id="custom-frame">{t("custom.frame")}</h3>
+          <div className="configurator__frames" role="radiogroup" aria-labelledby="custom-frame">
+            {FRAME_OPTIONS.map((frame) => {
+              const selected = choice.frameId === frame.id;
+              return (
+                <button
+                  key={frame.id}
+                  type="button"
+                  role="radio"
+                  aria-checked={selected}
+                  className={`buy-frame${selected ? " is-selected" : ""}`}
+                  onClick={() => onChange({ ...choice, frameId: selected ? undefined : frame.id })}
+                >
+                  {selected ? <LuCheck className="configurator__tick" aria-hidden="true" /> : null}
+                  <span className={`buy-frame__swatch buy-frame__swatch--${frame.id}`} aria-hidden="true">
+                    {frame.id === "none" ? <LuBan /> : null}
+                  </span>
+                  <span className="buy-frame__label">{t(`frameShort.${frame.id}` as StoreTextKey)}</span>
+                </button>
+              );
+            })}
+          </div>
+        </div>
+
+        <div className="configurator__group">
+          <h3 id="custom-format">{t("custom.format")}</h3>
+          <div className="configurator__sizes" role="radiogroup" aria-labelledby="custom-format">
+            {PRINT_SIZES.map((size) => {
+              const selected = choice.sizeId === size.id;
+              return (
+                <button
+                  key={size.id}
+                  type="button"
+                  role="radio"
+                  aria-checked={selected}
+                  className={`buy-size${selected ? " is-selected" : ""}`}
+                  onClick={() => onChange({ ...choice, sizeId: selected ? undefined : size.id })}
+                >
+                  <strong>{size.id.startsWith("a") ? sizeLabel(size.id) : `${size.widthCm} × ${size.heightCm}`}</strong>
+                  <span>{formatCm(size.widthCm)} × {formatCm(size.heightCm)} cm</span>
+                </button>
+              );
+            })}
+          </div>
+        </div>
+      </div>
+    </section>
+  );
+}
+
+function TrustBar() {
+  const { t, money } = useStoreText();
+  const items: { Icon: Icon; title: StoreTextKey; note: StoreTextKey }[] = [
+    { Icon: LuTruck, title: "trust.1", note: "trust.1Note" },
+    { Icon: LuBanknote, title: "trust.2", note: "trust.2Note" },
+    { Icon: LuGem, title: "trust.3", note: "trust.3Note" },
+    { Icon: LuEye, title: "trust.4", note: "trust.4Note" },
+  ];
+  return (
+    <section className="home-block trust-bar" aria-label={t("trust.label")}>
+      {items.map(({ Icon, title, note }) => (
+        <div key={title} className="trust-bar__item">
+          <Icon aria-hidden={true} />
+          <p>
+            <strong>{t(title)}</strong>
+            <span>{t(note, { amount: money(FREE_SHIPPING_THRESHOLD) })}</span>
+          </p>
+        </div>
+      ))}
     </section>
   );
 }

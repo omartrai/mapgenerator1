@@ -1,5 +1,5 @@
-import { useEffect, useRef, useState, type FormEvent } from "react";
-import { LuChevronDown, LuSearch, LuShoppingCart } from "react-icons/lu";
+import { useEffect, useRef, useState } from "react";
+import { LuChevronDown, LuShoppingCart } from "react-icons/lu";
 import { Link, useRouter } from "@/core/router/router";
 import BrandMark from "@/shared/ui/BrandMark";
 import { useLanguage, type AppLanguage } from "@/shared/i18n/LanguageContext";
@@ -27,15 +27,7 @@ const LANGUAGES: { code: AppLanguage; label: string; name: string }[] = [
 export default function StoreHeader({ variant = "site" }: StoreHeaderProps) {
   const { cartCount } = useStore();
   const { t } = useStoreText();
-  const { path, navigate } = useRouter();
-  const [query, setQuery] = useState("");
-
-  const onSearch = (event: FormEvent) => {
-    event.preventDefault();
-    const place = query.trim();
-    navigate(place ? `/create?place=${encodeURIComponent(place)}` : "/create");
-  };
-
+  const { path } = useRouter();
   const isActive = (to: string) => (to === "/" ? path === "/" : to === "/create" && path === "/create");
 
   return (
@@ -67,20 +59,6 @@ export default function StoreHeader({ variant = "site" }: StoreHeaderProps) {
         )}
 
         <div className="store-header__actions">
-          {variant === "site" ? (
-            <form className="store-search" role="search" onSubmit={onSearch}>
-              <button type="submit" aria-label={t("header.searchButton")}>
-                <LuSearch aria-hidden="true" />
-              </button>
-              <input
-                type="search"
-                value={query}
-                onChange={(event) => setQuery(event.target.value)}
-                placeholder={t("header.search")}
-                aria-label={t("header.searchLabel")}
-              />
-            </form>
-          ) : null}
           <LanguageMenu />
           {variant !== "checkout" ? (
             <Link

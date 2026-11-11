@@ -4,6 +4,7 @@ import { useRouter } from "@/core/router/router";
 import { adminApi, geocodeLocation } from "@/core/services";
 import { useDesignSnapshot } from "../application/useDesignSnapshot";
 import { useProductSync } from "../application/useProductSync";
+import { FRAME_OPTIONS, PRINT_SIZES, type FrameId } from "../domain/catalog";
 import { DESIGN_PRESETS, getPreset } from "../domain/presets";
 import AddedToCartDialog from "./AddedToCartDialog";
 import AdminExportPanel from "./AdminExportPanel";
@@ -88,10 +89,21 @@ export default function StudioPage() {
     }
 
     if (presetId) {
-      const preset = getPreset(presetId);
-      if (preset) {
+      const found = getPreset(presetId);
+      if (found) {
+        // ?size= and ?frame= come from the homepage frame/format picker.
+        const size = search.get("size");
+        const frame = search.get("frame");
+        const product = {
+          ...found.product,
+          ...(size && PRINT_SIZES.some((entry) => entry.id === size) ? { sizeId: size } : {}),
+          ...(frame && FRAME_OPTIONS.some((entry) => entry.id === frame)
+            ? { frameId: frame as FrameId }
+            : {}),
+        };
+        const preset = { ...found, product };
         applyPreset(preset);
-        store.setProduct(preset.product);
+        store.setProduct(product);
         store.setEditingItemId(null);
         store.setAdminTask(null);
       }
