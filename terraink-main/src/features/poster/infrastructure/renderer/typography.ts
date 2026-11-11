@@ -17,6 +17,28 @@ import {
   computeAttributionColor,
 } from "@/features/poster/domain/textLayout";
 
+/** Largest share of the poster width a text line may take. */
+const MAX_TEXT_WIDTH_RATIO = 0.86;
+
+/**
+ * Sets `weight size family` on the context, shrinking the size until the
+ * text fits within maxWidth so wide typefaces and long names never clip.
+ */
+function setFittedFont(
+  ctx: CanvasRenderingContext2D,
+  text: string,
+  weight: number,
+  sizePx: number,
+  family: string,
+  maxWidth: number,
+): void {
+  ctx.font = `${weight} ${sizePx}px ${family}`;
+  const measured = ctx.measureText(text).width;
+  if (measured > maxWidth && measured > 0) {
+    ctx.font = `${weight} ${sizePx * (maxWidth / measured)}px ${family}`;
+  }
+}
+
 export function drawPosterText(
   ctx: CanvasRenderingContext2D,
   width: number,
@@ -61,7 +83,8 @@ export function drawPosterText(
     ctx.fillStyle = textColor;
     ctx.textAlign = "center";
     ctx.textBaseline = "middle";
-    ctx.font = `700 ${cityFontSize}px ${titleFontFamily}`;
+    const maxTextWidth = width * MAX_TEXT_WIDTH_RATIO;
+    setFittedFont(ctx, cityLabel, 700, cityFontSize, titleFontFamily, maxTextWidth);
     ctx.fillText(cityLabel, width * 0.5, cityY);
 
     ctx.strokeStyle = textColor;
@@ -71,7 +94,7 @@ export function drawPosterText(
     ctx.lineTo(width * 0.6, lineY);
     ctx.stroke();
 
-    ctx.font = `300 ${countryFontSize}px ${titleFontFamily}`;
+    setFittedFont(ctx, country.toUpperCase(), 300, countryFontSize, titleFontFamily, maxTextWidth);
     ctx.fillText(country.toUpperCase(), width * 0.5, countryY);
 
     ctx.globalAlpha = 0.75;
