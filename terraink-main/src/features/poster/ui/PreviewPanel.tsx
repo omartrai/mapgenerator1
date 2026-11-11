@@ -4,6 +4,7 @@ import {
   useRef,
   useState,
   type CSSProperties,
+  type ReactNode,
 } from "react";
 import { usePosterContext } from "./PosterContext";
 import AdUnit from "@/shared/ui/AdUnit";
@@ -50,7 +51,14 @@ const CONTINENT_VIEW_ZOOM_LEVEL = 6;
 const DEFAULT_LOCATION_LABEL =
   "Hanover, Region Hannover, Lower Saxony, Germany";
 
-export default function PreviewPanel() {
+interface PreviewPanelProps {
+  /** Replaces the "current settings" card in the desktop side column. */
+  sidePanel?: ReactNode;
+  /** Extra content rendered under the poster (e.g. view toggles). */
+  belowPoster?: ReactNode;
+}
+
+export default function PreviewPanel({ sidePanel, belowPoster }: PreviewPanelProps = {}) {
   const { t } = useLanguage();
   const { state, dispatch, effectiveTheme, mapStyle, mapRef } =
     usePosterContext();
@@ -115,6 +123,27 @@ export default function PreviewPanel() {
       // Ignore font loading failures; fallback stack remains in place.
     });
   }, [form.fontFamily]);
+
+  // Restore the rotation of a saved design once the map instance exists.
+  useEffect(() => {
+    const bearing = state.pendingBearing;
+    if (bearing === null) return;
+    let timer: ReturnType<typeof setTimeout> | null = null;
+    const apply = () => {
+      const map = mapRef.current;
+      if (!map) {
+        timer = setTimeout(apply, 120);
+        return;
+      }
+      map.setBearing(bearing);
+      setMapBearing(bearing);
+      dispatch({ type: "CLEAR_PENDING_BEARING" });
+    };
+    apply();
+    return () => {
+      if (timer) clearTimeout(timer);
+    };
+  }, [state.pendingBearing, mapRef, dispatch]);
 
   useEffect(() => {
     const map = mapRef.current;
@@ -588,15 +617,17 @@ export default function PreviewPanel() {
         </div>
       </div>
 
+      {belowPoster}
+
       <div className="desktop-right-panel">
-        <SettingsInfo
+        {sidePanel ?? <SettingsInfo
           location={infoLocationLabel}
           theme={effectiveTheme.name}
           layout={infoLayoutLabel}
           posterSize={posterSizeLabel}
           markers={markersLabel}
           coordinates={coordinatesLabel}
-        />
+        />}
         <AdUnit
           slot={AD_SLOT_SIDEBAR}
           enabled={ADS_SIDEBAR_ENABLED}

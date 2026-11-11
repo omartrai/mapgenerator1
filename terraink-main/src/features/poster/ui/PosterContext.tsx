@@ -105,6 +105,7 @@ const INITIAL_STATE: PosterState = {
     city: false,
     country: false,
   },
+  pendingBearing: null,
 };
 
 /* ────── Context shapes ────── */

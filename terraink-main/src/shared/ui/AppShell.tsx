@@ -1,4 +1,4 @@
-import { lazy, Suspense, useCallback, useEffect, useState } from "react";
+import { lazy, Suspense, useCallback, useEffect, useState, type ReactNode } from "react";
 import { usePosterContext } from "@/features/poster/ui/PosterContext";
 import {
   MAX_MARKER_SIZE,
@@ -37,9 +37,13 @@ const DesktopLocationBar = lazy(() => import("@/shared/ui/DesktopLocationBar"));
 function SettingsDrawer({
   mobileTab,
   onClose,
+  sizeSection,
+  header,
 }: {
   mobileTab: MobileTab;
   onClose: () => void;
+  sizeSection?: ReactNode;
+  header?: ReactNode;
 }) {
   const { t } = useLanguage();
   const [isExpanded, setIsExpanded] = useState(false);
@@ -66,14 +70,50 @@ function SettingsDrawer({
           {...handleProps}
         />
         <div className="mobile-drawer-content">
-          <SettingsPanel mobileTab={mobileTab} />
+          <SettingsPanel mobileTab={mobileTab} sizeSection={sizeSection} header={header} />
         </div>
       </div>
     </div>
   );
 }
 
-export default function AppShell() {
+export interface AppShellSlots {
+  /** Replaces the default product header. */
+  header?: ReactNode;
+  /** Replaces the floating download button (e.g. purchase controls). */
+  actionArea?: (context: { isMobile: boolean }) => ReactNode;
+  /** Replaces the "current settings" card next to the poster on desktop. */
+  sidePanel?: ReactNode;
+  /** Rendered under the poster preview. */
+  belowPoster?: ReactNode;
+  /** Product size picker rendered as the "size" tab. */
+  sizeSection?: ReactNode;
+  /** Step guidance above the settings, given the active tab and a setter. */
+  panelHeader?: (tab: MobileTab, setTab: (tab: MobileTab) => void) => ReactNode;
+  /** Whether to open the "where is your place?" dialog on mount. */
+  showStartupModal?: boolean;
+  initialTab?: MobileTab;
+  /** Extra attributes for styling (e.g. frame colour, scene). */
+  dataAttributes?: Record<string, string>;
+  /** Desktop: the "Location" rail button opens a settings tab instead of the floating search bar. */
+  locationAsTab?: boolean;
+  /** Extra content such as modals. */
+  children?: ReactNode;
+}
+
+export default function AppShell({
+  header,
+  actionArea,
+  sidePanel,
+  belowPoster,
+  sizeSection,
+  panelHeader,
+  showStartupModal = true,
+  initialTab = "theme",
+  dataAttributes,
+  locationAsTab = false,
+  children,
+}: AppShellSlots = {}) {
   const { t } = useLanguage();
   const { state, dispatch } = usePosterContext();
 
@@ -86,17 +126,19 @@ export default function AppShell() {
       : null;
 
   // Mobile state
-  const [mobileTab, setMobileTab] = useState<MobileTab>("theme");
+  const [mobileTab, setMobileTab] = useState<MobileTab>(initialTab);
   const [mobileDrawerOpen, setMobileDrawerOpen] = useState(false);
   const [mobileLocationRowVisible, setMobileLocationRowVisible] =
-    useState(false);
+    useState(initialTab === "location");
   const [isMobileViewport, setIsMobileViewport] = useState(false);
 
   // Desktop state
-  const [desktopTab, setDesktopTab] = useState<MobileTab>("theme");
+  const [desktopTab, setDesktopTab] = useState<MobileTab>(
+    initialTab === "location" && !locationAsTab ? "theme" : initialTab,
+  );
   const [desktopPanelOpen, setDesktopPanelOpen] = useState(true);
   const [desktopLocationRowVisible, setDesktopLocationRowVisible] =
-    useState(true);
+    useState(!locationAsTab);
   const [supportPrompt, setSupportPrompt] = useState<SupportPromptState | null>(null);
   const [legalDoc, setLegalDoc] = useState<LegalDocType | null>(null);
 
@@ -213,18 +255,25 @@ export default function AppShell() {
       data-od-id="maploom-editor"
       data-mobile-tab={mobileTab}
       data-desktop-tab={desktopTab}
+      {...dataAttributes}
     >
-      <GeneralHeader />
+      {header ?? <GeneralHeader />}
       <InstallPrompt />
-      <StartupLocationModal />
+      {showStartupModal ? <StartupLocationModal /> : null}
 
       <DesktopNavBar
         activeTab={desktopTab}
         panelOpen={desktopPanelOpen}
         onTabChange={handleDesktopTabChange}
-        isLocationVisible={desktopLocationRowVisible}
+        isLocationVisible={
+          locationAsTab
+            ? desktopPanelOpen && desktopTab === "location"
+            : desktopLocationRowVisible
+        }
         onLocationToggle={() =>
-          setDesktopLocationRowVisible((isVisible) => !isVisible)
+          locationAsTab
+            ? handleDesktopTabChange("location")
+            : setDesktopLocationRowVisible((isVisible) => !isVisible)
         }
       />
 
@@ -274,17 +323,29 @@ export default function AppShell() {
           className={`desktop-settings-slide${desktopPanelOpen ? " is-open" : ""}`}
         >
           <Suspense fallback={null}>
-            <SettingsPanel />
+            <SettingsPanel
+              sizeSection={sizeSection}
+              header={panelHeader?.(desktopTab, handleDesktopTabChange)}
+            />
           </Suspense>
         </div>
       </div>
 
-      <PreviewPanel />
+      <PreviewPanel sidePanel={sidePanel} belowPoster={belowPoster} />
 
       {mobileDrawerOpen ? (
         <SettingsDrawer
           mobileTab={mobileTab}
           onClose={() => setMobileDrawerOpen(false)}
+          sizeSection={sizeSection}
+          header={panelHeader?.(mobileTab, (tab) => {
+            if (tab === "location") {
+              setMobileDrawerOpen(false);
+              setMobileLocationRowVisible(true);
+              return;
+            }
+            setMobileTab(tab);
+          })}
         />
       ) : null}
 
@@ -309,9 +370,13 @@ export default function AppShell() {
         isLocationVisible={mobileLocationRowVisible}
         onTabChange={handleMobileTabChange}
       />
-      <Suspense fallback={null}>
-        <ExportFab isMobile={isMobileViewport} />
-      </Suspense>
+      {actionArea ? (
+        actionArea({ isMobile: isMobileViewport })
+      ) : (
+        <Suspense fallback={null}>
+          <ExportFab isMobile={isMobileViewport} />
+        </Suspense>
+      )}
 
       <FooterNote />
       <Suspense fallback={null}>
@@ -328,6 +393,7 @@ export default function AppShell() {
           <LegalModal doc={legalDoc} onClose={() => setLegalDoc(null)} />
         </Suspense>
       ) : null}
+      {children}
     </div>
   );
 }

@@ -58,8 +58,14 @@ const accordionSections: {
 
 export default function SettingsPanel({
   mobileTab,
+  sizeSection,
+  header,
 }: {
   mobileTab?: MobileTab;
+  /** Product size & frame picker supplied by the store (replaces "Layout"). */
+  sizeSection?: React.ReactNode;
+  /** Guidance shown above the sections (e.g. the studio step header). */
+  header?: React.ReactNode;
 }) {
   const { t } = useLanguage();
   const { state, dispatch, mapRef, selectedTheme } = usePosterContext();
@@ -109,6 +115,14 @@ export default function SettingsPanel({
 
   return (
     <form className="settings-panel" onSubmit={(e) => e.preventDefault()}>
+      {header}
+      {sizeSection ? (
+        <div className="mobile-section mobile-section--size accordion-item accordion-item--open">
+          <div className="accordion-body is-open">
+            <div className="accordion-body-inner">{sizeSection}</div>
+          </div>
+        </div>
+      ) : null}
       <div
         className={`mobile-section mobile-section--location accordion-item${openSections.has("location") ? " accordion-item--open" : ""}`}
       >

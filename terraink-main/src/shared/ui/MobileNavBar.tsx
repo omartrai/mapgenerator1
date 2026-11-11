@@ -13,6 +13,7 @@ export type MobileTab =
   | "location"
   | "theme"
   | "layout"
+  | "size"
   | "style"
   | "layers"
   | "markers"
@@ -25,8 +26,8 @@ const tabs: {
 }[] = [
   { id: "location", labelKey: "nav.location", Icon: LocationIcon },
   { id: "theme", labelKey: "nav.theme", Icon: ThemeIcon },
-  { id: "layout", labelKey: "nav.layout", Icon: LayoutIcon },
   { id: "style", labelKey: "nav.style", Icon: StyleIcon },
+  { id: "size", labelKey: "nav.size", Icon: LayoutIcon },
   { id: "layers", labelKey: "nav.layers", Icon: LayersIcon },
   { id: "markers", labelKey: "nav.icons", Icon: MarkersIcon },
   { id: "routes", labelKey: "nav.routes", Icon: RouteIcon },

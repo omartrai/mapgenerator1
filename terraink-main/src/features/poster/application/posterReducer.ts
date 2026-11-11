@@ -71,12 +71,26 @@ export interface PosterState {
     city: boolean;
     country: boolean;
   };
+  /** Map rotation to apply once the map is ready (set when a saved design loads). */
+  pendingBearing: number | null;
+}
+
+/** Everything needed to restore a saved poster design into the editor. */
+export interface LoadDesignPayload {
+  form: Partial<PosterForm>;
+  customColors: Record<string, string>;
+  markers: MarkerItem[];
+  routes: Route[];
+  customMarkerIcons: MarkerIconDefinition[];
+  bearing: number;
 }
 
 /* ────── Actions ────── */
 
 export type PosterAction =
   | { type: "SET_FIELD"; name: string; value: string | boolean }
+  | { type: "LOAD_DESIGN"; design: LoadDesignPayload }
+  | { type: "CLEAR_PENDING_BEARING" }
   | {
       type: "SET_FORM_FIELDS";
       fields: Partial<PosterForm>;
@@ -126,6 +140,33 @@ export function posterReducer(
   action: PosterAction,
 ): PosterState {
   switch (action.type) {
+    case "LOAD_DESIGN": {
+      const { design } = action;
+      const knownIconIds = new Set(state.customMarkerIcons.map((icon) => icon.id));
+      return {
+        ...state,
+        form: { ...state.form, ...design.form },
+        customColors: { ...design.customColors },
+        markers: [...design.markers],
+        routes: [...design.routes],
+        customMarkerIcons: [
+          ...state.customMarkerIcons,
+          ...design.customMarkerIcons.filter((icon) => !knownIconIds.has(icon.id)),
+        ],
+        selectedLocation: null,
+        isMarkerEditorActive: false,
+        activeMarkerId: null,
+        error: "",
+        // Keep the saved poster text exactly as designed: stop the reverse
+        // geocoder from replacing it when the coordinates change.
+        displayNameOverrides: { city: true, country: true },
+        pendingBearing: Number.isFinite(design.bearing) ? design.bearing : 0,
+      };
+    }
+
+    case "CLEAR_PENDING_BEARING":
+      return { ...state, pendingBearing: null };
+
     case "SET_FIELD": {
       const nextForm = { ...state.form, [action.name]: action.value };
       const nextDisplayNameOverrides = { ...state.displayNameOverrides };
