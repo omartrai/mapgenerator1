@@ -1,4 +1,5 @@
-import { useCallback, useMemo, useRef, useState, type ChangeEvent } from "react";
+import { useCallback, useMemo, useRef, useState, type ChangeEvent, type DragEvent } from "react";
+import { LuChevronDown, LuEye, LuEyeOff, LuPencil, LuPlus, LuUpload } from "react-icons/lu";
 import { createPortal } from "react-dom";
 import { usePosterContext } from "@/features/poster/ui/PosterContext";
 import { useGpxUpload } from "@/features/routes/application/useGpxUpload";
@@ -43,11 +44,26 @@ interface EndpointPickerState {
   kind: RouteEndpointKind;
 }
 
-function formatRouteDistance(meters: number): string {
+function formatRouteDistance(meters: number, comma = false): string {
   if (!Number.isFinite(meters) || meters <= 0) return "—";
   if (meters < 1000) return `${Math.round(meters)} m`;
   const km = meters / 1000;
-  return km < 10 ? `${km.toFixed(2)} km` : `${km.toFixed(1)} km`;
+  const text = km < 10 ? km.toFixed(2) : km.toFixed(1);
+  return `${comma ? text.replace(".", ",") : text} km`;
+}
+
+/** Sporty accents plus the theme's own colours, current colour first. */
+const ACCENT_COLORS = ["#e8622c", "#e23b3b", "#f2b705", "#2f9e6e", "#2d7fd3", "#111111", "#ffffff"];
+function quickColors(current: string, suggested: string[]): string[] {
+  const seen = new Set<string>();
+  return [current, ...ACCENT_COLORS, ...suggested]
+    .filter((color) => {
+      const key = String(color || "").toLowerCase();
+      if (!key || seen.has(key)) return false;
+      seen.add(key);
+      return true;
+    })
+    .slice(0, 8);
 }
 
 interface PendingConfirmation {
@@ -119,7 +135,7 @@ function RouteBoundsWarningModal({
 }
 
 export default function RoutesSection() {
-  const { t } = useLanguage();
+  const { t, language } = useLanguage();
   const { state, dispatch, effectiveTheme } = usePosterContext();
   const { form, routes, customMarkerIcons } = state;
   const { uploadGpxFile, confirmAddRoute, confirmReplaceRoutes } =
@@ -153,12 +169,22 @@ export default function RoutesSection() {
     inputRef.current?.click();
   }, []);
 
-  const handleUploadChange = useCallback(
-    async (event: ChangeEvent<HTMLInputElement>) => {
-      const file = event.target.files?.[0];
-      event.target.value = "";
-      if (!file) return;
+  const [isDragging, setIsDragging] = useState(false);
+  const handleDrop = (event: DragEvent<HTMLElement>) => {
+    event.preventDefault();
+    setIsDragging(false);
+    const file = event.dataTransfer.files?.[0];
+    if (file) void processFile(file);
+  };
 
+  const handleUploadChange = (event: ChangeEvent<HTMLInputElement>) => {
+    const file = event.target.files?.[0];
+    event.target.value = "";
+    if (file) void processFile(file);
+  };
+
+  const processFile = useCallback(
+    async (file: File) => {
       setUploadError(null);
       setIsUploading(true);
       try {
@@ -294,33 +320,39 @@ export default function RoutesSection() {
         />
       ) : null}
 
-      <div className="markers-section-head">
+      <div className="routes-head">
         <p className="section-summary-label">{t("nav.routes")}</p>
-        <div className="markers-section-head-actions">
-          <button
-            type="button"
-            className="marker-row__icon-btn marker-header-action-btn"
-            onClick={toggleShowAll}
-            title={form.showRoutes ? t("routes.hide") : t("routes.show")}
-            disabled={routes.length === 0}
-          >
-            <span className="marker-row__icon-btn-label">
-              {form.showRoutes ? t("routes.hide") : t("routes.show")}
-            </span>
+        {routes.length > 0 ? (
+          <button type="button" className="routes-head__toggle" onClick={toggleShowAll}>
+            {form.showRoutes ? <LuEyeOff aria-hidden="true" /> : <LuEye aria-hidden="true" />}
+            {form.showRoutes ? t("routes.hide") : t("routes.show")}
           </button>
-          <button
-            type="button"
-            className="marker-row__icon-btn marker-header-action-btn"
-            onClick={handleUploadClick}
-            title={t("routes.uploadTitle")}
-            disabled={isUploading}
-          >
-            <span className="marker-row__icon-btn-label">
-              {isUploading ? t("routes.uploading") : t("routes.upload")}
-            </span>
-          </button>
-        </div>
+        ) : null}
       </div>
+
+      <button
+        type="button"
+        className={`gpx-drop${isDragging ? " is-dragging" : ""}${routes.length > 0 ? " is-compact" : ""}`}
+        onClick={handleUploadClick}
+        onDragOver={(event) => {
+          event.preventDefault();
+          setIsDragging(true);
+        }}
+        onDragLeave={() => setIsDragging(false)}
+        onDrop={handleDrop}
+        disabled={isUploading}
+        title={t("routes.uploadTitle")}
+      >
+        <span className="gpx-drop__icon" aria-hidden="true">
+          {routes.length > 0 ? <LuPlus /> : <LuUpload />}
+        </span>
+        <span className="gpx-drop__text">
+          <strong>
+            {isUploading ? t("routes.uploading") : routes.length > 0 ? t("routes.addAnother") : t("routes.dropTitle")}
+          </strong>
+          {routes.length > 0 ? null : <small>{t("routes.dropHint")}</small>}
+        </span>
+      </button>
 
       <input
         ref={inputRef}
@@ -373,17 +405,12 @@ export default function RoutesSection() {
       ) : null}
 
       <div className="routes-section__content">
-        {routes.length === 0 ? (
-          <p className="routes-section__empty">
-            {t("routes.empty")}
-          </p>
-        ) : null}
 
         {routes.map((route) => {
           const isOpen = openRouteId === route.id;
           const isColorOpen = openColorPickerId === route.id;
           const colorChoices = buildDynamicColorChoices(route.color, palette);
-          const distanceLabel = formatRouteDistance(routeLengthMeters(route));
+          const distanceLabel = formatRouteDistance(routeLengthMeters(route), language !== "en");
           const endpointKind =
             activeEndpoint?.routeId === route.id ? activeEndpoint.kind : null;
           const isEditingEndpoint = endpointKind !== null;
@@ -393,58 +420,46 @@ export default function RoutesSection() {
               key={route.id}
               className={`route-card${isOpen ? " is-open" : ""}`}
             >
-              {!isOpen ? (
+              <div className="route-card__header">
                 <button
                   type="button"
-                  className="route-card__delete"
-                  onClick={() => removeRoute(route.id)}
-                  title={t("routes.remove")}
-                  aria-label={`${t("routes.remove")}: ${route.label}`}
+                  className="route-card__summary"
+                  onClick={() => (isEditingEndpoint ? closeEndpointEditor() : toggleCardOpen(route.id))}
+                  aria-expanded={isOpen}
                 >
-                  <CloseIcon />
-                </button>
-              ) : (
-                <button
-                  type="button"
-                  className="route-card__done"
-                  onClick={
-                    isEditingEndpoint ? closeEndpointEditor : closeCard
-                  }
-                  title={isEditingEndpoint ? t("routes.finishEndpoint") : t("common.done")}
-                  aria-label={
-                    isEditingEndpoint ? t("routes.finishEndpoint") : t("routes.doneEditing")
-                  }
-                >
-                  <CheckIcon />
-                </button>
-              )}
-
-              <button
-                type="button"
-                className="route-card__summary"
-                onClick={() => toggleCardOpen(route.id)}
-                aria-expanded={isOpen}
-                disabled={isEditingEndpoint}
-              >
-                <span
-                  className="route-card__swatch"
-                  style={{
-                    backgroundColor: route.color,
-                    opacity: route.opacity,
-                  }}
-                  aria-hidden="true"
-                />
-                <span className="route-card__meta">
-                  <span className="route-card__label">
-                    {isEditingEndpoint
-                      ? `${t("common.edit")} ${endpointKind === "start" ? t("routes.start") : t("routes.finish")}`
-                      : route.label}
+                  <span
+                    className="route-card__swatch"
+                    style={{ backgroundColor: route.color, opacity: route.opacity }}
+                    aria-hidden="true"
+                  />
+                  <span className="route-card__meta">
+                    <span className="route-card__label" title={route.label}>
+                      {isEditingEndpoint
+                        ? endpointKind === "start" ? t("routes.start") : t("routes.finish")
+                        : route.label}
+                    </span>
+                    <span className="route-card__distance">
+                      {isEditingEndpoint ? route.label : distanceLabel}
+                    </span>
                   </span>
-                  <span className="route-card__distance">
-                    {isEditingEndpoint ? route.label : distanceLabel}
-                  </span>
-                </span>
-              </button>
+                  {isEditingEndpoint ? null : <LuChevronDown className="route-card__chevron" aria-hidden="true" />}
+                </button>
+                {isEditingEndpoint ? (
+                  <button type="button" className="route-card__back" onClick={closeEndpointEditor}>
+                    <CheckIcon /> {t("common.done")}
+                  </button>
+                ) : (
+                  <button
+                    type="button"
+                    className="route-card__trash"
+                    onClick={() => removeRoute(route.id)}
+                    title={t("routes.remove")}
+                    aria-label={`${t("routes.remove")}: ${route.label}`}
+                  >
+                    <TrashIcon />
+                  </button>
+                )}
+              </div>
 
               {isOpen && isEditingEndpoint ? (() => {
                 const endpoint =
@@ -578,91 +593,81 @@ export default function RoutesSection() {
 
               {isOpen && !isEditingEndpoint ? (
                 <div className="route-card__body">
-                  {(["start", "finish"] as const).map((kind) => {
-                    const marker = kind === "start" ? route.startMarker : route.finishMarker;
-                    const other = kind === "start" ? route.finishMarker : route.startMarker;
-                    const shown = route.showEndpoints && !marker.hidden;
-                    const otherShown = route.showEndpoints && !other.hidden;
-                    return (
-                      <label key={kind} className="toggle-field">
-                        <span>{t(kind === "start" ? "routes.showStart" : "routes.showFinish")}</span>
-                        <span className="theme-switch">
-                          <input
-                            type="checkbox"
-                            checked={shown}
-                            onChange={(event) => {
-                              const on = event.target.checked;
-                              updateRoute(route.id, {
-                                // Keep the other icon as it was shown.
-                                startMarker: { ...route.startMarker, hidden: kind === "start" ? !on : !otherShown },
-                                finishMarker: { ...route.finishMarker, hidden: kind === "finish" ? !on : !otherShown },
-                                showEndpoints: on || otherShown,
-                              });
-                            }}
-                          />
-                          <span className="theme-switch-track" aria-hidden="true" />
-                        </span>
-                      </label>
-                    );
-                  })}
-
-                  {route.showEndpoints && (!route.startMarker.hidden || !route.finishMarker.hidden) ? (
-                    <div className="route-card__endpoint-rows">
-                      {(["start", "finish"] as const)
-                        .filter((kind) => !(kind === "start" ? route.startMarker : route.finishMarker).hidden)
-                        .map((kind) => {
-                        const endpoint =
-                          kind === "start"
-                            ? route.startMarker
-                            : route.finishMarker;
-                        const icon = findMarkerIcon(
-                          endpoint.iconId,
-                          customMarkerIcons,
-                        );
-                        const label = kind === "start" ? t("routes.start") : t("routes.finish");
-                        return (
+                  <section className="route-card__section">
+                    <h4 className="route-card__section-title">{t("routes.iconsTitle")}</h4>
+                    {(["start", "finish"] as const).map((kind) => {
+                      const marker = kind === "start" ? route.startMarker : route.finishMarker;
+                      const other = kind === "start" ? route.finishMarker : route.startMarker;
+                      const shown = route.showEndpoints && !marker.hidden;
+                      const otherShown = route.showEndpoints && !other.hidden;
+                      const icon = findMarkerIcon(marker.iconId, customMarkerIcons);
+                      const label = kind === "start" ? t("routes.start") : t("routes.finish");
+                      return (
+                        <div key={kind} className={`route-endpoint${shown ? "" : " is-off"}`}>
                           <button
-                            key={kind}
                             type="button"
-                            className="route-card__endpoint-row"
+                            className="route-endpoint__edit"
                             onClick={() => openEndpointEditor(route.id, kind)}
-                            aria-label={`Edit ${label.toLowerCase()} marker`}
+                            disabled={!shown}
+                            title={t("routes.changeIcon")}
                           >
-                            <span className="route-card__endpoint-row-icon">
-                              {icon ? (
-                                <MarkerVisual
-                                  icon={icon}
-                                  size={24}
-                                  color={endpoint.color}
-                                />
-                              ) : null}
+                            <span className="route-endpoint__icon">
+                              {icon ? <MarkerVisual icon={icon} size={22} color={marker.color} /> : null}
                             </span>
-                            <span className="route-card__endpoint-row-label">
-                              {label}
-                            </span>
+                            <span className="route-endpoint__label">{label}</span>
+                            {shown ? <LuPencil className="route-endpoint__pencil" aria-hidden="true" /> : null}
                           </button>
-                        );
-                      })}
-                    </div>
-                  ) : null}
+                          <label className="theme-switch" title={t(kind === "start" ? "routes.showStart" : "routes.showFinish")}>
+                            <input
+                              type="checkbox"
+                              checked={shown}
+                              aria-label={t(kind === "start" ? "routes.showStart" : "routes.showFinish")}
+                              onChange={(event) => {
+                                const on = event.target.checked;
+                                updateRoute(route.id, {
+                                  // Keep the other icon as it was shown.
+                                  startMarker: { ...route.startMarker, hidden: kind === "start" ? !on : !otherShown },
+                                  finishMarker: { ...route.finishMarker, hidden: kind === "finish" ? !on : !otherShown },
+                                  showEndpoints: on || otherShown,
+                                });
+                              }}
+                            />
+                            <span className="theme-switch-track" aria-hidden="true" />
+                          </label>
+                        </div>
+                      );
+                    })}
+                  </section>
 
+                  <section className="route-card__section">
+                    <h4 className="route-card__section-title">{t("routes.lineTitle")}</h4>
                   <div className="route-card__field">
                     <label>
                       <span>{t("common.color")}</span>
+                    </label>
+                    <div className="route-swatches" role="radiogroup" aria-label={t("common.color")}>
+                      {quickColors(route.color, colorChoices.suggestedColors).map((color) => (
+                        <button
+                          key={color}
+                          type="button"
+                          role="radio"
+                          aria-checked={color.toLowerCase() === route.color.toLowerCase()}
+                          className={`route-swatch${color.toLowerCase() === route.color.toLowerCase() ? " is-active" : ""}`}
+                          style={{ backgroundColor: color }}
+                          onClick={() => updateRoute(route.id, { color })}
+                          title={color}
+                        />
+                      ))}
                       <button
                         type="button"
-                        className="route-card__color-toggle"
-                        style={{ backgroundColor: route.color }}
-                        onClick={() =>
-                          setOpenColorPickerId(isColorOpen ? null : route.id)
-                        }
-                        aria-label={
-                          isColorOpen ? t("routes.closeColorPicker") : t("routes.openColorPicker")
-                        }
+                        className={`route-swatch route-swatch--more${isColorOpen ? " is-open" : ""}`}
+                        onClick={() => setOpenColorPickerId(isColorOpen ? null : route.id)}
+                        aria-label={isColorOpen ? t("routes.closeColorPicker") : t("routes.openColorPicker")}
+                        title={t("routes.moreColors")}
                       >
-                        {isColorOpen ? <CloseIcon /> : null}
+                        {isColorOpen ? <CloseIcon /> : <LuPlus />}
                       </button>
-                    </label>
+                    </div>
                     {isColorOpen ? (
                       <ColorPicker
                         currentColor={route.color}
@@ -760,19 +765,7 @@ export default function RoutesSection() {
                     </div>
                   </div>
 
-                  <div className="route-card__actions">
-                    <button
-                      type="button"
-                      className="marker-row__icon-btn marker-row__icon-btn--danger"
-                      onClick={() => removeRoute(route.id)}
-                      title={t("routes.remove")}
-                    >
-                      <TrashIcon />
-                      <span className="marker-row__icon-btn-label">
-                        {t("routes.remove")}
-                      </span>
-                    </button>
-                  </div>
+                  </section>
                 </div>
               ) : null}
             </article>

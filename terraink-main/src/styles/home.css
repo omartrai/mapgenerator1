@@ -2506,3 +2506,407 @@
   color: var(--s-muted, #6b6259);
   font-size: 0.8rem;
 }
+
+/* ── Routes panel (Tracés) ── */
+.routes-head {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 10px;
+  margin-bottom: 10px;
+}
+
+.routes-head .section-summary-label {
+  margin: 0;
+}
+
+.routes-head__toggle {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  padding: 6px 10px;
+  border: 1px solid #e5ddd2;
+  border-radius: 999px;
+  background: #fff;
+  color: #4a443e;
+  font: inherit;
+  font-size: 0.8rem;
+  font-weight: 600;
+  cursor: pointer;
+}
+
+.routes-head__toggle svg {
+  width: 15px;
+  height: 15px;
+}
+
+/* Import: a big drop zone when empty, a slim "add another" row after. */
+.gpx-drop {
+  display: flex;
+  align-items: center;
+  gap: 14px;
+  width: 100%;
+  margin: 0 0 12px;
+  padding: 18px 16px;
+  border: 1.5px dashed #d8cbbb;
+  border-radius: 14px;
+  background: #fffdfa;
+  color: inherit;
+  font: inherit;
+  text-align: start;
+  cursor: pointer;
+  transition: border-color 0.15s ease, background 0.15s ease;
+}
+
+.gpx-drop:hover,
+.gpx-drop.is-dragging {
+  border-color: var(--s-accent, #e05a2b);
+  background: #fff4ee;
+}
+
+.gpx-drop:disabled {
+  cursor: progress;
+  opacity: 0.7;
+}
+
+.gpx-drop__icon {
+  display: grid;
+  place-items: center;
+  flex: none;
+  width: 42px;
+  height: 42px;
+  border-radius: 12px;
+  background: #fde6db;
+  color: var(--s-accent, #e05a2b);
+}
+
+.gpx-drop__icon svg {
+  width: 20px;
+  height: 20px;
+}
+
+.gpx-drop__text {
+  display: grid;
+  gap: 3px;
+}
+
+.gpx-drop__text strong {
+  font-size: 0.95rem;
+}
+
+.gpx-drop__text small {
+  color: var(--s-muted, #6b6259);
+  font-size: 0.8rem;
+  line-height: 1.4;
+}
+
+.gpx-drop.is-compact {
+  padding: 10px 12px;
+  border-style: dashed;
+}
+
+.gpx-drop.is-compact .gpx-drop__icon {
+  width: 30px;
+  height: 30px;
+  border-radius: 9px;
+}
+
+.gpx-drop.is-compact .gpx-drop__text strong {
+  font-size: 0.85rem;
+}
+
+/* Sport card: light, with the orange accent. */
+.sport-cta,
+.sport-cta.is-active {
+  margin: 0 0 12px;
+  border: 1px solid #f3d3c3;
+  background: linear-gradient(135deg, #fff6f1, #fdeee6);
+  color: var(--ink, #171816);
+}
+
+.sport-cta__hint {
+  color: #6b6259;
+}
+
+.sport-cta__ghost {
+  border-color: #e3cdbf;
+  background: #fff;
+  color: #4a443e;
+}
+
+.sport-cta__ghost:hover {
+  border-color: #cfb6a6;
+}
+
+/* Route card */
+.routes-settings-screen .route-card {
+  border-radius: 14px;
+  overflow: hidden;
+}
+
+.route-card__header {
+  display: flex;
+  align-items: center;
+  gap: 4px;
+  padding-inline-end: 8px;
+}
+
+.routes-settings-screen button.route-card__summary,
+.routes-settings-screen .route-card.is-open button.route-card__summary {
+  flex: 1;
+  min-width: 0;
+  flex-direction: row;
+  align-items: center;
+  gap: 12px;
+  padding: 14px 8px 14px 14px;
+  text-align: start;
+}
+
+.routes-settings-screen .route-card__meta,
+.routes-settings-screen .route-card.is-open .route-card__meta {
+  flex: 1;
+  align-items: flex-start;
+  text-align: start;
+}
+
+.routes-settings-screen .route-card__label {
+  display: -webkit-box;
+  font-size: 0.92rem;
+  line-height: 1.3;
+  white-space: normal;
+  -webkit-box-orient: vertical;
+  -webkit-line-clamp: 2;
+}
+
+.routes-settings-screen .route-card__distance {
+  color: #6b6259 !important;
+  font-size: 0.8rem;
+}
+
+.routes-settings-screen .route-card__swatch {
+  width: 26px;
+  height: 26px;
+  border-radius: 8px;
+  border-color: rgba(0, 0, 0, 0.1);
+}
+
+.route-card__chevron {
+  flex: none;
+  width: 18px;
+  height: 18px;
+  color: #8a8178;
+  transition: transform 0.2s ease;
+}
+
+.route-card.is-open .route-card__chevron {
+  transform: rotate(180deg);
+  color: var(--s-accent, #e05a2b);
+}
+
+.route-card__trash,
+.route-card__back {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: 6px;
+  flex: none;
+  border: 0;
+  border-radius: 10px;
+  background: transparent;
+  font: inherit;
+  cursor: pointer;
+}
+
+.route-card__trash {
+  width: 34px;
+  height: 34px;
+  color: #a2998f;
+}
+
+.route-card__trash:hover {
+  background: #fbe9e4;
+  color: #b23b22;
+}
+
+.route-card__trash svg,
+.route-card__back svg {
+  width: 16px;
+  height: 16px;
+}
+
+.route-card__back {
+  padding: 8px 12px;
+  background: #213d33;
+  color: #fff;
+  font-size: 0.8rem;
+  font-weight: 700;
+}
+
+.routes-settings-screen .route-card__body {
+  display: grid;
+  gap: 18px;
+  padding: 4px 14px 16px;
+  border-top: 1px solid #efe8de !important;
+}
+
+.route-card__section {
+  display: grid;
+  gap: 10px;
+  padding-top: 12px;
+}
+
+.route-card__section + .route-card__section {
+  border-top: 1px solid #f1ebe2;
+}
+
+.route-card__section-title {
+  margin: 0;
+  color: #8a8178;
+  font-size: 0.72rem;
+  font-weight: 700;
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+}
+
+/* Field labels in sentence case, values aligned right. */
+.routes-settings-screen .route-card__field label {
+  font-size: 0.86rem;
+  font-weight: 600;
+  letter-spacing: 0;
+  text-transform: none;
+}
+
+.routes-settings-screen .route-card__value {
+  color: #6b6259 !important;
+  font-weight: 600;
+}
+
+/* One row per icon: preview + name (click to edit) and its switch. */
+.route-endpoint {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  padding: 6px 6px 6px 8px;
+  border: 1px solid #ece4d9;
+  border-radius: 12px;
+  background: #fbf9f5;
+}
+
+.route-endpoint__edit {
+  display: flex;
+  flex: 1;
+  align-items: center;
+  gap: 10px;
+  min-width: 0;
+  padding: 4px;
+  border: 0;
+  border-radius: 8px;
+  background: transparent;
+  color: var(--ink, #171816);
+  font: inherit;
+  text-align: start;
+  cursor: pointer;
+}
+
+.route-endpoint__edit:not(:disabled):hover {
+  background: #f1ece4;
+}
+
+.route-endpoint__edit:disabled {
+  cursor: default;
+}
+
+.route-endpoint__icon {
+  display: grid;
+  place-items: center;
+  flex: none;
+  width: 32px;
+  height: 32px;
+  border-radius: 9px;
+  background: #fff;
+  box-shadow: inset 0 0 0 1px #ece4d9;
+}
+
+.route-endpoint__label {
+  flex: 1;
+  font-size: 0.88rem;
+  font-weight: 600;
+}
+
+.route-endpoint__pencil {
+  width: 14px;
+  height: 14px;
+  color: #a2998f;
+}
+
+.route-endpoint.is-off .route-endpoint__icon,
+.route-endpoint.is-off .route-endpoint__label {
+  opacity: 0.4;
+}
+
+/* Colour: quick swatches plus "more". */
+.route-swatches {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 8px;
+}
+
+.route-swatch {
+  display: grid;
+  place-items: center;
+  width: 30px;
+  height: 30px;
+  padding: 0;
+  border: 0;
+  border-radius: 50%;
+  box-shadow: inset 0 0 0 1px rgba(0, 0, 0, 0.12);
+  cursor: pointer;
+  transition: transform 0.12s ease, box-shadow 0.12s ease;
+}
+
+.route-swatch:hover {
+  transform: scale(1.08);
+}
+
+.route-swatch.is-active {
+  box-shadow: 0 0 0 2px #fff, 0 0 0 4px var(--s-accent, #e05a2b);
+}
+
+.route-swatch--more {
+  background: #fff;
+  color: #6b6259;
+  box-shadow: inset 0 0 0 1.5px #d8cbbb;
+}
+
+.route-swatch--more svg {
+  width: 15px;
+  height: 15px;
+}
+
+.route-swatch--more.is-open {
+  color: var(--s-accent, #e05a2b);
+  box-shadow: inset 0 0 0 1.5px var(--s-accent, #e05a2b);
+}
+
+.sport-cta__actions {
+  display: grid;
+  gap: 6px;
+}
+
+.sport-cta__actions .sport-cta__button {
+  justify-self: stretch;
+  padding: 10px 14px;
+  text-align: center;
+}
+
+/* Secondary action as a quiet link under the main button. */
+.sport-cta__actions .sport-cta__ghost {
+  justify-self: center;
+  padding: 4px 8px;
+  border: 0;
+  background: transparent;
+  color: #8a5a40;
+  font-size: 0.8rem;
+  text-decoration: underline;
+  text-underline-offset: 3px;
+}
