@@ -160,6 +160,8 @@ export default function TypographySection({
             </label>
             {(form.customMessage ?? "").trim() ? (
               <MessageLookControls
+                x={form.messageX}
+                y={form.messageY}
                 size={form.messageSize}
                 font={form.messageFont}
                 style={form.messageStyle}

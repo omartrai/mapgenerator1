@@ -59,6 +59,9 @@ export interface PosterForm {
   messageSize?: string;
   messageFont?: string;
   messageStyle?: string;
+  /** Message centre moved by the customer (0–1 of the poster, as text); empty = layout spot. */
+  messageX?: string;
+  messageY?: string;
   /** Personal message printed under the coordinates; empty hides it. */
   customMessage: string;
   includeCredits: boolean;

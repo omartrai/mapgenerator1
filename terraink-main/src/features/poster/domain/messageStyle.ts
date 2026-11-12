@@ -29,6 +29,28 @@ export interface MessageLook {
   size?: string;
   font?: string;
   style?: string;
+  /** Where the customer placed the message (centre, 0–1 of the poster); unset = layout spot. */
+  x?: number;
+  y?: number;
+}
+
+/** Keeps a moved message inside the poster. */
+export const MESSAGE_POINT_MIN = 0.04;
+export const MESSAGE_POINT_MAX = 0.96;
+/** A message dropped this close to the vertical middle snaps onto it. */
+const MESSAGE_SNAP = 0.015;
+
+export function clampMessagePoint(x: number, y: number): { x: number; y: number } {
+  const clamp = (value: number) => Math.min(MESSAGE_POINT_MAX, Math.max(MESSAGE_POINT_MIN, value));
+  const cx = clamp(x);
+  return { x: Math.abs(cx - 0.5) < MESSAGE_SNAP ? 0.5 : cx, y: clamp(y) };
+}
+
+/** The customer's message position, or null when it sits in the layout's spot. */
+export function customMessagePoint(look: MessageLook | undefined): { x: number; y: number } | null {
+  if (!look || typeof look.x !== "number" || typeof look.y !== "number") return null;
+  if (!Number.isFinite(look.x) || !Number.isFinite(look.y)) return null;
+  return clampMessagePoint(look.x, look.y);
 }
 
 export interface MessageType {
@@ -46,8 +68,17 @@ export function messageLookFromForm(form: {
   messageSize?: string;
   messageFont?: string;
   messageStyle?: string;
+  messageX?: string;
+  messageY?: string;
 }): MessageLook {
-  return { size: form.messageSize, font: form.messageFont, style: form.messageStyle };
+  const x = form.messageX ? Number(form.messageX) : NaN;
+  const y = form.messageY ? Number(form.messageY) : NaN;
+  return {
+    size: form.messageSize,
+    font: form.messageFont,
+    style: form.messageStyle,
+    ...(Number.isFinite(x) && Number.isFinite(y) ? { x, y } : {}),
+  };
 }
 
 export function resolveMessageType(look: MessageLook | undefined, isSport: boolean): MessageType {

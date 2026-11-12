@@ -11,6 +11,8 @@ import {
 } from "@/features/poster/domain/posterLayout";
 import type { ActivityPrint } from "@/features/poster/domain/activityPoster";
 import {
+  clampMessagePoint,
+  customMessagePoint,
   messageCenterY,
   resolveMessageType,
   type MessageLook,
@@ -51,6 +53,10 @@ interface PosterTextOverlayProps {
   activity?: ActivityPrint;
   /** Size, typeface and style of the personal message. */
   messageLook?: MessageLook;
+  /** When set, the message can be dragged; called once on drop with its new centre. */
+  onMessageMove?: (x: number, y: number) => void;
+  /** Tooltip on the movable message. */
+  moveHint?: string;
   includeCredits: boolean;
   showOverlay: boolean;
 }
@@ -116,6 +122,8 @@ export default function PosterTextOverlay({
   mapShape = "none",
   activity,
   messageLook,
+  onMessageMove,
+  moveHint,
   includeCredits,
   showOverlay,
 }: PosterTextOverlayProps) {
@@ -174,6 +182,43 @@ export default function PosterTextOverlay({
           TEXT_DIMENSION_REFERENCE_PX,
         )
       : layout.message.y;
+  // Drag to move: follow the pointer locally, save the spot on release.
+  const [dragPoint, setDragPoint] = useState<{ x: number; y: number } | null>(null);
+  const dragOffset = useRef({ x: 0, y: 0 });
+  const messagePoint = dragPoint ?? customMessagePoint(messageLook);
+  const pointerFraction = (event: React.PointerEvent) => {
+    const rect = rootRef.current!.getBoundingClientRect();
+    return {
+      x: (event.clientX - rect.left) / rect.width,
+      y: (event.clientY - rect.top) / rect.height,
+    };
+  };
+  const handleMessagePointerDown = (event: React.PointerEvent<HTMLParagraphElement>) => {
+    if (!onMessageMove || !rootRef.current || event.button > 0) return;
+    event.preventDefault();
+    event.stopPropagation();
+    const root = rootRef.current.getBoundingClientRect();
+    const box = event.currentTarget.firstElementChild?.getBoundingClientRect() ?? event.currentTarget.getBoundingClientRect();
+    const center = {
+      x: (box.left + box.width / 2 - root.left) / root.width,
+      y: (box.top + box.height / 2 - root.top) / root.height,
+    };
+    const pointer = pointerFraction(event);
+    dragOffset.current = { x: pointer.x - center.x, y: pointer.y - center.y };
+    event.currentTarget.setPointerCapture(event.pointerId);
+    setDragPoint(clampMessagePoint(center.x, center.y));
+  };
+  const handleMessagePointerMove = (event: React.PointerEvent<HTMLParagraphElement>) => {
+    if (!dragPoint) return;
+    const pointer = pointerFraction(event);
+    setDragPoint(clampMessagePoint(pointer.x - dragOffset.current.x, pointer.y - dragOffset.current.y));
+  };
+  const handleMessagePointerUp = () => {
+    if (!dragPoint) return;
+    onMessageMove?.(dragPoint.x, dragPoint.y);
+    setDragPoint(null);
+  };
+
   useEffect(() => {
     if (!messageType.family) return;
     void ensureFont(messageType.family).then(() => {
@@ -425,10 +470,23 @@ export default function PosterTextOverlay({
           ) : null}
           {textParts.message && trimmedMessage ? (
             <p
-              className="poster-message poster-line"
+              className={`poster-message poster-line${onMessageMove ? " is-movable" : ""}${dragPoint ? " is-dragging" : ""}`}
               data-fit={sport ? "" : String(Math.min(0.8, layout.maxWidth))}
+              onPointerDown={handleMessagePointerDown}
+              onPointerMove={handleMessagePointerMove}
+              onPointerUp={handleMessagePointerUp}
+              onPointerCancel={handleMessagePointerUp}
+              title={onMessageMove ? moveHint : undefined}
               style={{
-                ...slotStyle({ ...layout.message, y: messageY }),
+                ...(messagePoint
+                  ? {
+                      top: pct(messagePoint.y),
+                      left: pct(messagePoint.x),
+                      right: "auto",
+                      textAlign: "center",
+                      transform: "translate(-50%, -50%)",
+                    }
+                  : slotStyle({ ...layout.message, y: messageY })),
                 fontFamily: messageFont,
                 fontSize: messageFontSize,
                 fontStyle: messageType.italic ? "italic" : "normal",

@@ -12,6 +12,7 @@ import {
 } from "@/features/poster/domain/posterLayout";
 import type { ActivityPrint } from "@/features/poster/domain/activityPoster";
 import {
+  customMessagePoint,
   messageCenterY,
   resolveMessageType,
   type MessageLook,
@@ -211,16 +212,22 @@ export function drawPosterText(
         layout.activity ? maxTextWidth : Math.min(width * 0.8, maxTextWidth),
       );
       if (type.italic) ctx.font = `italic ${ctx.font}`;
-      const y = messageCenterY(
-        layout.message,
-        layout,
-        sizeRefPx,
-        baseRefPx,
-        shortSide / height,
-        TEXT_DIMENSION_REFERENCE_PX,
-      );
-      ctx.textAlign = layout.message.align;
-      ctx.fillText(text, width * layout.message.x, height * y);
+      const moved = customMessagePoint(messageLook);
+      if (moved) {
+        ctx.textAlign = "center";
+        ctx.fillText(text, width * moved.x, height * moved.y);
+      } else {
+        const y = messageCenterY(
+          layout.message,
+          layout,
+          sizeRefPx,
+          baseRefPx,
+          shortSide / height,
+          TEXT_DIMENSION_REFERENCE_PX,
+        );
+        ctx.textAlign = layout.message.align;
+        ctx.fillText(text, width * layout.message.x, height * y);
+      }
     }
   }
 

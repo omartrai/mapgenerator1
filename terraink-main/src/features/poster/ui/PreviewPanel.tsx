@@ -66,6 +66,13 @@ export default function PreviewPanel({ sidePanel, belowPoster }: PreviewPanelPro
   const { t } = useLanguage();
   const { state, dispatch, effectiveTheme, mapStyle, mapRef } =
     usePosterContext();
+  const handleMessageMove = useCallback(
+    (x: number, y: number) => {
+      dispatch({ type: "SET_FIELD", name: "messageX", value: x.toFixed(4) });
+      dispatch({ type: "SET_FIELD", name: "messageY", value: y.toFixed(4) });
+    },
+    [dispatch],
+  );
   const {
     form,
     selectedLocation,
@@ -489,6 +496,8 @@ export default function PreviewPanel({ sidePanel, belowPoster }: PreviewPanelPro
             showPosterText={form.showPosterText}
             message={form.customMessage}
             messageLook={messageLookFromForm(form)}
+            onMessageMove={handleMessageMove}
+            moveHint={t("style.msg.dragHint")}
             textParts={textPartsFromForm(form)}
             includeCredits={form.includeCredits}
             showOverlay={form.showMarkers}
