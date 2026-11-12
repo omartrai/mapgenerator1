@@ -578,25 +578,39 @@ export default function RoutesSection() {
 
               {isOpen && !isEditingEndpoint ? (
                 <div className="route-card__body">
-                  <label className="toggle-field">
-                    <span>{t("routes.showEndpoints")}</span>
-                    <span className="theme-switch">
-                      <input
-                        type="checkbox"
-                        checked={route.showEndpoints}
-                        onChange={(event) =>
-                          updateRoute(route.id, {
-                            showEndpoints: event.target.checked,
-                          })
-                        }
-                      />
-                      <span className="theme-switch-track" aria-hidden="true" />
-                    </span>
-                  </label>
+                  {(["start", "finish"] as const).map((kind) => {
+                    const marker = kind === "start" ? route.startMarker : route.finishMarker;
+                    const other = kind === "start" ? route.finishMarker : route.startMarker;
+                    const shown = route.showEndpoints && !marker.hidden;
+                    const otherShown = route.showEndpoints && !other.hidden;
+                    return (
+                      <label key={kind} className="toggle-field">
+                        <span>{t(kind === "start" ? "routes.showStart" : "routes.showFinish")}</span>
+                        <span className="theme-switch">
+                          <input
+                            type="checkbox"
+                            checked={shown}
+                            onChange={(event) => {
+                              const on = event.target.checked;
+                              updateRoute(route.id, {
+                                // Keep the other icon as it was shown.
+                                startMarker: { ...route.startMarker, hidden: kind === "start" ? !on : !otherShown },
+                                finishMarker: { ...route.finishMarker, hidden: kind === "finish" ? !on : !otherShown },
+                                showEndpoints: on || otherShown,
+                              });
+                            }}
+                          />
+                          <span className="theme-switch-track" aria-hidden="true" />
+                        </span>
+                      </label>
+                    );
+                  })}
 
-                  {route.showEndpoints ? (
+                  {route.showEndpoints && (!route.startMarker.hidden || !route.finishMarker.hidden) ? (
                     <div className="route-card__endpoint-rows">
-                      {(["start", "finish"] as const).map((kind) => {
+                      {(["start", "finish"] as const)
+                        .filter((kind) => !(kind === "start" ? route.startMarker : route.finishMarker).hidden)
+                        .map((kind) => {
                         const endpoint =
                           kind === "start"
                             ? route.startMarker

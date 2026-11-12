@@ -92,7 +92,7 @@ export function routeEndpointMarkerItems(routes: Route[]): MarkerItem[] {
     if (!route.visible || !route.showEndpoints) continue;
     const endpoints = routeEndpoints(route);
     if (!endpoints) continue;
-    items.push({
+    if (!route.startMarker.hidden) items.push({
       id: `${route.id}-start`,
       lat: endpoints.start.lat,
       lon: endpoints.start.lon,
@@ -100,7 +100,7 @@ export function routeEndpointMarkerItems(routes: Route[]): MarkerItem[] {
       color: route.startMarker.color,
       size: route.startMarker.size,
     });
-    items.push({
+    if (!route.finishMarker.hidden) items.push({
       id: `${route.id}-finish`,
       lat: endpoints.finish.lat,
       lon: endpoints.finish.lon,

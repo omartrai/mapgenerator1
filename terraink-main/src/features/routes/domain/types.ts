@@ -10,6 +10,8 @@ export interface RouteEndpointMarker {
   iconId: string;
   color: string;
   size: number;
+  /** Hide just this icon (start or finish); missing = shown. */
+  hidden?: boolean;
 }
 
 export interface Route {

@@ -67,7 +67,7 @@ export default function RouteEndpointsOverlay({
           return null;
         }
       };
-      const startIcon = findMarkerIcon(route.startMarker.iconId, customIcons);
+      const startIcon = route.startMarker.hidden ? null : findMarkerIcon(route.startMarker.iconId, customIcons);
       if (startIcon) {
         const p = projectPoint(endpoints.start.lat, endpoints.start.lon);
         if (p) {
@@ -81,7 +81,7 @@ export default function RouteEndpointsOverlay({
           });
         }
       }
-      const finishIcon = findMarkerIcon(route.finishMarker.iconId, customIcons);
+      const finishIcon = route.finishMarker.hidden ? null : findMarkerIcon(route.finishMarker.iconId, customIcons);
       if (finishIcon) {
         const p = projectPoint(endpoints.finish.lat, endpoints.finish.lon);
         if (p) {
