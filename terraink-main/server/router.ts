@@ -2,6 +2,7 @@ import { createHash, timingSafeEqual } from "node:crypto";
 import path from "node:path";
 import { handleUpload, type HandleUploadBody } from "@vercel/blob/client";
 import { toPublicOrder, toSummaryRow } from "../src/features/store/domain/order.js";
+import { framedPricesFromCollection } from "../src/features/store/domain/collection.js";
 import { createBlobStorage } from "./storage/blobStorage.js";
 import { createFsStorage } from "./storage/fsStorage.js";
 import { createFulfillmentProvider } from "./fulfillment/index.js";
@@ -86,6 +87,7 @@ export function createApiHandler(options: RouterOptions) {
       storage,
       createFulfillmentProvider(options.env),
       catalog ? async (id) => (await catalog.getProduct(id))?.product ?? null : undefined,
+      catalog ? async () => framedPricesFromCollection(await catalog.listProducts()) : undefined,
     );
     return service;
   };
@@ -142,6 +144,17 @@ export function createApiHandler(options: RouterOptions) {
         storage: storage?.kind ?? "unconfigured",
         adminConfigured: !!adminPassword(),
       });
+    }
+
+    // GET /api/studio-prices — framed studio prices, matched to the collection
+    if (head === "studio-prices" && rest.length === 0 && method === "GET") {
+      if (!catalog) return json(200, { framed: null });
+      try {
+        return json(200, { framed: framedPricesFromCollection(await catalog.listProducts()) }, cached);
+      } catch (error) {
+        console.warn("[urbanart] catalogue unavailable for studio prices", error);
+        return json(200, { framed: null });
+      }
     }
 
     // GET /api/collection — ready-made posters from UrbanArt

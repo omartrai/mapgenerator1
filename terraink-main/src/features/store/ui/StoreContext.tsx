@@ -7,9 +7,10 @@ import {
   useState,
   type ReactNode,
 } from "react";
-import { cartStorage } from "@/core/services";
+import { cartStorage, collectionApi } from "@/core/services";
 import {
   DEFAULT_PRODUCT,
+  applyFramedPrices,
   MAX_QUANTITY_PER_ITEM,
   computeTotals,
   type OrderTotals,
@@ -63,6 +64,20 @@ export function StoreProvider({ children }: { children: ReactNode }) {
   const [scene, setScene] = useState<StudioScene>("studio");
   const [hasStartedDesign, setHasStartedDesign] = useState(false);
   const [adminTask, setAdminTask] = useState<AdminTask | null>(null);
+  // Framed studio prices follow the collection's live prices; re-render once loaded.
+  const [pricesVersion, setPricesVersion] = useState(0);
+  useEffect(() => {
+    let alive = true;
+    collectionApi
+      .studioPrices()
+      .then(({ framed }) => {
+        if (alive && applyFramedPrices(framed)) setPricesVersion((version) => version + 1);
+      })
+      .catch(() => undefined);
+    return () => {
+      alive = false;
+    };
+  }, []);
 
   useEffect(() => {
     cartStorage.saveCart(cart);
@@ -133,6 +148,7 @@ export function StoreProvider({ children }: { children: ReactNode }) {
       setAdminTask,
     }),
     [
+      pricesVersion,
       cart,
       product,
       setProduct,

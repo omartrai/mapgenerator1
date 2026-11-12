@@ -160,6 +160,42 @@ export function formatRatio(sizeId: string, orientation: Orientation): string {
   return orientation === "landscape" ? `${long}:${short}` : `${short}:${long}`;
 }
 
+/** Framed prices by size and depth (centimes), e.g. from the live partner catalogue. */
+export type FramedPriceTable = Record<string, Partial<Record<FrameDepth, { plain: number; mat: number }>>>;
+
+/** The prices built into the code, kept so live prices can be re-applied cleanly. */
+const BUILT_IN_FRAMED = new Map(
+  PRINT_SIZES.map((size) => [size.id, JSON.parse(JSON.stringify(size.framed)) as PrintSize["framed"]]),
+);
+
+/**
+ * Makes the studio's framed prices follow a price table (the ready-made
+ * collection's prices for the same size, depth and passe-partout). Sizes or
+ * depths missing from the table keep their built-in prices. Returns true when
+ * anything changed.
+ */
+export function applyFramedPrices(table: FramedPriceTable | null | undefined): boolean {
+  let changed = false;
+  for (const size of PRINT_SIZES) {
+    const builtIn = BUILT_IN_FRAMED.get(size.id)!;
+    for (const depth of FRAME_DEPTHS) {
+      const live = table?.[size.id]?.[depth];
+      const valid =
+        live &&
+        Number.isInteger(live.plain) &&
+        Number.isInteger(live.mat) &&
+        live.plain > size.price &&
+        live.mat >= live.plain;
+      const next = valid ? { plain: live.plain, mat: live.mat } : builtIn[depth];
+      if (size.framed[depth].plain !== next.plain || size.framed[depth].mat !== next.mat) {
+        size.framed[depth] = { ...next };
+        changed = true;
+      }
+    }
+  }
+  return changed;
+}
+
 export function unitPrice(options: ProductOptions): number {
   const size = getPrintSize(options.sizeId);
   if (options.frameId === "none") return size.price;

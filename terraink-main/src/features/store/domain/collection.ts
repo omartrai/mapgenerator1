@@ -1,4 +1,4 @@
-import type { FrameId } from "./catalog.js";
+import type { FrameDepth, FrameId, FramedPriceTable } from "./catalog.js";
 
 /**
  * Ready-made posters from the print partner's catalogue (UrbanArt), as shown
@@ -209,4 +209,41 @@ export function categoriesFor(products: CollectionProduct[]): ShopCategory[] {
     }
   }
   return result;
+}
+
+/**
+ * Framed prices per size / depth / passe-partout as the collection sells them:
+ * the most common price across posters (lowest on a tie), so one odd listing
+ * does not move every studio price.
+ */
+export function framedPricesFromCollection(products: CollectionProduct[]): FramedPriceTable {
+  const counts = new Map<string, Map<number, number>>();
+  for (const product of products) {
+    for (const variant of product.variants) {
+      const depth: FrameDepth | null =
+        variant.frameDepthCm === 1.5 ? "1.5" : variant.frameDepthCm === 3 ? "3" : null;
+      if (!depth || !Number.isInteger(variant.price) || variant.price <= 0) continue;
+      const key = `${variant.size}|${depth}|${variant.withMat ? "mat" : "plain"}`;
+      const prices = counts.get(key) ?? new Map<number, number>();
+      prices.set(variant.price, (prices.get(variant.price) ?? 0) + 1);
+      counts.set(key, prices);
+    }
+  }
+  const pick = (key: string) => {
+    const prices = counts.get(key);
+    if (!prices) return null;
+    return [...prices.entries()].sort((a, b) => b[1] - a[1] || a[0] - b[0])[0][0];
+  };
+  const table: FramedPriceTable = {};
+  const sizes = new Set([...counts.keys()].map((key) => key.split("|")[0]));
+  for (const size of sizes) {
+    for (const depth of ["1.5", "3"] as FrameDepth[]) {
+      const plain = pick(`${size}|${depth}|plain`);
+      const mat = pick(`${size}|${depth}|mat`);
+      if (plain !== null && mat !== null) {
+        table[size] = { ...table[size], [depth]: { plain, mat } };
+      }
+    }
+  }
+  return table;
 }

@@ -5,8 +5,10 @@ import {
   computeTotals,
   describeProduct,
   isValidProduct,
+  applyFramedPrices,
   resolveDimensions,
   unitPrice,
+  type FramedPriceTable,
 } from "../src/features/store/domain/catalog.js";
 import { isPosterDesign } from "../src/features/store/domain/design.js";
 import {
@@ -135,6 +137,7 @@ export function createOrderService(
   storage: IOrderStorage,
   fulfillment: IFulfillmentProvider,
   findCollectionProduct?: CollectionLookup,
+  loadFramedPrices?: () => Promise<FramedPriceTable | null>,
 ) {
   async function load(number: string): Promise<Order> {
     const order = await storage.getJson<Order>(orderPath(assertOrderNumber(number)));
@@ -154,6 +157,14 @@ export function createOrderService(
     load,
 
     async create(input: CreateOrderInput): Promise<Order> {
+      // Studio frames are priced like the collection; use today's prices.
+      if (loadFramedPrices) {
+        try {
+          applyFramedPrices(await loadFramedPrices());
+        } catch (error) {
+          console.warn("[orders] live frame prices unavailable, using the built-in ones", error);
+        }
+      }
       if (!input || typeof input !== "object") throw new HttpError(400, "Invalid order.");
       if (input.website) throw new HttpError(400, "Invalid order.");
 

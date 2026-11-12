@@ -5,6 +5,7 @@ import type {
   PublicOrder,
 } from "../domain/order";
 import type { CollectionMockup, CollectionProduct } from "../domain/collection";
+import type { FramedPriceTable } from "../domain/catalog";
 import type { Review, ReviewInput, ReviewStatus, ReviewSummary } from "../domain/review";
 
 const API_BASE = "/api";
@@ -48,6 +49,7 @@ async function request<T>(path: string, init: RequestInit = {}): Promise<T> {
 
 export const collectionApi = {
   list: () => request<{ products: CollectionProduct[]; configured: boolean }>("/collection"),
+  studioPrices: () => request<{ framed: FramedPriceTable | null }>("/studio-prices"),
   get: (id: number) =>
     request<{ product: CollectionProduct; mockups: CollectionMockup[] }>(`/collection/${id}`),
 };
