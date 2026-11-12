@@ -2419,3 +2419,90 @@
 .sport-fields {
   scroll-margin-top: 16px;
 }
+
+/* ── Collapsible groups in settings panels (shared/ui/PanelGroup) ── */
+.panel-group {
+  margin: 0 0 10px;
+  border: 1px solid #e5ddd2;
+  border-radius: 14px;
+  background: #fff;
+  transition: border-color 0.15s ease, box-shadow 0.15s ease;
+}
+
+.panel-group.is-open {
+  border-color: color-mix(in srgb, var(--s-accent, #e05a2b) 40%, #e5ddd2);
+  box-shadow: 0 6px 18px rgba(40, 30, 20, 0.06);
+}
+
+.panel-group__head {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  width: 100%;
+  padding: 14px 16px;
+  border: 0;
+  background: transparent;
+  color: inherit;
+  font: inherit;
+  text-align: start;
+  cursor: pointer;
+}
+
+.panel-group__text {
+  display: grid;
+  flex: 1;
+  min-width: 0;
+  gap: 2px;
+}
+
+.panel-group__title {
+  font-size: 0.95rem;
+  font-weight: 700;
+}
+
+.panel-group__summary {
+  overflow: hidden;
+  color: var(--s-muted, #6b6259);
+  font-size: 0.82rem;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+.panel-group__chevron {
+  flex: none;
+  width: 18px;
+  height: 18px;
+  color: var(--s-muted, #6b6259);
+  transition: transform 0.2s ease;
+}
+
+.panel-group.is-open .panel-group__chevron {
+  transform: rotate(180deg);
+  color: var(--s-accent, #e05a2b);
+}
+
+.panel-group__body {
+  display: grid;
+  gap: 12px;
+  padding: 0 16px 16px;
+}
+
+/* Inside a group the card is the frame: drop the inner box and title. */
+.panel-group .sport-fields {
+  margin: 0;
+  padding: 0;
+  border: 0;
+}
+
+.panel-group .sport-fields > legend {
+  display: none;
+}
+
+.panel-group .layout-picker {
+  margin: 0;
+}
+
+.panel-group .layout-picker legend {
+  color: var(--s-muted, #6b6259);
+  font-size: 0.8rem;
+}
