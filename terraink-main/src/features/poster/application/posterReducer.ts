@@ -55,6 +55,13 @@ export interface PosterForm {
   showCountry?: boolean;
   showCoordinates?: boolean;
   showMessage?: boolean;
+  /** "map" (default) or "sky": a star chart of the night sky over the place. */
+  posterKind?: string;
+  /** Night-sky poster: local date and time at the place, "YYYY-MM-DDTHH:mm". */
+  skyTime?: string;
+  skyLines?: boolean;
+  skyGrid?: boolean;
+  skyMilkyWay?: boolean;
   /** Personal message look: size s|m|l|xl, font id, style id (missing = original). */
   messageSize?: string;
   messageFont?: string;

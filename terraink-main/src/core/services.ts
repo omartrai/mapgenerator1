@@ -68,3 +68,14 @@ export { drawRoutesOnCanvas } from "@/features/routes/infrastructure/rendering";
 
 export { cartStorage } from "@/features/store/infrastructure/cartStorage";
 export { ordersApi, adminApi, collectionApi, reviewsApi, trackingApi, ApiError } from "@/features/store/infrastructure/ordersApi";
+
+/* ── Night sky ── */
+
+export {
+  drawSkyChart,
+  loadSkyCatalog,
+  renderSkyCanvas,
+  skyInstant,
+  timeZoneAt,
+} from "@/features/sky/infrastructure/skyRenderer";
+export type { SkyCatalog, SkyChartOptions } from "@/features/sky/infrastructure/skyRenderer";

@@ -93,6 +93,8 @@ export default function StorefrontPage() {
 
         <ProductGrid choice={choice} />
 
+        <SkyPromo />
+
         <CollectionSection />
 
         <Configurator choice={choice} onChange={setChoice} />
@@ -181,6 +183,29 @@ function HeroSlider() {
           ))}
         </div>
       </div>
+    </section>
+  );
+}
+
+/** Night-sky posters: a dark band that opens the studio in sky mode. */
+function SkyPromo() {
+  const { t } = useStoreText();
+  return (
+    <section className="home-block sky-promo" aria-labelledby="sky-promo-title">
+      <div className="sky-promo__copy">
+        <p className="sky-promo__eyebrow">{t("skyPromo.eyebrow")}</p>
+        <h2 id="sky-promo-title" className="sky-promo__title">{t("skyPromo.title")}</h2>
+        <p className="sky-promo__lede">{t("skyPromo.lede")}</p>
+        <ul className="sky-promo__points">
+          <li>{t("skyPromo.p1")}</li>
+          <li>{t("skyPromo.p2")}</li>
+          <li>{t("skyPromo.p3")}</li>
+        </ul>
+        <Link to="/create?type=sky" className="store-btn store-btn--primary store-btn--lg">
+          {t("skyPromo.cta")} <LuArrowRight className="rtl-flip" aria-hidden="true" />
+        </Link>
+      </div>
+      <img className="sky-promo__poster" src="/assets/sky-poster.webp" alt={t("skyPromo.alt")} loading="lazy" />
     </section>
   );
 }

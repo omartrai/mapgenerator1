@@ -4,6 +4,8 @@ import type { ExportFormat } from "@/features/export/domain/types";
 import { usePrintFiles } from "../application/usePrintFiles";
 import { describeProduct } from "../domain/catalog";
 import { useStore, type AdminTask } from "./StoreContext";
+import { usePosterContext } from "@/features/poster/ui/PosterContext";
+import { isSkyPoster } from "@/features/sky/application/skyOptions";
 
 const FORMATS: ExportFormat[] = ["png", "pdf", "svg"];
 
@@ -12,6 +14,8 @@ export default function AdminExportPanel({ task, isMobile }: { task: AdminTask; 
   const { product } = useStore();
   const { generate, status, error, labels } = usePrintFiles(task.orderNumber, task.itemId);
   const busy = Object.values(status).some((value) => value === "rendering");
+  const { state } = usePosterContext();
+  const formats = isSkyPoster(state.form) ? FORMATS.filter((format) => format !== "svg") : FORMATS;
 
   return (
     <aside className={`studio-buy studio-buy--admin${isMobile ? " is-mobile" : ""}`} aria-label="Print files">
@@ -23,7 +27,7 @@ export default function AdminExportPanel({ task, isMobile }: { task: AdminTask; 
         print size and downloads it to this computer. Nothing is stored online.
       </p>
       <div className="admin-export__buttons">
-        {FORMATS.map((format) => {
+        {formats.map((format) => {
           const state = status[format] ?? "idle";
           return (
             <button

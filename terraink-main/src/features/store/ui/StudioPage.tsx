@@ -10,6 +10,7 @@ import AddedToCartDialog from "./AddedToCartDialog";
 import AdminExportPanel from "./AdminExportPanel";
 import PurchasePanel from "./PurchasePanel";
 import RoomDecor from "./RoomDecor";
+import { useSkyPoster } from "@/features/sky/application/useSkyPoster";
 import SizeFrameSection from "./SizeFrameSection";
 import StoreHeader from "./StoreHeader";
 import StudioStepFooter from "./StudioStepFooter";
@@ -40,6 +41,12 @@ export default function StudioPage() {
       !search.get("place"),
   );
   useProductSync(store.product);
+  const skyPoster = useSkyPoster();
+  // /create?type=sky starts a night-sky poster.
+  useEffect(() => {
+    if (search.get("type") === "sky") skyPoster.setKind("sky");
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, []);
 
   const searchKey = search.toString();
   const [showStartup] = useState(
@@ -197,6 +204,7 @@ export default function StudioPage() {
         "data-scene": store.scene,
         "data-orientation": store.product.orientation,
         "data-depth": store.product.frameId === "none" ? "none" : frameDepthOf(store.product),
+        "data-poster-kind": skyPoster.isSky ? "sky" : "map",
       }}
       style={
         {

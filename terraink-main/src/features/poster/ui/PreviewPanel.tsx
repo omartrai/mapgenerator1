@@ -19,6 +19,10 @@ import GradientFades from "./GradientFades";
 import { effectiveFades, getPosterLayout } from "@/features/poster/domain/posterLayout";
 import { activityFromForm } from "@/features/poster/domain/activityPoster";
 import { messageLookFromForm } from "@/features/poster/domain/messageStyle";
+import SkyPreview from "@/features/sky/ui/SkyPreview";
+import { isSkyPoster } from "@/features/sky/application/skyOptions";
+import { skyCoordsLabel } from "@/features/sky/application/useSkyPoster";
+import { formatCoordinates } from "@/shared/geo/posterBounds";
 import PosterTextOverlay from "./PosterTextOverlay";
 import SettingsInfo from "./SettingsInfo";
 import MapPrimaryControls from "./MapPrimaryControls";
@@ -63,9 +67,10 @@ interface PreviewPanelProps {
 }
 
 export default function PreviewPanel({ sidePanel, belowPoster }: PreviewPanelProps = {}) {
-  const { t } = useLanguage();
+  const { t, language } = useLanguage();
   const { state, dispatch, effectiveTheme, mapStyle, mapRef } =
     usePosterContext();
+  const sky = isSkyPoster(state.form);
   const handleMessageMove = useCallback(
     (x: number, y: number) => {
       dispatch({ type: "SET_FIELD", name: "messageX", value: x.toFixed(4) });
@@ -452,23 +457,24 @@ export default function PreviewPanel({ sidePanel, belowPoster }: PreviewPanelPro
             onMove={handleMove}
             onMoveEnd={handleMoveEnd}
           />
-          {form.showMarkers ? (
+          {sky ? <SkyPreview /> : null}
+          {form.showMarkers && !sky ? (
             <GradientFades color={effectiveTheme.ui.bg} fades={effectiveFades(getPosterLayout(form.posterLayout), form.mapShape)} />
           ) : null}
           <RouteOverlay
-            routes={state.routes}
+            routes={sky ? [] : state.routes}
             mapRef={mapRef}
             visible={form.showRoutes}
             overzoomScale={overzoomScale}
           />
           <RouteEndpointsOverlay
-            routes={state.routes}
+            routes={sky ? [] : state.routes}
             customIcons={state.customMarkerIcons}
             mapRef={mapRef}
             visible={form.showRoutes}
             overzoomScale={overzoomScale}
           />
-          {hasVisibleMarkers ? (
+          {hasVisibleMarkers && !sky ? (
             <MarkerOverlay
               markers={state.markers}
               customIcons={state.customMarkerIcons}
@@ -491,15 +497,17 @@ export default function PreviewPanel({ sidePanel, belowPoster }: PreviewPanelPro
             landColor={effectiveTheme.map.land}
             paperColor={effectiveTheme.ui.bg}
             layout={form.posterLayout}
-            mapShape={form.mapShape}
+            mapShape={sky ? "none" : form.mapShape}
             activity={activityFromForm(form as unknown as Record<string, unknown>, state.routes)}
             showPosterText={form.showPosterText}
             message={form.customMessage}
             messageLook={messageLookFromForm(form)}
+            coordsLabel={sky ? skyCoordsLabel(form.skyTime ?? "", formatCoordinates(formLat, formLon), language) : undefined}
+            mapCredit={!sky}
             onMessageMove={handleMessageMove}
             moveHint={t("style.msg.dragHint")}
             textParts={textPartsFromForm(form)}
-            includeCredits={form.includeCredits}
+            includeCredits={form.includeCredits && !sky}
             showOverlay={form.showMarkers}
           />
 

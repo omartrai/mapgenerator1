@@ -4720,3 +4720,240 @@
   justify-content: space-between;
   gap: 8px;
 }
+
+/* ── Night-sky poster ── */
+.sky-preview {
+  position: absolute;
+  inset: 0;
+  z-index: 1;
+  width: 100%;
+  height: 100%;
+  pointer-events: none;
+}
+
+/* Map-only tools are hidden on a night-sky poster. */
+.app-shell[data-poster-kind="sky"] :is(
+    .desktop-nav-tab--layers,
+    .desktop-nav-tab--markers,
+    .desktop-nav-tab--routes,
+    .mobile-nav-tab--layers,
+    .mobile-nav-tab--markers,
+    .mobile-nav-tab--routes
+  ),
+.app-shell[data-poster-kind="sky"] .map-controls {
+  display: none !important;
+}
+
+.poster-kind {
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+  margin-bottom: 18px;
+}
+
+.poster-kind__switch {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 8px;
+}
+
+.poster-kind__opt {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  min-width: 0;
+  padding: 10px 12px;
+  border: 1px solid var(--s-line, #e7dfd3);
+  border-radius: 12px;
+  background: #fff;
+  color: var(--s-ink, #1f2a26);
+  text-align: start;
+  cursor: pointer;
+}
+
+.poster-kind__opt svg {
+  flex: none;
+  width: 20px;
+  height: 20px;
+  color: var(--s-muted, #6b6259);
+}
+
+.poster-kind__opt span {
+  display: flex;
+  flex-direction: column;
+  min-width: 0;
+}
+
+.poster-kind__opt strong {
+  font-size: 0.86rem;
+}
+
+.poster-kind__opt small {
+  overflow: hidden;
+  color: var(--s-muted, #6b6259);
+  font-size: 0.72rem;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+.poster-kind__opt.is-active {
+  border-color: var(--s-accent, #e8622c);
+  box-shadow: 0 0 0 1px var(--s-accent, #e8622c);
+}
+
+.poster-kind__opt.is-active svg {
+  color: var(--s-accent, #e8622c);
+}
+
+.sky-moment {
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+  padding: 12px;
+  border-radius: 12px;
+  background: #1c2433;
+  color: #f3efe6;
+}
+
+.sky-moment__title {
+  margin: 0;
+  font-size: 0.88rem;
+  font-weight: 700;
+}
+
+.sky-moment__row {
+  display: grid;
+  grid-template-columns: 1.4fr 1fr;
+  gap: 8px;
+}
+
+.sky-moment__row label {
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
+  font-size: 0.74rem;
+  font-weight: 600;
+  opacity: 0.9;
+}
+
+.sky-moment__row input {
+  min-width: 0;
+  color: var(--s-ink, #1f2a26);
+}
+
+.sky-moment__hint {
+  margin: 0;
+  font-size: 0.74rem;
+  line-height: 1.35;
+  opacity: 0.8;
+}
+
+.sky-options {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 6px 14px;
+}
+
+.sky-option {
+  display: inline-flex !important;
+  flex-direction: row !important;
+  align-items: center;
+  gap: 6px;
+  font-size: 0.8rem;
+  cursor: pointer;
+}
+
+.sky-option input {
+  width: 16px;
+  height: 16px;
+  accent-color: var(--s-accent, #e8622c);
+}
+
+.app-shell .sky-moment label,
+.app-shell .sky-moment label span,
+.app-shell .sky-moment .sky-option span {
+  color: #f3efe6 !important;
+}
+
+/* ── Homepage: night-sky promo ── */
+.sky-promo {
+  display: grid;
+  grid-template-columns: minmax(0, 1.1fr) minmax(0, 0.9fr);
+  align-items: center;
+  gap: clamp(24px, 5vw, 64px);
+  margin-block: 48px;
+  padding: clamp(28px, 5vw, 56px);
+  border-radius: 28px;
+  background:
+    radial-gradient(circle at 80% 30%, rgba(214, 170, 72, 0.18), transparent 45%),
+    linear-gradient(160deg, #0f1a2e, #0a1222);
+  color: #f3efe6;
+}
+
+.sky-promo__eyebrow {
+  margin: 0 0 10px;
+  color: #d6aa48;
+  font-size: 0.8rem;
+  font-weight: 700;
+  letter-spacing: 0.12em;
+  text-transform: uppercase;
+}
+
+.sky-promo__title {
+  margin: 0 0 12px;
+  color: #fff;
+  font-size: clamp(1.8rem, 4vw, 2.8rem);
+  line-height: 1.08;
+  letter-spacing: -0.02em;
+}
+
+.sky-promo__lede {
+  margin: 0 0 16px;
+  color: rgba(243, 239, 230, 0.82);
+  font-size: 1.02rem;
+  line-height: 1.6;
+}
+
+.sky-promo__points {
+  margin: 0 0 24px;
+  padding: 0;
+  list-style: none;
+}
+
+.sky-promo__points li {
+  position: relative;
+  padding: 4px 0 4px 22px;
+  color: rgba(243, 239, 230, 0.9);
+}
+
+.sky-promo__points li::before {
+  content: "✦";
+  position: absolute;
+  inset-inline-start: 0;
+  color: #d6aa48;
+}
+
+.sky-promo__poster {
+  justify-self: center;
+  width: min(100%, 340px);
+  border-radius: 4px;
+  box-shadow: 0 30px 60px rgba(0, 0, 0, 0.45), 0 0 0 10px #f6f1e7;
+  transform: rotate(2deg);
+}
+
+@media (max-width: 760px) {
+  .sky-promo {
+    grid-template-columns: 1fr;
+    margin-inline: 16px;
+    border-radius: 22px;
+  }
+
+  .sky-promo__poster {
+    width: min(78%, 280px);
+  }
+}
+
+.store-page .sky-promo .sky-promo__title {
+  margin: 0 0 14px !important;
+  color: #fff !important;
+}

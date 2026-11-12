@@ -35,6 +35,10 @@ export interface ExportOptions {
   activity?: import("./activityPoster").ActivityPrint;
   /** Size, typeface and style of the personal message. */
   messageLook?: import("./messageStyle").MessageLook;
+  /** Text for the coordinates line instead of the coordinates. */
+  coordsLabel?: string;
+  /** Print the OpenStreetMap credit (default true). */
+  mapCredit?: boolean;
   showOverlay?: boolean;
   includeCredits?: boolean;
   markers?: MarkerItem[];

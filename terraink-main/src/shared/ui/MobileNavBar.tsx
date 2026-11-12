@@ -65,7 +65,7 @@ export default function MobileNavBar({
                 <button
                   key={id}
                   type="button"
-                  className={`mobile-nav-tab${isActive ? " is-active" : ""}`}
+                  className={`mobile-nav-tab mobile-nav-tab--${id}${isActive ? " is-active" : ""}`}
                   onClick={() => onTabChange(id)}
                   aria-current={!isLocationTab && activeTab === id ? "page" : undefined}
                   aria-pressed={isLocationTab ? isLocationVisible : undefined}

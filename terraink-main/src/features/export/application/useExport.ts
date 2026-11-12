@@ -7,6 +7,11 @@ import { messageLookFromForm, resolveMessageType } from "@/features/poster/domai
 import { localStorageCache } from "@/core/cache/localStorageCache";
 import type { ExportFormat } from "@/features/export/domain/types";
 import { captureMapAsCanvas } from "@/features/export/infrastructure/mapExporter";
+import { renderSkyCanvas } from "@/core/services";
+import { isSkyPoster, skyOptionsFromForm } from "@/features/sky/application/skyOptions";
+import { skyCoordsLabel } from "@/features/sky/application/useSkyPoster";
+import { formatCoordinates } from "@/shared/geo/posterBounds";
+import { useLanguage } from "@/shared/i18n/LanguageContext";
 import { compositeExport } from "@/features/poster/infrastructure/renderer";
 import { resolveCanvasSize } from "@/features/poster/infrastructure/renderer/canvas";
 import {
@@ -102,6 +107,7 @@ function writePosterExportCount(nextCount: number): void {
 export function useExport() {
   const { state, dispatch, effectiveTheme, mapRef } = usePosterContext();
   const { form } = state;
+  const { language } = useLanguage();
   const hasVisibleMarkers = form.showMarkers && state.markers.length > 0;
   const visibleRoutes = useMemo(
     () =>
@@ -153,13 +159,24 @@ export function useExport() {
       const lat = Number(form.latitude) || 0;
       const lon = Number(form.longitude) || 0;
 
+      // Night-sky poster: the star chart replaces the map; no markers or routes.
+      const sky = isSkyPoster(form);
       const {
         canvas: mapCanvas,
         markerProjection,
         markerScaleX,
         markerScaleY,
         markerSizeScale,
-      } = await captureMapAsCanvas(map, width, height);
+      } = sky
+        ? {
+            canvas: await renderSkyCanvas(width, height, skyOptionsFromForm(form, effectiveTheme, width, height)),
+            markerProjection: undefined,
+            markerScaleX: undefined,
+            markerScaleY: undefined,
+            markerSizeScale: undefined,
+          }
+        : await captureMapAsCanvas(map, width, height);
+      const withOverlays = hasVisibleOverlays && !sky;
 
       const { canvas } = await compositeExport(mapCanvas, {
         theme: effectiveTheme,
@@ -170,23 +187,22 @@ export function useExport() {
         displayCountry: form.displayCountry || "",
         fontFamily: form.fontFamily.trim(),
         showPosterText: form.showPosterText,
-        showOverlay: form.showMarkers,
-        includeCredits: form.includeCredits,
+        showOverlay: form.showMarkers && !sky,
+        includeCredits: form.includeCredits && !sky,
         customMessage: form.customMessage || "",
         textParts: textPartsFromForm(form),
         posterLayout: form.posterLayout,
-        mapShape: form.mapShape,
+        mapShape: sky ? "none" : form.mapShape,
         activity: activityFromForm(form as unknown as Record<string, unknown>, state.routes),
         messageLook: messageLookFromForm(form),
-        markers: hasVisibleMarkers ? state.markers : [],
-        markerIcons: hasVisibleOverlays
-          ? getAllMarkerIcons(state.customMarkerIcons)
-          : [],
-        markerProjection: hasVisibleOverlays ? markerProjection : undefined,
-        markerScaleX: hasVisibleOverlays ? markerScaleX : undefined,
-        markerScaleY: hasVisibleOverlays ? markerScaleY : undefined,
-        markerSizeScale: hasVisibleOverlays ? markerSizeScale : undefined,
-        routes: visibleRoutes,
+        ...(sky ? { mapCredit: false, coordsLabel: skyCoordsLabel(form.skyTime ?? "", formatCoordinates(lat, lon), language) } : {}),
+        markers: hasVisibleMarkers && !sky ? state.markers : [],
+        markerIcons: withOverlays ? getAllMarkerIcons(state.customMarkerIcons) : [],
+        markerProjection: withOverlays ? markerProjection : undefined,
+        markerScaleX: withOverlays ? markerScaleX : undefined,
+        markerScaleY: withOverlays ? markerScaleY : undefined,
+        markerSizeScale: withOverlays ? markerSizeScale : undefined,
+        routes: sky ? [] : visibleRoutes,
       });
       return canvas;
     },
@@ -200,6 +216,7 @@ export function useExport() {
       state.routes,
       state.markers,
       state.customMarkerIcons,
+      language,
     ],
   );
 
@@ -227,6 +244,9 @@ export function useExport() {
         format,
       );
 
+      if (format === "svg" && isSkyPoster(form)) {
+        throw new Error("SVG is not available for night-sky posters — use PNG or PDF.");
+      }
       if (format === "svg") {
         if (form.showPosterText && form.fontFamily.trim()) {
           await ensureFont(form.fontFamily.trim());

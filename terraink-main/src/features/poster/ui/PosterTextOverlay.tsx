@@ -57,6 +57,10 @@ interface PosterTextOverlayProps {
   onMessageMove?: (x: number, y: number) => void;
   /** Tooltip on the movable message. */
   moveHint?: string;
+  /** Text for the coordinates line instead of the coordinates. */
+  coordsLabel?: string;
+  /** The OpenStreetMap credit; off for posters without map data (night sky). */
+  mapCredit?: boolean;
   includeCredits: boolean;
   showOverlay: boolean;
 }
@@ -124,6 +128,8 @@ export default function PosterTextOverlay({
   messageLook,
   onMessageMove,
   moveHint,
+  coordsLabel,
+  mapCredit = true,
   includeCredits,
   showOverlay,
 }: PosterTextOverlayProps) {
@@ -465,7 +471,7 @@ export default function PosterTextOverlay({
               className="poster-coords poster-line"
               style={{ ...slotStyle(layout.coords), fontFamily: bodyFont, fontSize: coordsFontSize }}
             >
-              {formatCoordinates(lat, lon)}
+              {coordsLabel || formatCoordinates(lat, lon)}
             </p>
           ) : null}
           {textParts.message && trimmedMessage ? (
@@ -499,6 +505,7 @@ export default function PosterTextOverlay({
         </>
       )}
 
+      {mapCredit ? (
       <span
         className="poster-attribution"
         style={{
@@ -512,6 +519,7 @@ export default function PosterTextOverlay({
       >
         &copy; OpenStreetMap contributors
       </span>
+      ) : null}
     </div>
   );
 }

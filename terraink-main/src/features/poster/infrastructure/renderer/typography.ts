@@ -71,6 +71,10 @@ export function drawPosterText(
   mapShape: string = "none",
   activity?: ActivityPrint,
   messageLook?: MessageLook,
+  /** Replaces the coordinates line (e.g. date · time · coordinates on a sky poster). */
+  coordsLabel?: string,
+  /** The OpenStreetMap credit; off for posters without map data (night sky). */
+  mapCredit: boolean = true,
 ): void {
   const layout = getPosterLayout(layoutId);
   const themeText = theme.ui?.text || "#111111";
@@ -192,7 +196,7 @@ export function drawPosterText(
     if (textParts.coordinates && !layout.activity) {
       ctx.globalAlpha = 0.75;
       ctx.font = `400 ${coordinateFontSize}px ${bodyFontFamily}`;
-      ctx.fillText(formatCoordinates(center.lat, center.lon), ...at(layout.coords));
+      ctx.fillText(coordsLabel || formatCoordinates(center.lat, center.lon), ...at(layout.coords));
       ctx.globalAlpha = 1;
     }
 
@@ -231,6 +235,7 @@ export function drawPosterText(
     }
   }
 
+  if (!mapCredit) return;
   ctx.fillStyle = layout.band || layout.border || mask ? themeText : attributionColor;
   ctx.globalAlpha = attributionAlpha;
   ctx.textAlign = "right";

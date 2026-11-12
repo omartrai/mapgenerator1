@@ -9,6 +9,7 @@ import {
 } from "./constants";
 import { MyLocationIcon } from "@/shared/ui/Icons";
 import { useLanguage } from "@/shared/i18n/LanguageContext";
+import PosterKindPicker from "@/features/sky/ui/PosterKindPicker";
 
 interface LocationSectionProps {
   form: PosterForm;
@@ -46,6 +47,7 @@ export default function LocationSection({
 
   return (
     <section className="panel-block">
+      <PosterKindPicker />
       <h2>{t("nav.location")}</h2>
       <label>
         {t("nav.location")}
