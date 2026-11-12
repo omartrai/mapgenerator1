@@ -39,7 +39,9 @@ export default function PurchasePanel({ isMobile }: { isMobile: boolean }) {
   const { addToCart, isAdding, error, isEditing } = useAddToCart();
 
   const { t, money, sizeLabel, shapeName, frameLabel, depthLabel, language } = useStoreText();
-  const [step, setStep] = useState(1);
+  // Starts as a summary (format, frame, finishing): the full choices live
+  // in the "Format & cadre" tab; "Modifier" opens one step here.
+  const [step, setStep] = useState<number | null>(null);
   const price = unitPrice(product);
   const title = (state.form.displayCity || state.form.location || t("buy.yourMap")).trim();
   const buttonLabel = isEditing ? t("buy.update") : t("buy.add");

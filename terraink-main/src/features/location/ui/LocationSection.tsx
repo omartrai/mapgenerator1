@@ -100,6 +100,8 @@ export default function LocationSection({
           />
         </div>
       </label>
+      <details className="advanced-coords">
+        <summary>{t("location.coordsToggle")}</summary>
       <div className="field-grid keep-two-mobile">
         <label>
           {t("location.latitude")}
@@ -122,6 +124,7 @@ export default function LocationSection({
           />
         </label>
       </div>
+      </details>
     </section>
   );
 }

@@ -42,3 +42,15 @@ export function revealAfterTabChange(selector: string | undefined): void {
   };
   window.setTimeout(attempt, 120);
 }
+
+const CLOSE_EVENT = "noria:close-settings";
+
+/** Asks the shell to close the mobile settings drawer (desktop: no-op). */
+export function closeSettingsPanel(): void {
+  window.dispatchEvent(new Event(CLOSE_EVENT));
+}
+
+export function onCloseSettingsPanel(handler: () => void): () => void {
+  window.addEventListener(CLOSE_EVENT, handler);
+  return () => window.removeEventListener(CLOSE_EVENT, handler);
+}

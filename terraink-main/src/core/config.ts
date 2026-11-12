@@ -33,11 +33,11 @@ export const DEFAULT_CONTAINER_PX = 600;
 /** Duration (ms) for flyTo animation when selecting a location. */
 export const FLY_TO_DURATION_MS = 1800;
 
-/** Hanover, Germany — default fallback when geolocation is denied. */
-export const DEFAULT_LAT = 52.3759;
-export const DEFAULT_LON = 9.732;
-export const DEFAULT_CITY = "Hanover";
-export const DEFAULT_COUNTRY = "Germany";
+/** Casablanca, Morocco — default place (the shop's home market). */
+export const DEFAULT_LAT = 33.5731;
+export const DEFAULT_LON = -7.5898;
+export const DEFAULT_CITY = "Casablanca";
+export const DEFAULT_COUNTRY = "Maroc";
 
 /**
  * The sidebar ad in the poster preview panel is OFF unless

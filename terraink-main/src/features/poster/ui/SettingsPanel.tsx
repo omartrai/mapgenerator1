@@ -60,12 +60,15 @@ export default function SettingsPanel({
   mobileTab,
   sizeSection,
   header,
+  footer,
 }: {
   mobileTab?: MobileTab;
   /** Product size & frame picker supplied by the store (replaces "Layout"). */
   sizeSection?: React.ReactNode;
   /** Guidance shown above the sections (e.g. the studio step header). */
   header?: React.ReactNode;
+  /** Shown after the sections (e.g. previous / next step buttons). */
+  footer?: React.ReactNode;
 }) {
   const { t } = useLanguage();
   const { state, dispatch, mapRef, selectedTheme } = usePosterContext();
@@ -323,6 +326,7 @@ export default function SettingsPanel({
       </div>
 
       {!isAuxEditorActive && state.error ? <p className="error">{state.error}</p> : null}
+      {footer}
     </form>
   );
 }

@@ -2986,3 +2986,196 @@
 .layout-thumb--mini .layout-thumb__sub {
   height: 1px;
 }
+
+/* ── Step navigation under each studio tab ── */
+.studio-steps-nav {
+  position: sticky;
+  bottom: 0;
+  z-index: 2;
+  display: flex;
+  gap: 8px;
+  margin: 16px -4px 0;
+  padding: 12px 4px 4px;
+  background: linear-gradient(to bottom, transparent, var(--s-paper, #fbf7f2) 22%);
+}
+
+.studio-steps-nav__back,
+.studio-steps-nav__next {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: 8px;
+  min-height: 46px;
+  padding: 0 16px;
+  border-radius: 12px;
+  font: inherit;
+  font-size: 0.9rem;
+  font-weight: 700;
+  cursor: pointer;
+}
+
+.studio-steps-nav__back {
+  flex: none;
+  border: 1px solid #e0d6c9;
+  background: #fff;
+  color: #4a443e;
+}
+
+.studio-steps-nav__next {
+  flex: 1;
+  border: 0;
+  background: var(--s-ink, #171816);
+  color: #fff;
+}
+
+.studio-steps-nav__next.is-order {
+  background: var(--s-accent, #e05a2b);
+}
+
+.studio-steps-nav button svg {
+  width: 17px;
+  height: 17px;
+}
+
+.studio-steps-nav__next:hover {
+  filter: brightness(1.12);
+}
+
+/* Draw the eye to the cart button after "Order this poster". */
+@keyframes checkout-nudge {
+  0%, 100% { transform: scale(1); box-shadow: 0 0 0 0 rgba(224, 90, 43, 0.5); }
+  40% { transform: scale(1.04); box-shadow: 0 0 0 10px rgba(224, 90, 43, 0); }
+}
+
+.is-nudged {
+  animation: checkout-nudge 0.9s ease 2;
+}
+
+/* Lieu: coordinates folded away for the few who need them. */
+.advanced-coords {
+  margin-top: 4px;
+}
+
+.advanced-coords summary {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  color: var(--s-muted, #6b6259);
+  font-size: 0.82rem;
+  font-weight: 600;
+  cursor: pointer;
+  list-style: none;
+}
+
+.advanced-coords summary::-webkit-details-marker {
+  display: none;
+}
+
+.advanced-coords summary::before {
+  content: "+";
+  display: inline-grid;
+  place-items: center;
+  width: 18px;
+  height: 18px;
+  border-radius: 50%;
+  background: #f1ece6;
+  font-size: 0.8rem;
+}
+
+.advanced-coords[open] summary::before {
+  content: "–";
+}
+
+.advanced-coords[open] summary {
+  margin-bottom: 10px;
+}
+
+/* Map zoom: a readable "≈ 8 km across" instead of a metres box. */
+.distance-readout {
+  color: var(--s-ink, #171816);
+  font-size: 0.86rem;
+  font-weight: 700;
+  font-variant-numeric: tabular-nums;
+}
+
+/* Phones: a slim one-row price bar, and room for the map buttons above it. */
+@media (max-width: 768px), (hover: none) and (pointer: coarse) {
+  .studio-buy-bar {
+    flex-wrap: nowrap;
+    padding: 8px 8px 8px 16px;
+    border-radius: 16px;
+  }
+
+  .app-shell[data-store-studio] .studio-buy-bar__price {
+    font-size: 1.3rem;
+  }
+
+  .studio-buy-bar__cta {
+    flex: none;
+    min-height: 44px;
+    padding: 0 14px;
+  }
+
+  .studio-buy-bar__error {
+    position: absolute;
+    left: 16px;
+    bottom: calc(100% + 6px);
+    padding: 4px 10px;
+    border-radius: 8px;
+    background: #fff;
+  }
+
+  .app-shell[data-store-studio] .poster-frame,
+  .app-shell[data-store-studio] > .preview-panel .poster-frame {
+    width: min(
+      calc(100% - 32px),
+      max(200px, calc((100dvh - 410px) * var(--poster-aspect, 0.75)))
+    ) !important;
+  }
+}
+
+/* Phones: the map buttons as one row of small pills under the poster. */
+@media (max-width: 768px), (hover: none) and (pointer: coarse) {
+  .app-shell[data-store-studio] .poster-frame .map-controls {
+    display: flex !important;
+    flex-direction: row !important;
+    flex-wrap: nowrap;
+    justify-content: center;
+    gap: 6px;
+    width: max-content !important;
+    max-width: calc(100vw - 24px);
+  }
+
+  .app-shell[data-store-studio] .poster-frame .map-controls .map-control-group {
+    display: flex !important;
+    flex-direction: row !important;
+    gap: 6px;
+    width: auto !important;
+    padding: 0 !important;
+    border: 0 !important;
+    background: transparent !important;
+    box-shadow: none !important;
+  }
+
+  .app-shell[data-store-studio] .poster-frame .map-control-btn {
+    flex: none !important;
+    min-height: 34px !important;
+    padding: 0 12px !important;
+    border-radius: 999px !important;
+    font-size: 0.78rem !important;
+    box-shadow: 0 3px 10px rgba(23, 24, 22, 0.12);
+  }
+}
+
+/* Short phones (iPhone SE…): a slightly smaller poster keeps everything visible. */
+@media (max-width: 768px) and (max-height: 620px) {
+  .app-shell[data-store-studio] .poster-frame,
+  .app-shell[data-store-studio] > .preview-panel .poster-frame {
+    width: min(
+      calc(100% - 32px),
+      max(170px, calc((100dvh - 430px) * var(--poster-aspect, 0.75)))
+    ) !important;
+    /* An older rule pins phones to 236px; let short screens go smaller. */
+    min-width: 0;
+  }
+}

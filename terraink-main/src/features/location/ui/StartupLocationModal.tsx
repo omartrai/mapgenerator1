@@ -26,7 +26,7 @@ import type { SearchResult } from "@/features/location/domain/types";
 import { useLanguage, type TranslationKey } from "@/shared/i18n/LanguageContext";
 
 const CLOSE_ANIMATION_MS = 220;
-const DEFAULT_LOCATION_LABEL = "Hanover, Region Hannover, Lower Saxony, Germany";
+const DEFAULT_LOCATION_LABEL = "Casablanca, Maroc";
 
 type PlaceKind = "city" | "street" | "monument" | "zone";
 

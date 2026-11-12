@@ -52,7 +52,7 @@ import {
 const COUNTRY_VIEW_ZOOM_LEVEL = 10;
 const CONTINENT_VIEW_ZOOM_LEVEL = 6;
 const DEFAULT_LOCATION_LABEL =
-  "Hanover, Region Hannover, Lower Saxony, Germany";
+  "Casablanca, Maroc";
 
 interface PreviewPanelProps {
   /** Replaces the "current settings" card in the desktop side column. */
@@ -217,12 +217,12 @@ export default function PreviewPanel({ sidePanel, belowPoster }: PreviewPanelPro
   const isCountryContinentView =
     mapZoom >= CONTINENT_VIEW_ZOOM_LEVEL && mapZoom < COUNTRY_VIEW_ZOOM_LEVEL;
   const cityLabel = isCityCountryView
-    ? form.displayCity || form.location || "Hanover"
+    ? form.displayCity || form.location || "Casablanca"
     : isCountryContinentView
-      ? form.displayCountry || "Germany"
+      ? form.displayCountry || "Maroc"
       : form.displayContinent || "Earth";
   const countryLabel = isCityCountryView
-    ? form.displayCountry || "Germany"
+    ? form.displayCountry || "Maroc"
     : isCountryContinentView
       ? form.displayContinent || "Europe"
       : "Earth";
@@ -524,17 +524,11 @@ export default function PreviewPanel({ sidePanel, belowPoster }: PreviewPanelPro
                       type="button"
                       className={`map-control-btn${isRotationEnabled ? " is-active" : ""}`}
                       onClick={handleToggleRotation}
-                      title={
-                        isRotationEnabled
-                          ? "Disable rotation"
-                          : "Enable rotation"
-                      }
+                      title={t(isRotationEnabled ? "map.rotationOff" : "map.rotationOn")}
                     >
                       <RotateIcon />
                       <span>
-                        {isRotationEnabled
-                          ? "Disable Rotation"
-                          : "Enable Rotation"}
+                        {t(isRotationEnabled ? "map.rotationOff" : "map.rotationOn")}
                       </span>
                     </button>
                   ) : null}
@@ -545,17 +539,11 @@ export default function PreviewPanel({ sidePanel, belowPoster }: PreviewPanelPro
                       type="button"
                       className={`map-control-btn${isRotationEnabled ? " is-active" : ""}`}
                       onClick={handleToggleRotation}
-                      title={
-                        isRotationEnabled
-                          ? "Disable rotation"
-                          : "Enable rotation"
-                      }
+                      title={t(isRotationEnabled ? "map.rotationOff" : "map.rotationOn")}
                     >
                       <RotateIcon />
                       <span>
-                        {isRotationEnabled
-                          ? "Disable Rotation"
-                          : "Enable Rotation"}
+                        {t(isRotationEnabled ? "map.rotationOff" : "map.rotationOn")}
                       </span>
                     </button>
                   </div>

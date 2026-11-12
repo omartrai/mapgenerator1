@@ -1,5 +1,5 @@
 import { lazy, Suspense, useCallback, useEffect, useState, type ReactNode } from "react";
-import { onOpenSettingsTab, revealAfterTabChange } from "@/shared/ui/settingsTabs";
+import { onCloseSettingsPanel, onOpenSettingsTab, revealAfterTabChange } from "@/shared/ui/settingsTabs";
 import { usePosterContext } from "@/features/poster/ui/PosterContext";
 import {
   MAX_MARKER_SIZE,
@@ -40,11 +40,13 @@ function SettingsDrawer({
   onClose,
   sizeSection,
   header,
+  footer,
 }: {
   mobileTab: MobileTab;
   onClose: () => void;
   sizeSection?: ReactNode;
   header?: ReactNode;
+  footer?: ReactNode;
 }) {
   const { t } = useLanguage();
   const [isExpanded, setIsExpanded] = useState(false);
@@ -71,7 +73,7 @@ function SettingsDrawer({
           {...handleProps}
         />
         <div className="mobile-drawer-content">
-          <SettingsPanel mobileTab={mobileTab} sizeSection={sizeSection} header={header} />
+          <SettingsPanel mobileTab={mobileTab} sizeSection={sizeSection} header={header} footer={footer} />
         </div>
       </div>
     </div>
@@ -91,6 +93,8 @@ export interface AppShellSlots {
   sizeSection?: ReactNode;
   /** Step guidance above the settings, given the active tab and a setter. */
   panelHeader?: (tab: MobileTab, setTab: (tab: MobileTab) => void) => ReactNode;
+  /** Shown under the settings of the open tab (e.g. step navigation). */
+  panelFooter?: (tab: MobileTab, setTab: (tab: MobileTab) => void) => ReactNode;
   /** Whether to open the "where is your place?" dialog on mount. */
   showStartupModal?: boolean;
   initialTab?: MobileTab;
@@ -109,6 +113,7 @@ export default function AppShell({
   belowPoster,
   sizeSection,
   panelHeader,
+  panelFooter,
   showStartupModal = true,
   initialTab = "theme",
   dataAttributes,
@@ -227,10 +232,24 @@ export default function AppShell({
     }
   };
 
+  // Tabs chosen from inside the drawer (step buttons); on mobile the
+  // location search lives in its own row above the poster.
+  const setMobileTabFromPanel = (tab: MobileTab) => {
+    if (tab === "location") {
+      setMobileDrawerOpen(false);
+      setMobileLocationRowVisible(true);
+      return;
+    }
+    setMobileTab(tab);
+  };
+
   const handleDesktopTabChange = (tab: MobileTab) => {
     setDesktopTab(tab);
     setDesktopPanelOpen(true);
   };
+
+  // Step buttons can ask to close the mobile drawer (e.g. "Order").
+  useEffect(() => onCloseSettingsPanel(() => setMobileDrawerOpen(false)), []);
 
   // Other panels can ask for a tab (e.g. Routes → "Edit the texts").
   useEffect(
@@ -341,6 +360,7 @@ export default function AppShell({
             <SettingsPanel
               sizeSection={sizeSection}
               header={panelHeader?.(desktopTab, handleDesktopTabChange)}
+              footer={panelFooter?.(desktopTab, handleDesktopTabChange)}
             />
           </Suspense>
         </div>
@@ -353,14 +373,8 @@ export default function AppShell({
           mobileTab={mobileTab}
           onClose={() => setMobileDrawerOpen(false)}
           sizeSection={sizeSection}
-          header={panelHeader?.(mobileTab, (tab) => {
-            if (tab === "location") {
-              setMobileDrawerOpen(false);
-              setMobileLocationRowVisible(true);
-              return;
-            }
-            setMobileTab(tab);
-          })}
+          header={panelHeader?.(mobileTab, setMobileTabFromPanel)}
+          footer={panelFooter?.(mobileTab, setMobileTabFromPanel)}
         />
       ) : null}
 

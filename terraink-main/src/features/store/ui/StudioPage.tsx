@@ -12,6 +12,7 @@ import PurchasePanel from "./PurchasePanel";
 import RoomDecor from "./RoomDecor";
 import SizeFrameSection from "./SizeFrameSection";
 import StoreHeader from "./StoreHeader";
+import StudioStepFooter from "./StudioStepFooter";
 import StudioStepHeader from "./StudioStepHeader";
 import StudioViewToggle from "./StudioViewToggle";
 import { useStore } from "./StoreContext";
@@ -172,6 +173,7 @@ export default function StudioPage() {
       header={<StoreHeader variant="studio" />}
       sizeSection={<SizeFrameSection />}
       panelHeader={(tab, setTab) => <StudioStepHeader tab={tab} setTab={setTab} />}
+      panelFooter={(tab, setTab) => (adminTask ? null : <StudioStepFooter tab={tab} setTab={setTab} />)}
       actionArea={({ isMobile }) =>
         adminTask ? (
           <AdminExportPanel task={adminTask} isMobile={isMobile} />

@@ -26,7 +26,7 @@ export default function MapDimensionFields({
   showSizeFields = true,
   showDistanceField = true,
 }: MapDimensionFieldsProps) {
-  const { t } = useLanguage();
+  const { t, language } = useLanguage();
   const SLIDER_MIN = 0;
   const SLIDER_MAX = 1000;
 
@@ -62,24 +62,13 @@ export default function MapDimensionFields({
     return snapDistanceToAdaptiveStep(distance);
   };
 
+  /** Plain distances: "500 m", "2,5 km", "1 200 km". */
   const formatDistance = (distanceMeters: number) => {
-    if (distanceMeters >= 1_000_000) {
-      const millions = distanceMeters / 1_000_000;
-      const text = Number.isInteger(millions)
-        ? millions.toString()
-        : millions.toFixed(1).replace(/\.0$/, "");
-      return `${text}M m`;
-    }
-
-    if (distanceMeters >= 100_000) {
-      const thousands = distanceMeters / 1_000;
-      const text = Number.isInteger(thousands)
-        ? thousands.toString()
-        : thousands.toFixed(1).replace(/\.0$/, "");
-      return `${text}K m`;
-    }
-
-    return `${Math.round(distanceMeters).toLocaleString()} m`;
+    const locale = language === "en" ? "en-GB" : language === "ar" ? "ar-MA" : "fr-FR";
+    if (distanceMeters < 1000) return `${Math.round(distanceMeters).toLocaleString(locale)} m`;
+    const km = distanceMeters / 1000;
+    const digits = km < 10 && !Number.isInteger(Math.round(km * 10) / 10) ? 1 : 0;
+    return `${km.toLocaleString(locale, { maximumFractionDigits: digits })} km`;
   };
 
   const emitDistanceChange = (nextDistance: number) => {
@@ -100,12 +89,8 @@ export default function MapDimensionFields({
     : MIN_DISTANCE_METERS;
   const sliderValue = distanceToSliderValue(distanceValue);
 
-  const sliderMetaMarks = [
-    MIN_DISTANCE_METERS,
-    100_000,
-    1_000_000,
-    MAX_DISTANCE_METERS,
-  ];
+  // Only the two ends: the middle marks crowd together on narrow panels.
+  const sliderMetaMarks = [MIN_DISTANCE_METERS, MAX_DISTANCE_METERS];
 
   const sliderPositionPercent = (distanceMeters: number) =>
     ((distanceToSliderValue(distanceMeters) - SLIDER_MIN) /
@@ -151,18 +136,10 @@ export default function MapDimensionFields({
         <label className="distance-slider-field">
           <span>
             <span>{t("dimensions.distance")}</span>
-            <input
-              className="distance-slider-input"
-              name="distance"
-              type="number"
-              min={MIN_DISTANCE_METERS}
-              max={MAX_DISTANCE_METERS}
-              step="any"
-              value={form.distance}
-              onChange={onChange}
-              onBlur={onNumericFieldBlur}
-              aria-label={t("dimensions.distanceAria")}
-            />
+            {/* Plain-language readout instead of a metres box. */}
+            <output className="distance-readout" aria-live="polite">
+              {t("dimensions.across").replace("{km}", formatDistance(Math.max(0, Number(form.distance) || 0) * 2))}
+            </output>
           </span>
           <input
             className="distance-slider"
