@@ -10,6 +10,7 @@ import {
 import { MyLocationIcon } from "@/shared/ui/Icons";
 import { useLanguage } from "@/shared/i18n/LanguageContext";
 import PosterKindPicker from "@/features/sky/ui/PosterKindPicker";
+import SkyMomentCard from "@/features/sky/ui/SkyMomentCard";
 
 interface LocationSectionProps {
   form: PosterForm;
@@ -102,6 +103,7 @@ export default function LocationSection({
           />
         </div>
       </label>
+      <SkyMomentCard />
       <details className="advanced-coords">
         <summary>{t("location.coordsToggle")}</summary>
       <div className="field-grid keep-two-mobile">

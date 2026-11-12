@@ -9,6 +9,7 @@ import GeneralHeader from "@/shared/ui/GeneralHeader";
 import DesktopNavBar from "@/shared/ui/DesktopNavBar";
 import FooterNote from "@/shared/ui/FooterNote";
 import PreviewPanel from "@/features/poster/ui/PreviewPanel";
+import MobileSkyBar from "@/features/sky/ui/MobileSkyBar";
 import MobileNavBar, { type MobileTab } from "@/shared/ui/MobileNavBar";
 import InstallPrompt from "@/features/install/ui/InstallPrompt";
 import { useSwipeDown } from "@/shared/hooks/useSwipeDown";
@@ -329,6 +330,7 @@ export default function AppShell({
         <Suspense fallback={null}>
           <DesktopLocationBar />
         </Suspense>
+        {isMobileViewport ? <MobileSkyBar /> : null}
       </div>
       {isMobileViewport && isMarkerEditorActive && activeMarker ? (
         <div

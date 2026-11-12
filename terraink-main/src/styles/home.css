@@ -4744,136 +4744,6 @@
   display: none !important;
 }
 
-.poster-kind {
-  display: flex;
-  flex-direction: column;
-  gap: 12px;
-  margin-bottom: 18px;
-}
-
-.poster-kind__switch {
-  display: grid;
-  grid-template-columns: 1fr 1fr;
-  gap: 8px;
-}
-
-.poster-kind__opt {
-  display: flex;
-  align-items: center;
-  gap: 10px;
-  min-width: 0;
-  padding: 10px 12px;
-  border: 1px solid var(--s-line, #e7dfd3);
-  border-radius: 12px;
-  background: #fff;
-  color: var(--s-ink, #1f2a26);
-  text-align: start;
-  cursor: pointer;
-}
-
-.poster-kind__opt svg {
-  flex: none;
-  width: 20px;
-  height: 20px;
-  color: var(--s-muted, #6b6259);
-}
-
-.poster-kind__opt span {
-  display: flex;
-  flex-direction: column;
-  min-width: 0;
-}
-
-.poster-kind__opt strong {
-  font-size: 0.86rem;
-}
-
-.poster-kind__opt small {
-  overflow: hidden;
-  color: var(--s-muted, #6b6259);
-  font-size: 0.72rem;
-  text-overflow: ellipsis;
-  white-space: nowrap;
-}
-
-.poster-kind__opt.is-active {
-  border-color: var(--s-accent, #e8622c);
-  box-shadow: 0 0 0 1px var(--s-accent, #e8622c);
-}
-
-.poster-kind__opt.is-active svg {
-  color: var(--s-accent, #e8622c);
-}
-
-.sky-moment {
-  display: flex;
-  flex-direction: column;
-  gap: 8px;
-  padding: 12px;
-  border-radius: 12px;
-  background: #1c2433;
-  color: #f3efe6;
-}
-
-.sky-moment__title {
-  margin: 0;
-  font-size: 0.88rem;
-  font-weight: 700;
-}
-
-.sky-moment__row {
-  display: grid;
-  grid-template-columns: 1.4fr 1fr;
-  gap: 8px;
-}
-
-.sky-moment__row label {
-  display: flex;
-  flex-direction: column;
-  gap: 4px;
-  font-size: 0.74rem;
-  font-weight: 600;
-  opacity: 0.9;
-}
-
-.sky-moment__row input {
-  min-width: 0;
-  color: var(--s-ink, #1f2a26);
-}
-
-.sky-moment__hint {
-  margin: 0;
-  font-size: 0.74rem;
-  line-height: 1.35;
-  opacity: 0.8;
-}
-
-.sky-options {
-  display: flex;
-  flex-wrap: wrap;
-  gap: 6px 14px;
-}
-
-.sky-option {
-  display: inline-flex !important;
-  flex-direction: row !important;
-  align-items: center;
-  gap: 6px;
-  font-size: 0.8rem;
-  cursor: pointer;
-}
-
-.sky-option input {
-  width: 16px;
-  height: 16px;
-  accent-color: var(--s-accent, #e8622c);
-}
-
-.app-shell .sky-moment label,
-.app-shell .sky-moment label span,
-.app-shell .sky-moment .sky-option span {
-  color: #f3efe6 !important;
-}
 
 /* ── Homepage: night-sky promo ── */
 .sky-promo {
@@ -5046,4 +4916,230 @@
   font-weight: 600;
   text-decoration: underline;
   cursor: pointer;
+}
+
+/* ── Place step: map / night-sky switch and the moment card ── */
+.poster-kind {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 4px;
+  margin-bottom: 18px;
+  padding: 4px;
+  border-radius: 14px;
+  background: rgba(31, 59, 51, 0.07);
+}
+
+.poster-kind__opt {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: 8px;
+  min-height: 44px;
+  padding: 0 10px;
+  border: 0;
+  border-radius: 11px;
+  background: transparent;
+  color: var(--s-muted, #6b6259);
+  font-size: 0.9rem;
+  font-weight: 700;
+  white-space: nowrap;
+  cursor: pointer;
+  transition: background-color 0.15s ease, color 0.15s ease, box-shadow 0.15s ease;
+}
+
+.poster-kind__opt svg {
+  width: 18px;
+  height: 18px;
+}
+
+.poster-kind__opt:hover {
+  color: var(--s-ink, #1f2a26);
+}
+
+.poster-kind__opt.is-active {
+  background: #fff;
+  color: var(--s-ink, #1f2a26);
+  box-shadow: 0 1px 4px rgba(60, 40, 20, 0.16);
+}
+
+.poster-kind__opt.is-active svg {
+  color: var(--s-accent, #e8622c);
+}
+
+.sky-moment {
+  display: flex;
+  flex-direction: column;
+  gap: 14px;
+  margin-top: 16px;
+  padding: 16px;
+  border: 1px solid var(--s-line, #e7dfd3);
+  border-radius: 14px;
+  background: #fff;
+}
+
+.sky-moment__head {
+  display: flex;
+  align-items: flex-start;
+  gap: 12px;
+}
+
+.sky-moment__icon {
+  flex: none;
+  display: grid;
+  place-items: center;
+  width: 36px;
+  height: 36px;
+  border-radius: 10px;
+  background: #1c2433;
+  color: #f2c86b;
+  font-size: 1.1rem;
+}
+
+.sky-moment__head h3 {
+  margin: 0;
+  color: var(--s-ink, #1f2a26);
+  font-size: 0.95rem;
+  font-weight: 700;
+}
+
+.sky-moment__head p {
+  margin: 2px 0 0;
+  color: var(--s-muted, #6b6259);
+  font-size: 0.78rem;
+  line-height: 1.35;
+}
+
+.sky-moment__field {
+  display: flex !important;
+  flex-direction: column;
+  gap: 6px;
+}
+
+.sky-moment__field > span,
+.sky-moment__field > label,
+.sky-moment__label {
+  color: var(--s-ink, #1f2a26);
+  font-size: 0.8rem;
+  font-weight: 600;
+}
+
+.sky-moment__field input {
+  width: 100%;
+  min-width: 0;
+}
+
+.sky-moment__time {
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+}
+
+.sky-moment__quick,
+.sky-moment__toggles {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 6px;
+}
+
+.sky-chip {
+  display: inline-flex;
+  align-items: center;
+  gap: 5px;
+  min-height: 32px;
+  padding: 0 12px;
+  border: 1px solid var(--s-line, #e7dfd3);
+  border-radius: 999px;
+  background: #fff;
+  color: var(--s-ink, #1f2a26);
+  font-size: 0.8rem;
+  font-weight: 600;
+  font-variant-numeric: tabular-nums;
+  cursor: pointer;
+}
+
+.sky-chip:hover {
+  border-color: var(--s-line-strong, #d8cfc2);
+}
+
+.sky-chip.is-active {
+  border-color: #1c2433;
+  background: #1c2433;
+  color: #fff;
+}
+
+.sky-chip svg {
+  width: 13px;
+  height: 13px;
+  color: #f2c86b;
+}
+
+.sky-moment__note {
+  color: var(--s-muted, #6b6259);
+  font-size: 0.74rem;
+  line-height: 1.35;
+}
+
+.app-shell[data-store-studio][data-poster-kind="sky"] .poster-frame .map-controls,
+.app-shell[data-store-studio][data-poster-kind="sky"] .map-controls {
+  display: none !important;
+}
+
+/* Phones: poster type + night-sky moment under the floating search bar */
+.mobile-sky-bar {
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+  margin-top: 8px;
+  padding: 8px;
+  border: 1px solid var(--s-line, #e7dfd3);
+  border-radius: 14px;
+  background: rgba(255, 255, 255, 0.96);
+  box-shadow: 0 6px 18px rgba(40, 30, 20, 0.12);
+}
+
+.mobile-sky-bar .poster-kind {
+  margin: 0;
+}
+
+.mobile-sky-bar .poster-kind__opt {
+  min-height: 38px;
+  font-size: 0.85rem;
+}
+
+.mobile-sky-bar__row {
+  display: grid;
+  grid-template-columns: 1.4fr 1fr;
+  gap: 8px;
+}
+
+.mobile-sky-bar__row label {
+  display: flex;
+  flex-direction: column;
+  gap: 3px;
+  color: var(--s-ink, #1f2a26);
+  font-size: 0.72rem;
+  font-weight: 600;
+}
+
+.mobile-sky-bar__row input {
+  min-width: 0;
+  min-height: 40px;
+  padding: 0 8px;
+  border: 1px solid var(--s-line-strong, #d8cfc2);
+  border-radius: 10px;
+  background: #fff;
+  font: inherit;
+  font-size: 0.9rem;
+}
+
+.mobile-sky-bar__toggles {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 6px;
+}
+
+.mobile-sky-bar .sky-chip {
+  min-height: 30px;
+  padding: 0 10px;
+  font-size: 0.76rem;
 }
