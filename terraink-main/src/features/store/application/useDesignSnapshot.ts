@@ -88,6 +88,7 @@ export function useDesignSnapshot() {
             width: String(widthCm),
             height: String(heightCm),
             showPosterText: true,
+            posterLayout: "classic",
             showCity: true,
             showDivider: true,
             showCountry: true,

@@ -27,6 +27,8 @@ export interface ExportOptions {
   showPosterText: boolean;
   customMessage?: string;
   textParts?: import("./textLayout").PosterTextParts;
+  /** Poster layout id (see posterLayout.ts). */
+  posterLayout?: string;
   showOverlay?: boolean;
   includeCredits?: boolean;
   markers?: MarkerItem[];

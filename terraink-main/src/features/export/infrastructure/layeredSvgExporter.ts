@@ -9,6 +9,7 @@ import type { Route } from "@/features/routes/domain/types";
 import { drawRoutesOnCanvas } from "@/features/routes/infrastructure/rendering";
 import { routeEndpointMarkerItems } from "@/features/routes/infrastructure/helpers";
 import { applyFades } from "@/features/poster/infrastructure/renderer/layers";
+import { getPosterLayout } from "@/features/poster/domain/posterLayout";
 import { drawPosterText } from "@/features/poster/infrastructure/renderer/typography";
 import type { PosterTextParts } from "@/features/poster/domain/textLayout";
 import type { ResolvedTheme } from "@/features/theme/domain/types";
@@ -32,6 +33,7 @@ interface LayeredSvgOptions {
   includeCredits: boolean;
   customMessage?: string;
   textParts?: PosterTextParts;
+  posterLayout?: string;
   markers: MarkerItem[];
   markerIcons: MarkerIconDefinition[];
   routes?: Route[];
@@ -89,6 +91,7 @@ export async function createLayeredSvgBlobFromMap({
   includeCredits,
   customMessage = "",
   textParts,
+  posterLayout,
   markers,
   markerIcons,
   routes = [],
@@ -173,7 +176,7 @@ export async function createLayeredSvgBlobFromMap({
       overlayLayers.push({
         id: "fades",
         dataUrl: canvasToDataUrl(exportWidth, exportHeight, (ctx) => {
-          applyFades(ctx, exportWidth, exportHeight, theme.ui.bg);
+          applyFades(ctx, exportWidth, exportHeight, theme.ui.bg, getPosterLayout(posterLayout).fades);
         }),
       });
     }
@@ -264,6 +267,7 @@ export async function createLayeredSvgBlobFromMap({
           includeCredits,
           customMessage,
           textParts,
+          posterLayout,
         );
       }),
     });

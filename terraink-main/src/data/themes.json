@@ -493,6 +493,110 @@
           "minor_low": "#CCCCDA"
         }
       }
+    },
+    "monochrome": {
+      "name": "Monochrome",
+      "description": "Black roads on white paper with soft grey water - crisp and timeless",
+      "ui": {
+        "bg": "#FFFFFF",
+        "text": "#111111"
+      },
+      "map": {
+        "land": "#FFFFFF",
+        "landcover": "#F5F5F5",
+        "water": "#E0E0E0",
+        "waterway": "#D4D4D4",
+        "parks": "#F0F0F0",
+        "buildings": "#DADADA",
+        "aeroway": "#EDEDED",
+        "rail": "#444444",
+        "roads": {
+          "major": "#111111",
+          "path": "#B8B8B8",
+          "outline": "#FFFFFF",
+          "minor_high": "#2A2A2A",
+          "minor_mid": "#555555",
+          "minor_low": "#8A8A8A"
+        }
+      }
+    },
+    "slate": {
+      "name": "Slate",
+      "description": "Deep slate blue with white roads - calm and modern",
+      "ui": {
+        "bg": "#1D2B34",
+        "text": "#F2F4F5"
+      },
+      "map": {
+        "land": "#2E4250",
+        "landcover": "#2A3C48",
+        "water": "#1B2A33",
+        "waterway": "#1B2A33",
+        "parks": "#34505C",
+        "buildings": "#3B5260",
+        "aeroway": "#34485A",
+        "rail": "#8FA3AD",
+        "roads": {
+          "major": "#FFFFFF",
+          "path": "#6F8793",
+          "outline": "#2E4250",
+          "minor_high": "#E8EEF1",
+          "minor_mid": "#B8C7CF",
+          "minor_low": "#8EA3AD"
+        }
+      }
+    },
+    "vintage": {
+      "name": "Vintage",
+      "description": "Sea-green water and terracotta roads on warm cream - old atlas charm",
+      "ui": {
+        "bg": "#FBF3E8",
+        "text": "#2F4A55"
+      },
+      "map": {
+        "land": "#FBF1E4",
+        "landcover": "#F3EAD9",
+        "water": "#8FC1B5",
+        "waterway": "#6AA597",
+        "parks": "#DFE3CF",
+        "buildings": "#EFD9C6",
+        "aeroway": "#E8E0CF",
+        "rail": "#2F5562",
+        "roads": {
+          "major": "#C0694A",
+          "path": "#EFD8C8",
+          "outline": "#FBF1E4",
+          "minor_high": "#CF8A6C",
+          "minor_mid": "#E0B49C",
+          "minor_low": "#ECCCB8"
+        }
+      }
+    },
+    "steel_blue": {
+      "name": "Steel Blue",
+      "description": "Steel-blue city with white streets and white water - airy and graphic",
+      "ui": {
+        "bg": "#FFFFFF",
+        "text": "#111111"
+      },
+      "map": {
+        "land": "#7EA9BD",
+        "landcover": "#8BB3C5",
+        "water": "#FFFFFF",
+        "waterway": "#FFFFFF",
+        "parks": "#8FB7C8",
+        "buildings": "#9BBFCF",
+        "aeroway": "#8DB4C6",
+        "rail": "#E6F0F4",
+        "roads": {
+          "major": "#FFFFFF",
+          "path": "#B5CFDB",
+          "outline": "#7EA9BD",
+          "minor_high": "#F2F8FB",
+          "minor_mid": "#D9E8EF",
+          "minor_low": "#C3D9E3"
+        }
+      }
     }
   }
 }

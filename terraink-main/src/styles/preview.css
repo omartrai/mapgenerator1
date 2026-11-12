@@ -489,3 +489,47 @@
   white-space: nowrap;
   transform: translateY(-50%);
 }
+
+/* ── Poster layouts (see poster/domain/posterLayout.ts) ── */
+
+/* Lines placed from a layout slot: the inner span is measured to fit the width. */
+.poster-line {
+  overflow: visible;
+  /* Keep the double spaces of the letter-spaced city, like the print. */
+  white-space: pre;
+}
+
+.poster-line > span {
+  display: inline-flex;
+  align-items: center;
+}
+
+.poster-country__rule {
+  display: inline-block;
+  height: 0;
+  border-top: 2px solid currentcolor;
+}
+
+.poster-layout-mat {
+  position: absolute;
+  inset: 0;
+  border-style: solid;
+}
+
+.poster-layout-rule {
+  position: absolute;
+  border-style: solid;
+}
+
+.poster-layout-band {
+  position: absolute;
+  left: 0;
+  right: 0;
+  bottom: 0;
+}
+
+.poster-layout-box {
+  position: absolute;
+  left: 50%;
+  transform: translateX(-50%);
+}

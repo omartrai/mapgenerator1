@@ -109,6 +109,10 @@ const referenceAliases: Record<string, string> = {
 
 const preferredThemeOrder = [
   "pastel_dream",
+  "monochrome",
+  "slate",
+  "vintage",
+  "steel_blue",
   "carrara",
   "blush",
   "sandstone",

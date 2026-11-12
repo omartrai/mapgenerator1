@@ -1918,3 +1918,179 @@
   background: #f6e1dc;
   color: #93391f;
 }
+
+/* ── Poster layout picker (Text panel) ── */
+.layout-picker {
+  margin: 0 0 14px;
+  padding: 0;
+  border: 0;
+}
+
+.layout-picker legend {
+  margin-bottom: 8px;
+  font-size: 0.85rem;
+  font-weight: 600;
+}
+
+.layout-picker__grid {
+  display: grid;
+  grid-template-columns: repeat(5, minmax(0, 1fr));
+  gap: 8px;
+}
+
+.layout-picker__option {
+  display: grid;
+  justify-items: center;
+  gap: 5px;
+  cursor: pointer;
+}
+
+.layout-picker__option input {
+  position: absolute;
+  opacity: 0;
+  pointer-events: none;
+}
+
+.layout-picker__name {
+  font-size: 0.72rem;
+  font-weight: 600;
+  color: var(--s-muted, #6b6259);
+}
+
+.layout-picker__option input:checked ~ .layout-picker__name {
+  color: var(--s-accent, #e05a2b);
+}
+
+.layout-thumb {
+  position: relative;
+  width: 100%;
+  aspect-ratio: 3 / 4;
+  overflow: hidden;
+  border: 1.5px solid #e5ddd2;
+  border-radius: 6px;
+  background: #fff;
+  transition: border-color 0.15s ease, box-shadow 0.15s ease;
+}
+
+.layout-picker__option:hover .layout-thumb {
+  border-color: #cfc3b4;
+}
+
+.layout-picker__option input:checked + .layout-thumb {
+  border-color: var(--s-accent, #e05a2b);
+  box-shadow: 0 0 0 2px color-mix(in srgb, var(--s-accent, #e05a2b) 25%, transparent);
+}
+
+.layout-picker__option input:focus-visible + .layout-thumb {
+  outline: 2px solid var(--s-accent, #e05a2b);
+  outline-offset: 2px;
+}
+
+.layout-thumb i {
+  position: absolute;
+  display: block;
+}
+
+/* A hint of streets for the map. */
+.layout-thumb__map {
+  inset: 0;
+  background:
+    repeating-linear-gradient(35deg, transparent 0 5px, rgba(80, 90, 120, 0.35) 5px 6px),
+    repeating-linear-gradient(-55deg, transparent 0 7px, rgba(80, 90, 120, 0.25) 7px 8px),
+    #eef1f4;
+}
+
+.layout-thumb__title,
+.layout-thumb__sub {
+  left: 50%;
+  border-radius: 2px;
+  background: #2a2a2a;
+  transform: translateX(-50%);
+}
+
+.layout-thumb__title {
+  top: 80%;
+  width: 56%;
+  height: 4px;
+}
+
+.layout-thumb__sub {
+  top: 88%;
+  width: 30%;
+  height: 2px;
+  opacity: 0.7;
+}
+
+.layout-thumb--classic .layout-thumb__deco {
+  inset: 0;
+  background: linear-gradient(#fff, transparent 26%, transparent 68%, #fff 82%);
+}
+
+.layout-thumb--fade .layout-thumb__deco {
+  inset: 0;
+  background: linear-gradient(transparent 45%, #fff 76%);
+}
+
+.layout-thumb--fade .layout-thumb__title {
+  width: 66%;
+  height: 5px;
+}
+
+.layout-thumb--border .layout-thumb__deco {
+  inset: 0;
+  border: 3px solid #fff;
+  outline: 1.5px solid #2a2a2a;
+  outline-offset: -5px;
+  box-shadow: inset 0 0 0 4px #fff, inset 0 0 0 5px #2a2a2a;
+  background: linear-gradient(transparent 62%, #fff 80%);
+}
+
+.layout-thumb--label .layout-thumb__deco {
+  top: 76%;
+  left: 28%;
+  width: 44%;
+  height: 18%;
+  background: #fff;
+}
+
+.layout-thumb--label .layout-thumb__map {
+  background:
+    repeating-linear-gradient(35deg, transparent 0 5px, rgba(255, 255, 255, 0.45) 5px 6px),
+    repeating-linear-gradient(-55deg, transparent 0 7px, rgba(255, 255, 255, 0.3) 7px 8px),
+    #34495a;
+}
+
+.layout-thumb--label .layout-thumb__title {
+  width: 32%;
+  height: 3px;
+}
+
+.layout-thumb--label .layout-thumb__sub {
+  top: 87%;
+  width: 18%;
+}
+
+.layout-thumb--band .layout-thumb__deco {
+  top: 76%;
+  right: 0;
+  bottom: 0;
+  left: 0;
+  border-top: 3px solid #2a2a2a;
+  background: #fff;
+}
+
+.layout-thumb--band .layout-thumb__title,
+.layout-thumb--band .layout-thumb__sub {
+  left: 10%;
+  transform: none;
+}
+
+.layout-thumb--band .layout-thumb__title {
+  top: 83%;
+  width: 46%;
+}
+
+.layout-thumb--band .layout-thumb__sub {
+  top: 90%;
+  width: 24%;
+}

@@ -35,6 +35,8 @@ export interface PosterForm {
   displayContinent: string;
   fontFamily: string;
   showPosterText: boolean;
+  /** Text layout (classic, border, label, band, fade); missing = classic. */
+  posterLayout?: string;
   /** Per-line switches inside the poster text (all on by default). */
   showCity?: boolean;
   showDivider?: boolean;

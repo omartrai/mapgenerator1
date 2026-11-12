@@ -7,7 +7,8 @@ import {
   PLACEHOLDER_EXAMPLE_CITY,
   PLACEHOLDER_EXAMPLE_COUNTRY,
 } from "@/features/location/ui/constants";
-import { useLanguage } from "@/shared/i18n/LanguageContext";
+import { useLanguage, type TranslationKey } from "@/shared/i18n/LanguageContext";
+import { POSTER_LAYOUTS, DEFAULT_POSTER_LAYOUT } from "@/features/poster/domain/posterLayout";
 
 /** Lines of the poster text that can each be hidden on their own. */
 const TEXT_PARTS = [
@@ -54,6 +55,29 @@ export default function TypographySection({
     <>
       <section className="panel-block">
         <p className="section-summary-label">{t("nav.style")}</p>
+        <fieldset className="layout-picker">
+          <legend>{t("style.layout")}</legend>
+          <div className="layout-picker__grid">
+            {POSTER_LAYOUTS.map((id) => (
+              <label key={id} className="layout-picker__option">
+                <input
+                  type="radio"
+                  name="posterLayout"
+                  value={id}
+                  checked={(form.posterLayout || DEFAULT_POSTER_LAYOUT) === id}
+                  onChange={onChange}
+                />
+                <span className={`layout-thumb layout-thumb--${id}`} aria-hidden="true">
+                  <i className="layout-thumb__map" />
+                  <i className="layout-thumb__deco" />
+                  <i className="layout-thumb__title" />
+                  <i className="layout-thumb__sub" />
+                </span>
+                <span className="layout-picker__name">{t(`style.layout.${id}` as TranslationKey)}</span>
+              </label>
+            ))}
+          </div>
+        </fieldset>
         <label className="toggle-field">
           <span>{t("style.posterText")}</span>
           <span className="theme-switch">

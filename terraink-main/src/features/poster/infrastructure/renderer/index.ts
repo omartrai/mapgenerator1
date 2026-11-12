@@ -1,4 +1,5 @@
 import { applyFades } from "./layers";
+import { getPosterLayout } from "@/features/poster/domain/posterLayout";
 import { drawPosterText } from "./typography";
 import { drawMarkersOnCanvas } from "@/features/markers/infrastructure/rendering";
 import { drawRoutesOnCanvas } from "@/features/routes/infrastructure/rendering";
@@ -29,6 +30,7 @@ export async function compositeExport(
     showPosterText = true,
     customMessage = "",
     textParts,
+    posterLayout,
     showOverlay = true,
     includeCredits = true,
     markers = [],
@@ -55,7 +57,7 @@ export async function compositeExport(
 
   // 2. Gradient fades
   if (showOverlay) {
-    applyFades(ctx, width, height, theme.ui.bg);
+    applyFades(ctx, width, height, theme.ui.bg, getPosterLayout(posterLayout).fades);
   }
 
   // 3. Routes (below markers)
@@ -114,6 +116,7 @@ export async function compositeExport(
     includeCredits,
     customMessage,
     textParts,
+    posterLayout,
   );
 
   const size: CanvasSize = {
