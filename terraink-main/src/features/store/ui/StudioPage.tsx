@@ -17,6 +17,7 @@ import StudioStepFooter from "./StudioStepFooter";
 import StudioStepHeader from "./StudioStepHeader";
 import StudioViewToggle from "./StudioViewToggle";
 import { useStore } from "./StoreContext";
+import { openSettingsTab } from "@/shared/ui/settingsTabs";
 
 /**
  * The poster studio: the existing map editor wrapped with guided steps,
@@ -42,9 +43,15 @@ export default function StudioPage() {
   );
   useProductSync(store.product);
   const skyPoster = useSkyPoster();
-  // /create?type=sky starts a night-sky poster.
+  // /create?type=sky starts a night-sky poster; ?type=sport opens the Routes
+  // tab, where a GPX file becomes a sport poster.
   useEffect(() => {
-    if (search.get("type") === "sky") skyPoster.setKind("sky");
+    const type = search.get("type");
+    if (type === "sky") skyPoster.setKind("sky");
+    if (type !== "sport") return undefined;
+    // The shell starts listening once it has mounted.
+    const timer = window.setTimeout(() => openSettingsTab({ tab: "routes" }), 400);
+    return () => window.clearTimeout(timer);
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, []);
 

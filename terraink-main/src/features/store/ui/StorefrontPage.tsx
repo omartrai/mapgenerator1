@@ -28,6 +28,7 @@ import {
   type ProductOptions,
 } from "../domain/catalog";
 import { DESIGN_PRESETS, MOROCCAN_PRESET_IDS, type DesignPreset } from "../domain/presets";
+import { useCollection } from "../application/useCollection";
 import CollectionSection from "./CollectionSection";
 import FramedPoster from "./FramedPoster";
 import ReviewsSection from "./ReviewsSection";
@@ -35,12 +36,24 @@ import StoreFooter from "./StoreFooter";
 import StoreHeader from "./StoreHeader";
 import { useStoreText, type StoreTextKey } from "./storeText";
 
-/** Hero photos (an arch looking out over each city, the poster on a ledge). */
-const SLIDES = [
-  { id: "marrakech", image: "/assets/hero/marrakech.webp" },
-  { id: "chefchaouen", image: "/assets/hero/chefchaouen.webp" },
-  { id: "casablanca", image: "/assets/hero/casablanca.webp" },
+/** The four things the shop sells; each has a hero photo and its own page. */
+type LineId = "maps" | "sky" | "sport" | "prints";
+const LINES: { id: LineId; image: string; to: string; focus?: string }[] = [
+  { id: "maps", image: "/assets/hero/marrakech.webp", to: "/create", focus: "86% 50%" },
+  { id: "sky", image: "/assets/hero/night-sky.webp", to: "/create?type=sky" },
+  { id: "sport", image: "/assets/hero/sport.webp", to: "/create?type=sport" },
+  { id: "prints", image: "/assets/hero/collection.webp", to: "/collection" },
 ];
+const lineKey = (id: LineId, part: string) => `home.${id}.${part}` as StoreTextKey;
+const LOWEST_PRINT_PRICE = Math.min(...PRINT_SIZES.map((size) => size.price));
+
+/** Art prints come from the print partner; hide them when there are none. */
+function useLines() {
+  const { products, status } = useCollection();
+  const hasPrints = status === "loading" || products.length > 0;
+  const printsFrom = products.length ? Math.min(...products.map((product) => product.fromPrice)) : null;
+  return { lines: hasPrints ? LINES : LINES.filter((line) => line.id !== "prints"), printsFrom };
+}
 
 /** Frame and format picked in "Personnalisez votre affiche"; unset keeps each design's own. */
 interface Choice {
@@ -91,9 +104,13 @@ export default function StorefrontPage() {
       <main>
         <HeroSlider />
 
+        <Categories />
+
         <ProductGrid choice={choice} />
 
         <SkyPromo />
+
+        <SportPromo />
 
         <CollectionSection />
 
@@ -126,62 +143,133 @@ export default function StorefrontPage() {
 }
 
 function HeroSlider() {
-  const { t, lines } = useStoreText();
+  const { t, lines: titleLines } = useStoreText();
+  const { lines } = useLines();
   const [index, setIndex] = useState(0);
   const [paused, setPaused] = useState(false);
-  const [line1, line2] = lines("hero.title");
+  const current = lines[Math.min(index, lines.length - 1)];
+  const [line1, line2] = titleLines(lineKey(current.id, "title"));
 
   useEffect(() => {
     if (paused) return undefined;
-    const timer = window.setTimeout(() => setIndex((current) => (current + 1) % SLIDES.length), 7000);
+    const timer = window.setTimeout(() => setIndex((value) => (value + 1) % lines.length), 7000);
     return () => window.clearTimeout(timer);
-  }, [index, paused]);
+  }, [index, paused, lines.length]);
 
   return (
     <section
-      className="photo-hero"
+      className="split-hero"
       aria-roledescription="carousel"
       aria-label={t("hero.label")}
       onMouseEnter={() => setPaused(true)}
       onMouseLeave={() => setPaused(false)}
+      onFocus={() => setPaused(true)}
+      onBlur={() => setPaused(false)}
     >
-      <div className="photo-hero__slides" aria-hidden="true">
-        {SLIDES.map((slide, slideIndex) => (
+      <div className="split-hero__copy">
+        <div key={current.id} className="split-hero__text">
+          <p className="split-hero__eyebrow">{t(lineKey(current.id, "eyebrow"))}</p>
+          <h1 className="split-hero__title">
+            {line1}
+            <br />
+            {line2}
+          </h1>
+          <p className="split-hero__lede">{t(lineKey(current.id, "lede"))}</p>
+          <Link to={current.to} className="split-hero__cta">
+            {t(lineKey(current.id, "cta"))} <LuArrowRight className="rtl-flip" aria-hidden="true" />
+          </Link>
+        </div>
+
+        <div className="split-hero__tabs">
+          {lines.map((line, lineIndex) => (
+            <button
+              key={line.id}
+              type="button"
+              className={`split-hero__tab${line.id === current.id ? " is-active" : ""}${paused ? " is-paused" : ""}`}
+              aria-current={line.id === current.id}
+              onClick={() => setIndex(lineIndex)}
+            >
+              {t(lineKey(line.id, "tab"))}
+            </button>
+          ))}
+        </div>
+      </div>
+
+      <div className="split-hero__media" aria-hidden="true">
+        {lines.map((line, lineIndex) => (
           <img
-            key={slide.id}
-            src={slide.image}
+            key={line.id}
+            src={line.image}
             alt=""
-            className={`photo-hero__slide${slideIndex === index ? " is-active" : ""}`}
-            loading={slideIndex === 0 ? "eager" : "lazy"}
+            className={`split-hero__image${line.id === current.id ? " is-active" : ""}`}
+            style={line.focus ? { objectPosition: line.focus } : undefined}
+            loading={lineIndex === 0 ? "eager" : "lazy"}
             decoding="async"
-            onError={(event) => event.currentTarget.classList.add("is-missing")}
           />
         ))}
       </div>
+    </section>
+  );
+}
 
-      <div className="photo-hero__copy">
-        <p className="photo-hero__eyebrow">{t("hero.eyebrow")}</p>
-        <h1 className="photo-hero__title">
-          {line1}
-          <br />
-          {line2}
-        </h1>
-        <p className="photo-hero__lede">{t("hero.lede")}</p>
-        <Link to="/#designs" className="photo-hero__cta">
-          {t("hero.explore")} <LuArrowRight className="rtl-flip" aria-hidden="true" />
+/** One tall photo tile per product line. */
+function Categories() {
+  const { t, money } = useStoreText();
+  const { lines, printsFrom } = useLines();
+
+  return (
+    <section className="home-block home-cats" aria-labelledby="cats-title">
+      <div className="home-head home-head--center">
+        <p className="home-eyebrow">{t("home.cats.eyebrow")}</p>
+        <h2 id="cats-title" className="home-heading">{t("home.cats.title")}</h2>
+        <span className="home-rule" aria-hidden="true" />
+      </div>
+      <div className="home-cats__grid" data-count={lines.length}>
+        {lines.map((line) => {
+          const from = line.id === "prints" ? printsFrom : LOWEST_PRINT_PRICE;
+          return (
+            <Link key={line.id} to={line.to} className="home-cat">
+              <img
+                src={line.image}
+                alt=""
+                loading="lazy"
+                decoding="async"
+                style={line.focus ? { objectPosition: line.focus } : undefined}
+              />
+              <span className="home-cat__body">
+                <strong className="home-cat__name">{t(lineKey(line.id, "tab"))}</strong>
+                <span className="home-cat__note">{t(lineKey(line.id, "note"))}</span>
+                <span className="home-cat__price">
+                  {from === null ? t("home.cats.browse") : t("home.cats.from", { amount: money(from) })}
+                  <LuArrowRight className="rtl-flip" aria-hidden="true" />
+                </span>
+              </span>
+            </Link>
+          );
+        })}
+      </div>
+    </section>
+  );
+}
+
+/** Sport posters from a GPX route (Strava, Garmin, Komoot). */
+function SportPromo() {
+  const { t } = useStoreText();
+  return (
+    <section className="home-block sky-promo sky-promo--sport" aria-labelledby="sport-promo-title">
+      <img className="sky-promo__poster" src="/assets/sport-poster.webp" alt={t("sportPromo.alt")} loading="lazy" />
+      <div className="sky-promo__copy">
+        <p className="sky-promo__eyebrow">{t("sportPromo.eyebrow")}</p>
+        <h2 id="sport-promo-title" className="sky-promo__title">{t("sportPromo.title")}</h2>
+        <p className="sky-promo__lede">{t("sportPromo.lede")}</p>
+        <ul className="sky-promo__points">
+          <li>{t("sportPromo.p1")}</li>
+          <li>{t("sportPromo.p2")}</li>
+          <li>{t("sportPromo.p3")}</li>
+        </ul>
+        <Link to="/create?type=sport" className="store-btn store-btn--primary store-btn--lg">
+          {t("sportPromo.cta")} <LuArrowRight className="rtl-flip" aria-hidden="true" />
         </Link>
-        <div className="photo-hero__dots">
-          {SLIDES.map((slide, slideIndex) => (
-            <button
-              key={slide.id}
-              type="button"
-              className={slideIndex === index ? "is-active" : ""}
-              aria-label={t("hero.show", { n: slideIndex + 1 })}
-              aria-current={slideIndex === index}
-              onClick={() => setIndex(slideIndex)}
-            />
-          ))}
-        </div>
       </div>
     </section>
   );
@@ -219,7 +307,11 @@ function ProductGrid({ choice }: { choice: Choice }) {
 
   return (
     <section className="home-styles" id="designs" aria-labelledby="designs-title">
-      <h2 id="designs-title" className="visually-hidden">{t("style.title")}</h2>
+      <div className="home-head home-head--center">
+        <p className="home-eyebrow">{t("home.designs.eyebrow")}</p>
+        <h2 id="designs-title" className="home-heading">{t("home.designs.title")}</h2>
+        <span className="home-rule" aria-hidden="true" />
+      </div>
 
       <div className="chips" role="toolbar" aria-label={t("grid.filter")}>
         {FILTERS.slice(0, 3).map((entry) => (
