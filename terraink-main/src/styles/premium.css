@@ -493,3 +493,233 @@
   font-weight: 500 !important;
   letter-spacing: -0.012em !important;
 }
+
+/* ══ Editor (poster studio) ══
+   Same language as the shop: green header, squared controls, hairlines,
+   uppercase labels, gold for the current tool. */
+
+/* Header: identical to the shop header. */
+.app-shell[data-store-studio] > .store-header {
+  border-bottom: 1px solid rgba(220, 197, 148, 0.26) !important;
+  background: var(--s-green) !important;
+}
+
+.store-header--studio .store-brand,
+.store-header--studio .store-brand__name {
+  color: #fff !important;
+}
+
+.store-header--studio .store-nav__link {
+  color: rgba(255, 255, 255, 0.88) !important;
+  font-size: 0.74rem;
+  font-weight: 500;
+  letter-spacing: 0.16em;
+  text-transform: uppercase;
+}
+
+.store-header--studio .store-nav__link:hover {
+  color: #fff !important;
+}
+
+.store-header--studio .store-nav__link.is-active {
+  padding: 10px 18px;
+  border: 1px solid var(--s-gold-light);
+  border-radius: var(--s-radius-sm);
+  background: var(--s-gold-light);
+  color: var(--s-green) !important;
+  font-weight: 600;
+}
+
+.store-header--studio .lang-menu__trigger {
+  border-color: rgba(255, 255, 255, 0.28);
+  border-radius: var(--s-radius-sm);
+  background: transparent;
+  color: #fff;
+}
+
+.store-header--studio .store-cart-btn {
+  color: #fff !important;
+}
+
+.store-header--studio .store-cart-btn__count {
+  background: var(--s-gold-light);
+  color: var(--s-green);
+}
+
+/* Tool rail: the current tool is gold with a rule, not a dim box. */
+.app-shell[data-store-studio] .desktop-nav-tab {
+  border-radius: 0 !important;
+}
+
+.app-shell[data-store-studio] .desktop-nav-tab.is-active {
+  background: transparent !important;
+  color: var(--s-gold-light) !important;
+  box-shadow: inset 2px 0 0 var(--s-gold-light) !important;
+}
+
+[dir="rtl"] .app-shell[data-store-studio] .desktop-nav-tab.is-active {
+  box-shadow: inset -2px 0 0 var(--s-gold-light) !important;
+}
+
+.app-shell[data-store-studio] .desktop-nav-tab.is-active .desktop-nav-icon {
+  color: var(--s-gold-light) !important;
+}
+
+.app-shell[data-store-studio] .mobile-nav-tab {
+  border-radius: 0 !important;
+}
+
+.app-shell[data-store-studio] .mobile-nav-tab.is-active {
+  color: var(--s-gold-light) !important;
+}
+
+.app-shell[data-store-studio] .mobile-nav-tab.is-active::before {
+  background: var(--s-gold-light) !important;
+}
+
+/* Step heading */
+.app-shell[data-store-studio] .studio-step__eyebrow,
+.studio-buy .store-eyebrow {
+  color: var(--s-gold-text) !important;
+  font-size: 0.66rem !important;
+  font-weight: 600 !important;
+  letter-spacing: 0.2em !important;
+}
+
+.app-shell[data-store-studio] .studio-step__title {
+  font-size: 1.55rem !important;
+}
+
+/* Small labels above controls */
+.app-shell[data-store-studio] :is(.sf-block__title, .map-details-subtitle) {
+  color: var(--s-ink-soft) !important;
+  font-size: 0.68rem !important;
+  font-weight: 600 !important;
+  letter-spacing: 0.14em !important;
+  text-transform: uppercase;
+}
+
+/* Squared corners on every box and control (switches and radios stay round).
+   The repeated class outranks the many panel-scoped radius rules. */
+.app-shell.app-shell.app-shell[data-store-studio] :is(
+  .sf-orientation, .sf-orientation__opt, .sf-list, .sf-row, .sf-row__badge, .sf-swatch, .sf-swatch__tile,
+  .sf-frame-info, .accordion-header, .poster-kind, .poster-kind__opt, .form-control-tall, .location-current-btn,
+  .theme-picker__current, .theme-picker__edit, .theme-picker__filters, .theme-picker__filter, .theme-card,
+  .theme-card-palette, .theme-picker__more, .theme-customize-btn, .marker-picker__intro, .marker-picker__search-field,
+  .marker-picker__option, .marker-picker__uploaded-section, .gpx-drop, .gpx-drop__icon, .panel-group,
+  .panel-group__head, .message-suggestion, .advanced-card, .advanced-card__value, .advanced-rotate__reset,
+  .advanced-rotate__step, .advanced-link, .advanced-link__icon, .studio-steps-nav__back, .studio-steps-nav__next,
+  .desktop-layout-label, .map-control-group, .map-control-btn, .room-decor__scale, .studio-view-toggle,
+  .segmented__option, .buy-summary, .buy-summary__edit, .studio-buy__cta, .studio-buy-bar, .studio-buy-bar__cta,
+  .layout-card, .text-parts__chip span, .route-card, .sport-cta, .color-editor-screen button, input[type="text"],
+  input[type="search"], input[type="number"], input[type="date"], input[type="time"], select, textarea
+) {
+  border-radius: var(--s-radius) !important;
+}
+
+/* Cards: a hairline, no drop shadow. */
+.app-shell[data-store-studio] :is(
+  .sf-list, .sf-frame-info, .theme-picker__current, .panel-group, .advanced-card, .advanced-link,
+  .marker-picker__uploaded-section, .buy-summary, .theme-card, .marker-picker__option, .sf-swatch
+) {
+  border-color: var(--s-line) !important;
+  box-shadow: none !important;
+}
+
+.app-shell[data-store-studio] :is(.theme-card, .sf-swatch, .marker-picker__option).is-selected,
+.app-shell[data-store-studio] .theme-card.is-selected {
+  border-color: var(--s-green) !important;
+  box-shadow: 0 0 0 1px var(--s-green) !important;
+}
+
+/* Switches between two or three options: ruled box, green fill on the choice. */
+.app-shell[data-store-studio] :is(.sf-orientation, .poster-kind, .theme-picker__filters),
+.studio-view-toggle {
+  padding: 3px !important;
+  border: 1px solid var(--s-line) !important;
+  background: var(--s-surface) !important;
+  box-shadow: none !important;
+}
+
+.app-shell[data-store-studio] :is(.sf-orientation__opt.is-selected, .poster-kind__opt.is-active, .theme-picker__filter.is-active),
+.app-shell[data-store-studio] .studio-view-toggle .segmented__option.is-selected {
+  background: var(--s-green) !important;
+  color: var(--s-cream) !important;
+  box-shadow: none !important;
+}
+
+.app-shell[data-store-studio] :is(.sf-orientation__opt.is-selected, .poster-kind__opt.is-active) svg {
+  color: var(--s-cream) !important;
+}
+
+/* Step buttons */
+.app-shell[data-store-studio] .studio-steps-nav__next {
+  min-height: 50px;
+  background: var(--s-green) !important;
+  color: #fff !important;
+  font-size: 0.74rem !important;
+  font-weight: 600 !important;
+  letter-spacing: 0.12em;
+  text-transform: uppercase;
+}
+
+.app-shell[data-store-studio] .studio-steps-nav__next:hover:not(:disabled) {
+  background: var(--s-accent-hover) !important;
+}
+
+.app-shell[data-store-studio] .studio-steps-nav__back {
+  min-height: 50px;
+  border-color: var(--s-line-strong) !important;
+  background: transparent !important;
+}
+
+/* Poster stage controls */
+.app-shell.app-shell[data-store-studio] :is(.map-control-group, .map-control-btn, .location-row-icon-btn, .location-current-btn, .marker-picker__option, .theme-card, .form-control-tall, .location-input-wrap input) {
+  border-radius: var(--s-radius) !important;
+}
+
+.app-shell[data-store-studio] .map-control-group {
+  border: 1px solid var(--s-line) !important;
+  box-shadow: 0 8px 24px rgba(27, 27, 25, 0.08) !important;
+}
+
+.app-shell[data-store-studio] .map-control-btn {
+  font-size: 0.68rem !important;
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+}
+
+/* Buy box */
+.studio-buy__amount,
+.studio-buy-bar__price {
+  font-family: var(--s-display) !important;
+  font-weight: 500 !important;
+  letter-spacing: -0.01em !important;
+}
+
+.studio-buy__cta,
+.studio-buy-bar__cta {
+  min-height: 54px;
+  font-size: 0.76rem !important;
+  font-weight: 600 !important;
+  letter-spacing: 0.12em;
+  text-transform: uppercase;
+}
+
+.studio-buy-bar__cta {
+  min-height: 46px;
+}
+
+.studio-buy__trust svg {
+  color: var(--s-gold);
+}
+
+:root[lang="ar"] .app-shell[data-store-studio] :is(.desktop-nav-tab, .map-control-btn, .studio-steps-nav__next, .studio-buy__cta, .studio-buy-bar__cta, .sf-block__title, .studio-step__eyebrow, .store-nav__link) {
+  letter-spacing: 0 !important;
+}
+
+.app-shell[data-store-studio] .map-control-btn--primary {
+  border-color: var(--s-green) !important;
+  background: var(--s-green) !important;
+  color: #fff !important;
+}
