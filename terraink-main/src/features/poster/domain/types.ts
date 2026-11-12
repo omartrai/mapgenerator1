@@ -33,6 +33,8 @@ export interface ExportOptions {
   mapShape?: string;
   /** Sport layout extras (subtitle, stats, profile, accent). */
   activity?: import("./activityPoster").ActivityPrint;
+  /** Size, typeface and style of the personal message. */
+  messageLook?: import("./messageStyle").MessageLook;
   showOverlay?: boolean;
   includeCredits?: boolean;
   markers?: MarkerItem[];

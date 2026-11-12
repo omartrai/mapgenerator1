@@ -11,6 +11,11 @@ import {
   type TextSlot,
 } from "@/features/poster/domain/posterLayout";
 import type { ActivityPrint } from "@/features/poster/domain/activityPoster";
+import {
+  messageCenterY,
+  resolveMessageType,
+  type MessageLook,
+} from "@/features/poster/domain/messageStyle";
 import { profileAreaPath } from "@/features/routes/domain/activity";
 import { withAlpha } from "@/shared/utils/color";
 import {
@@ -64,6 +69,7 @@ export function drawPosterText(
   layoutId: string = DEFAULT_POSTER_LAYOUT,
   mapShape: string = "none",
   activity?: ActivityPrint,
+  messageLook?: MessageLook,
 ): void {
   const layout = getPosterLayout(layoutId);
   const themeText = theme.ui?.text || "#111111";
@@ -191,23 +197,30 @@ export function drawPosterText(
 
     const message = textParts.message ? customMessage.trim() : "";
     if (message) {
+      const type = resolveMessageType(messageLook, Boolean(layout.activity));
+      const baseRefPx = MESSAGE_FONT_BASE_PX * layout.scale.message;
+      const sizeRefPx = baseRefPx * type.scale;
+      const family = type.family ? `"${type.family}", ${titleFontFamily}` : titleFontFamily;
+      const text = type.upper ? message.toUpperCase() : message;
       setFittedFont(
         ctx,
-        message,
-        400,
-        MESSAGE_FONT_BASE_PX * dimScale * layout.scale.message,
-        titleFontFamily,
-        Math.min(width * 0.7, maxTextWidth),
+        text,
+        type.weight,
+        sizeRefPx * dimScale,
+        family,
+        layout.activity ? maxTextWidth : Math.min(width * 0.8, maxTextWidth),
       );
-      if (layout.activity) {
-        // Sport layout: an upright, capitalised closing line.
-        const upper = message.toUpperCase();
-        setFittedFont(ctx, upper, 500, MESSAGE_FONT_BASE_PX * dimScale * layout.scale.message, titleFontFamily, maxTextWidth);
-        ctx.fillText(upper, ...at(layout.message));
-      } else {
-        ctx.font = `italic ${ctx.font}`;
-        ctx.fillText(message, ...at(layout.message));
-      }
+      if (type.italic) ctx.font = `italic ${ctx.font}`;
+      const y = messageCenterY(
+        layout.message,
+        layout,
+        sizeRefPx,
+        baseRefPx,
+        shortSide / height,
+        TEXT_DIMENSION_REFERENCE_PX,
+      );
+      ctx.textAlign = layout.message.align;
+      ctx.fillText(text, width * layout.message.x, height * y);
     }
   }
 

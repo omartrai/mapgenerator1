@@ -3,6 +3,7 @@ import { usePosterContext } from "@/features/poster/ui/PosterContext";
 import { textPartsFromForm } from "@/features/poster/domain/textLayout";
 import { getPosterLayout } from "@/features/poster/domain/posterLayout";
 import { activityFromForm } from "@/features/poster/domain/activityPoster";
+import { messageLookFromForm, resolveMessageType } from "@/features/poster/domain/messageStyle";
 import { localStorageCache } from "@/core/cache/localStorageCache";
 import type { ExportFormat } from "@/features/export/domain/types";
 import { captureMapAsCanvas } from "@/features/export/infrastructure/mapExporter";
@@ -144,6 +145,8 @@ export function useExport() {
       // Script layouts draw the city in their own face.
       const layoutFont = getPosterLayout(form.posterLayout).cityStyle.family;
       if (form.showPosterText && layoutFont) await ensureFont(layoutFont);
+      const messageFont = resolveMessageType(messageLookFromForm(form), false).family;
+      if (form.showPosterText && messageFont) await ensureFont(messageFont);
 
       const widthCm = Number(form.width) || DEFAULT_POSTER_WIDTH_CM;
       const heightCm = Number(form.height) || DEFAULT_POSTER_HEIGHT_CM;
@@ -174,6 +177,7 @@ export function useExport() {
         posterLayout: form.posterLayout,
         mapShape: form.mapShape,
         activity: activityFromForm(form as unknown as Record<string, unknown>, state.routes),
+        messageLook: messageLookFromForm(form),
         markers: hasVisibleMarkers ? state.markers : [],
         markerIcons: hasVisibleOverlays
           ? getAllMarkerIcons(state.customMarkerIcons)
@@ -229,6 +233,8 @@ export function useExport() {
         }
         const svgLayoutFont = getPosterLayout(form.posterLayout).cityStyle.family;
         if (form.showPosterText && svgLayoutFont) await ensureFont(svgLayoutFont);
+        const svgMessageFont = resolveMessageType(messageLookFromForm(form), false).family;
+        if (form.showPosterText && svgMessageFont) await ensureFont(svgMessageFont);
         const blob = await createLayeredSvgBlobFromMap({
           map,
           exportWidth: size.width,
@@ -249,6 +255,7 @@ export function useExport() {
         posterLayout: form.posterLayout,
         mapShape: form.mapShape,
         activity: activityFromForm(form as unknown as Record<string, unknown>, state.routes),
+        messageLook: messageLookFromForm(form),
           markers: hasVisibleMarkers ? state.markers : [],
           markerIcons: hasVisibleOverlays
             ? getAllMarkerIcons(state.customMarkerIcons)

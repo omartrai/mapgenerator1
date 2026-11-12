@@ -10,6 +10,11 @@ import {
   type TextSlot,
 } from "@/features/poster/domain/posterLayout";
 import type { ActivityPrint } from "@/features/poster/domain/activityPoster";
+import {
+  messageCenterY,
+  resolveMessageType,
+  type MessageLook,
+} from "@/features/poster/domain/messageStyle";
 import { profileAreaPath } from "@/features/routes/domain/activity";
 import {
   TEXT_DIMENSION_REFERENCE_PX,
@@ -44,6 +49,8 @@ interface PosterTextOverlayProps {
   mapShape?: string;
   /** Sport layout extras: date line, stats, elevation profile, accent colour. */
   activity?: ActivityPrint;
+  /** Size, typeface and style of the personal message. */
+  messageLook?: MessageLook;
   includeCredits: boolean;
   showOverlay: boolean;
 }
@@ -108,6 +115,7 @@ export default function PosterTextOverlay({
   layout: layoutId,
   mapShape = "none",
   activity,
+  messageLook,
   includeCredits,
   showOverlay,
 }: PosterTextOverlayProps) {
@@ -150,7 +158,28 @@ export default function PosterTextOverlay({
   const cityFontSize = fitted(CITY_FONT_BASE_PX * (spacedCity ? computeCityFontScale(city) : 1) * layout.scale.city);
   const countryFontSize = fitted(COUNTRY_FONT_BASE_PX * layout.scale.country);
   const coordsFontSize = `${toCqMin(COORDS_FONT_BASE_PX * layout.scale.coords)}cqmin`;
-  const messageFontSize = fitted(MESSAGE_FONT_BASE_PX * layout.scale.message);
+  const messageType = resolveMessageType(messageLook, Boolean(layout.activity));
+  const messageBasePx = MESSAGE_FONT_BASE_PX * layout.scale.message;
+  const messageSizePx = messageBasePx * messageType.scale;
+  const messageFontSize = fitted(messageSizePx);
+  const messageFont = messageType.family ? `"${messageType.family}", ${titleFont}` : titleFont;
+  const messageY =
+    size.width > 0
+      ? messageCenterY(
+          layout.message,
+          layout,
+          messageSizePx,
+          messageBasePx,
+          Math.min(size.width, size.height) / size.height,
+          TEXT_DIMENSION_REFERENCE_PX,
+        )
+      : layout.message.y;
+  useEffect(() => {
+    if (!messageType.family) return;
+    void ensureFont(messageType.family).then(() => {
+      rootRef.current?.dispatchEvent(new Event("fontload"));
+    });
+  }, [messageType.family]);
   const attributionFontSize = `${toCqMin(ATTRIBUTION_FONT_BASE_PX)}cqmin`;
   const attributionColor =
     layout.band || layout.border || mapShape !== "none" || layout.mapWindow
@@ -168,6 +197,11 @@ export default function PosterTextOverlay({
     cityLabel,
     countryLabel,
     trimmedMessage,
+    messageSizePx,
+    messageFont,
+    messageType.weight,
+    messageType.italic,
+    messageType.upper,
     fontFamily,
     layoutId,
     showPosterText,
@@ -392,15 +426,16 @@ export default function PosterTextOverlay({
           {textParts.message && trimmedMessage ? (
             <p
               className="poster-message poster-line"
-              data-fit=""
+              data-fit={sport ? "" : String(Math.min(0.8, layout.maxWidth))}
               style={{
-                ...slotStyle(layout.message),
-                fontFamily: titleFont,
+                ...slotStyle({ ...layout.message, y: messageY }),
+                fontFamily: messageFont,
                 fontSize: messageFontSize,
-                ...(sport ? { fontStyle: "normal", fontWeight: 500 } : {}),
+                fontStyle: messageType.italic ? "italic" : "normal",
+                fontWeight: messageType.weight,
               }}
             >
-              <span>{sport ? trimmedMessage.toUpperCase() : trimmedMessage}</span>
+              <span>{messageType.upper ? trimmedMessage.toUpperCase() : trimmedMessage}</span>
             </p>
           ) : null}
         </>

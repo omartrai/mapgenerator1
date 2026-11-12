@@ -14,6 +14,7 @@ import { MAP_SHAPES, POSTER_LAYOUTS, DEFAULT_POSTER_LAYOUT } from "@/features/po
 import { LuBan, LuCircle, LuHeart, LuStar } from "react-icons/lu";
 import { usePosterContext } from "@/features/poster/ui/PosterContext";
 import { useActivityPoster } from "@/features/routes/application/useActivityPoster";
+import MessageLookControls from "@/features/poster/ui/MessageLookControls";
 
 /** Lines of the poster text that can each be hidden on their own. */
 const TEXT_PARTS = [
@@ -157,6 +158,14 @@ export default function TypographySection({
               })}
             </span>
             </label>
+            {(form.customMessage ?? "").trim() ? (
+              <MessageLookControls
+                size={form.messageSize}
+                font={form.messageFont}
+                style={form.messageStyle}
+                isSport={isSport}
+              />
+            ) : null}
         </PanelGroup>
 
 

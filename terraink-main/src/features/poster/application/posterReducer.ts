@@ -55,6 +55,10 @@ export interface PosterForm {
   showCountry?: boolean;
   showCoordinates?: boolean;
   showMessage?: boolean;
+  /** Personal message look: size s|m|l|xl, font id, style id (missing = original). */
+  messageSize?: string;
+  messageFont?: string;
+  messageStyle?: string;
   /** Personal message printed under the coordinates; empty hides it. */
   customMessage: string;
   includeCredits: boolean;
