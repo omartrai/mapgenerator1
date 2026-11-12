@@ -10,6 +10,7 @@ const CollectionPage = lazy(() => import("@/features/store/ui/CollectionPage"));
 const CollectionProductPage = lazy(() => import("@/features/store/ui/CollectionProductPage"));
 const AdminOrdersPage = lazy(() => import("@/features/store/ui/AdminOrdersPage"));
 const AdminReviewsPage = lazy(() => import("@/features/store/ui/AdminReviewsPage"));
+const LegalPage = lazy(() => import("@/features/store/ui/LegalPage"));
 const AdminOrderPage = lazy(() => import("@/features/store/ui/AdminOrderPage"));
 
 const TITLES: [RegExp, string][] = [
@@ -44,6 +45,7 @@ export default function AppRouter() {
   else if ((params = matchPath("/order/:number", path))) page = <OrderConfirmationPage number={params.number} />;
   else if (path === "/collection") page = <CollectionPage />;
   else if ((params = matchPath("/collection/:id", path))) page = <CollectionProductPage id={Number(params.id)} />;
+  else if ((params = matchPath("/legal/:slug", path))) page = <LegalPage slug={params.slug} />;
   else if (path === "/admin") page = <AdminOrdersPage />;
   else if (path === "/admin/reviews") page = <AdminReviewsPage />;
   else if ((params = matchPath("/admin/orders/:number", path))) page = <AdminOrderPage number={params.number} />;

@@ -225,6 +225,19 @@ export default function CheckoutPage() {
             <p className="summary-card__note">
               {t("checkout.agree", { amount: money(totals.total) })}
             </p>
+            <p className="summary-card__note summary-card__legal">
+              {t("checkout.legal", { terms: "\u0001", privacy: "\u0002" })
+                .split(/(\u0001|\u0002)/)
+                .map((part, index) =>
+                  part === "\u0001" ? (
+                    <Link key={index} to="/legal/cgv">{t("legal.cgv")}</Link>
+                  ) : part === "\u0002" ? (
+                    <Link key={index} to="/legal/confidentialite">{t("legal.confidentialite")}</Link>
+                  ) : (
+                    part
+                  ),
+                )}
+            </p>
           </aside>
         </form>
       </main>

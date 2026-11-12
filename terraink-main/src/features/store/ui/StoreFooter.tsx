@@ -28,6 +28,12 @@ export default function StoreFooter() {
             <Link to="/#faq">{t("nav.faq")}</Link>
             <Link to="/cart">{t("footer.cart")}</Link>
           </div>
+          <div>
+            <h3>{t("footer.legal")}</h3>
+            <Link to="/legal/cgv">{t("legal.cgv")}</Link>
+            <Link to="/legal/confidentialite">{t("legal.confidentialite")}</Link>
+            <Link to="/legal/mentions-legales">{t("legal.mentions-legales")}</Link>
+          </div>
         </nav>
       </div>
       <div className="store-footer__base">
