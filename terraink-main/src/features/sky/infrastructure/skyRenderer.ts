@@ -6,7 +6,8 @@ import {
   starSize,
   toHorizontal,
 } from "@/features/sky/domain/astronomy";
-import type { SkyColors, SkyDisc } from "@/features/sky/domain/chart";
+import type { SkyColors, SkyDisc, SkyShape } from "@/features/sky/domain/chart";
+import { shapePath } from "@/features/poster/domain/posterLayout";
 import { withAlpha } from "@/shared/utils/color";
 
 /**
@@ -88,6 +89,27 @@ export interface SkyChartOptions {
   showLines: boolean;
   showGrid: boolean;
   showMilkyWay: boolean;
+  /** Outline of the chart (circle by default). */
+  shape?: SkyShape;
+}
+
+/** The chart outline as a canvas path, in the square around the disc. */
+function outlinePath(shape: SkyShape, disc: SkyDisc): Path2D {
+  const box = { x: disc.cx - disc.r, y: disc.cy - disc.r, w: disc.r * 2, h: disc.r * 2 };
+  if (shape === "square") {
+    const path = new Path2D();
+    path.rect(box.x, box.y, box.w, box.h);
+    return path;
+  }
+  if (shape === "heart" || shape === "star") {
+    // A star needs a little more room than the circle to look as big.
+    const grow = shape === "star" ? 0.06 : 0;
+    const big = { x: box.x - box.w * grow, y: box.y - box.h * grow, w: box.w * (1 + grow * 2), h: box.h * (1 + grow * 2) };
+    return new Path2D(shapePath(shape, big));
+  }
+  const path = new Path2D();
+  path.arc(disc.cx, disc.cy, disc.r, 0, Math.PI * 2);
+  return path;
 }
 
 /** Draws the poster background and the round chart of the sky. */
@@ -98,7 +120,11 @@ export function drawSkyChart(
   catalog: SkyCatalog,
   options: SkyChartOptions,
 ): void {
-  const { disc, colors } = options;
+  const { colors } = options;
+  const shape = options.shape ?? "circle";
+  const outline = outlinePath(shape, options.disc);
+  // A square shows the whole sky down to the horizon in its corners.
+  const disc = shape === "square" ? { ...options.disc, r: options.disc.r * Math.SQRT2 } : options.disc;
   const lst = localSiderealTime({ lat: options.lat, lon: options.lon, time: options.time });
   const project = (ra: number, dec: number) => {
     const { alt, az } = toHorizontal(ra, dec, options.lat, lst);
@@ -111,13 +137,11 @@ export function drawSkyChart(
   ctx.fillStyle = colors.paper;
   ctx.fillRect(0, 0, width, height);
 
-  // The chart disc.
-  ctx.beginPath();
-  ctx.arc(disc.cx, disc.cy, disc.r, 0, Math.PI * 2);
+  // The chart area.
   ctx.fillStyle = colors.disc;
-  ctx.fill();
+  ctx.fill(outline);
   ctx.save();
-  ctx.clip();
+  ctx.clip(outline);
 
   if (options.showMilkyWay) {
     ctx.fillStyle = withAlpha(colors.star, 0.045);
@@ -207,11 +231,10 @@ export function drawSkyChart(
   ctx.restore();
 
   // Rim.
-  ctx.beginPath();
-  ctx.arc(disc.cx, disc.cy, disc.r, 0, Math.PI * 2);
   ctx.strokeStyle = colors.ring;
   ctx.lineWidth = Math.max(1, unit * 2.2);
-  ctx.stroke();
+  ctx.lineJoin = "round";
+  ctx.stroke(outline);
   ctx.restore();
 }
 

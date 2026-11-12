@@ -123,7 +123,11 @@ export const frameDepthOf = (options: ProductOptions): FrameDepth =>
   options.frameDepth === "3" ? "3" : "1.5";
 
 /** True when the poster gets a passe-partout (needs a frame). */
-export const hasMat = (options: ProductOptions) => options.frameId !== "none" && options.mat === true;
+/**
+ * Passe-partout (mount) is no longer offered: every poster is sold without
+ * one, whatever an older cart or link says.
+ */
+export const hasMat = (_options: ProductOptions) => false;
 
 export function getPrintSize(sizeId: string): PrintSize {
   return findSize(sizeId) ?? PRINT_SIZES[0];

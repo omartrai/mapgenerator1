@@ -59,6 +59,7 @@ export default function SkyPreview() {
     form.skyLines,
     form.skyGrid,
     form.skyMilkyWay,
+    form.skyShape,
     form.posterLayout,
   ]);
 

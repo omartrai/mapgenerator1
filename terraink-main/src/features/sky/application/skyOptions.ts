@@ -1,5 +1,5 @@
 import { getPosterLayout } from "@/features/poster/domain/posterLayout";
-import { skyColors, skyDisc } from "@/features/sky/domain/chart";
+import { skyColors, skyDisc, toSkyShape } from "@/features/sky/domain/chart";
 import { skyInstant, type SkyChartOptions } from "@/core/services";
 
 export interface SkyForm {
@@ -8,6 +8,7 @@ export interface SkyForm {
   skyLines?: boolean;
   skyGrid?: boolean;
   skyMilkyWay?: boolean;
+  skyShape?: string;
   posterLayout?: string;
   latitude: string;
   longitude: string;
@@ -40,5 +41,6 @@ export function skyOptionsFromForm(
     showLines: form.skyLines !== false,
     showGrid: form.skyGrid === true,
     showMilkyWay: form.skyMilkyWay !== false,
+    shape: toSkyShape(form.skyShape),
   };
 }

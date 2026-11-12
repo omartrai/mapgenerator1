@@ -72,6 +72,7 @@ export const DEFAULT_FORM: PosterForm = {
   skyLines: true,
   skyGrid: false,
   skyMilkyWay: true,
+  skyShape: "circle",
   messageSize: "s",
   messageFont: "poster",
   messageStyle: "",

@@ -18,6 +18,7 @@ import MapDimensionFields from "./MapDimensionFields";
 import ColorPicker from "@/features/theme/ui/ColorPicker";
 import ThemeColorEditor from "@/features/theme/ui/ThemeColorEditor";
 import ThemeSummarySection from "@/features/theme/ui/ThemeSummarySection";
+import SkyShapePicker from "@/features/sky/ui/SkyShapePicker";
 import { CheckIcon, EditIcon } from "@/shared/ui/Icons";
 import type { ResolvedTheme } from "@/features/theme/domain/types";
 import type { LayoutGroup } from "@/features/layout/domain/types";
@@ -422,6 +423,8 @@ export default function MapSettingsSection({
             />
           )
         ) : (
+          <>
+          <SkyShapePicker />
           <ThemeSummarySection
             listRef={themeListRef}
             themeOptions={themeOptions}
@@ -430,6 +433,7 @@ export default function MapSettingsSection({
             onThemeSelect={handleThemeSelect}
             onCustomize={handleOpenThemeEditor}
           />
+          </>
         )}
       </div>
 

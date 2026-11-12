@@ -4957,3 +4957,93 @@
   margin: 0 0 14px !important;
   color: #fff !important;
 }
+
+/* Night-sky chart shapes (Theme tab) */
+.sky-shapes {
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+  margin-bottom: 14px;
+}
+
+.sky-shapes__title {
+  margin: 0;
+  color: var(--s-ink, #1f2a26);
+  font-size: 0.85rem;
+  font-weight: 700;
+}
+
+.sky-shapes__grid {
+  display: grid;
+  grid-template-columns: repeat(4, minmax(0, 1fr));
+  gap: 6px;
+}
+
+.sky-shapes__opt {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 4px;
+  padding: 10px 4px 8px;
+  border: 1px solid var(--s-line, #e7dfd3);
+  border-radius: 10px;
+  background: #fff;
+  color: var(--s-ink, #1f2a26);
+  font-size: 0.72rem;
+  font-weight: 600;
+  cursor: pointer;
+}
+
+.sky-shapes__opt svg {
+  width: 20px;
+  height: 20px;
+}
+
+.sky-shapes__opt.is-active {
+  border-color: var(--s-accent, #e8622c);
+  box-shadow: 0 0 0 1px var(--s-accent, #e8622c);
+  color: var(--s-accent, #e8622c);
+}
+
+/* Buy box: read-only summary; choices live in the left panel. */
+.buy-summary {
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+  margin: 4px 0 0;
+  padding: 14px 16px;
+  border: 1px solid var(--s-line, #e7dfd3);
+  border-radius: 14px;
+  background: #fff;
+}
+
+.buy-summary div {
+  display: flex;
+  justify-content: space-between;
+  gap: 12px;
+}
+
+.buy-summary dt {
+  color: var(--s-muted, #6b6259);
+  font-size: 0.85rem;
+}
+
+.buy-summary dd {
+  margin: 0;
+  color: var(--s-ink, #1f2a26);
+  font-size: 0.88rem;
+  font-weight: 600;
+  text-align: end;
+}
+
+.buy-summary__edit {
+  align-self: flex-end;
+  padding: 0;
+  border: 0;
+  background: none;
+  color: var(--s-accent, #e8622c);
+  font-size: 0.82rem;
+  font-weight: 600;
+  text-decoration: underline;
+  cursor: pointer;
+}

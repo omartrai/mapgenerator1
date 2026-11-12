@@ -30,6 +30,14 @@ export function skyDisc(layout: PosterLayoutSpec, width: number, height: number)
   return { cx: (window.x + window.w / 2) * width, cy: (top + (bottom - top) / 2) * height + (layout.mapWindow ? 0 : height * 0.012), r };
 }
 
+/** Outline of the star chart. */
+export const SKY_SHAPES = ["circle", "heart", "star", "square"] as const;
+export type SkyShape = (typeof SKY_SHAPES)[number];
+
+export function toSkyShape(value: string | undefined): SkyShape {
+  return (SKY_SHAPES as readonly string[]).includes(value ?? "") ? (value as SkyShape) : "circle";
+}
+
 export interface SkyColors {
   paper: string;
   disc: string;

@@ -252,7 +252,7 @@ const SHAPE_REGION: Rect = { x: 0.06, y: 0.05, w: 0.88, h: 0.71 };
 const n = (value: number) => Math.round(value * 100) / 100;
 
 /** SVG path of the shape, fitted (square) and centred in the box. */
-function shapePath(shape: MapShapeId, box: { x: number; y: number; w: number; h: number }): string {
+export function shapePath(shape: MapShapeId, box: { x: number; y: number; w: number; h: number }): string {
   const size = Math.min(box.w, box.h);
   const x0 = box.x + (box.w - size) / 2;
   const y0 = box.y + (box.h - size) / 2;

@@ -48,11 +48,12 @@ export default function CollectionProductPage({ id }: { id: number }) {
   // Start on the cheapest option.
   useEffect(() => {
     if (!product) return;
-    const pool = product.variants.filter((v) => v.size === wantedSize);
+    // No passe-partout: only frames without a mount are offered.
+    const pool = product.variants.filter((v) => v.size === wantedSize && !v.withMat);
     const cheapest = (pool.length ? pool : product.variants).reduce((best, v) => (v.price < best.price ? v : best));
     setSelection({
       size: cheapest.size,
-      withMat: cheapest.withMat,
+      withMat: false,
       depth: cheapest.frameDepthCm,
       color: cheapest.colors.includes("black") ? "black" : cheapest.colors[0],
     });
@@ -66,7 +67,6 @@ export default function CollectionProductPage({ id }: { id: number }) {
 
   const variant = product && selection ? pickVariant(product.variants, selection) : undefined;
   const sizeVariants = product && selection ? product.variants.filter((v) => v.size === selection.size) : [];
-  const matOptions = [...new Set(sizeVariants.map((v) => v.withMat))];
   const depthOptions = [...new Set(sizeVariants.filter((v) => v.withMat === selection?.withMat).map((v) => v.frameDepthCm))].sort();
   const colorOptions = variant?.colors ?? [];
   const color = selection && colorOptions.includes(selection.color) ? selection.color : colorOptions[0];
@@ -173,26 +173,6 @@ export default function CollectionProductPage({ id }: { id: number }) {
                   ))}
                 </div>
               </div>
-
-              {matOptions.length > 1 ? (
-                <div className="studio-buy__group">
-                  <h3 id="collection-mat">{t("collection.mat")}</h3>
-                  <div className="collection-options" role="radiogroup" aria-labelledby="collection-mat">
-                    {[false, true].map((withMat) => (
-                      <button
-                        key={String(withMat)}
-                        type="button"
-                        role="radio"
-                        aria-checked={selection.withMat === withMat}
-                        className={`buy-size${selection.withMat === withMat ? " is-selected" : ""}`}
-                        onClick={() => setSelection({ ...selection, withMat })}
-                      >
-                        <strong>{t(withMat ? "collection.withMat" : "collection.withoutMat")}</strong>
-                      </button>
-                    ))}
-                  </div>
-                </div>
-              ) : null}
 
               {depthOptions.length > 1 ? (
                 <div className="studio-buy__group">

@@ -62,6 +62,8 @@ export interface PosterForm {
   skyLines?: boolean;
   skyGrid?: boolean;
   skyMilkyWay?: boolean;
+  /** Night-sky chart outline: circle, heart, star or square. */
+  skyShape?: string;
   /** Personal message look: size s|m|l|xl, font id, style id (missing = original). */
   messageSize?: string;
   messageFont?: string;
