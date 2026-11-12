@@ -21,8 +21,8 @@ import "@fontsource/plus-jakarta-sans/500.css";
 import "@fontsource/plus-jakarta-sans/600.css";
 import "@fontsource/plus-jakarta-sans/700.css";
 import "@fontsource/plus-jakarta-sans/800.css";
-import "@fontsource/playfair-display/400.css";
-import "@fontsource/playfair-display/500.css";
+// Display typeface for headings, poster names and prices.
+import "@fontsource/marcellus/400.css";
 // Arabic storefront text (Plus Jakarta Sans has no Arabic glyphs).
 import "@fontsource/cairo/arabic-400.css";
 import "@fontsource/cairo/arabic-500.css";

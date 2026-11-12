@@ -1,5 +1,5 @@
 /* ── Premium layer ──
-   Loaded last. Gallery-style storefront: serif display headings, squared
+   Loaded last. Gallery-style storefront: display headings (Marcellus), squared
    edges, hairlines instead of shadows, brand green for actions and a little
    gold for detail. Colours and radii come from the tokens in store.css. */
 
@@ -16,8 +16,8 @@
 .added-dialog__title,
 .admin-login h1 {
   font-family: var(--s-display) !important;
-  font-weight: 500 !important;
-  letter-spacing: -0.012em !important;
+  font-weight: 400 !important;
+  letter-spacing: 0 !important;
 }
 
 .home-heading,
@@ -245,7 +245,7 @@
 .home-styles .product-card__title {
   font-family: var(--s-display);
   font-size: 1.14rem !important;
-  font-weight: 500 !important;
+  font-weight: 400 !important;
   letter-spacing: 0 !important;
 }
 
@@ -404,8 +404,8 @@
 
 .startup-modal__title {
   font-family: var(--s-display);
-  font-weight: 500;
-  letter-spacing: -0.012em;
+  font-weight: 400;
+  letter-spacing: 0;
 }
 
 .startup-modal__start {
@@ -490,8 +490,8 @@
 .studio-step__title,
 .studio-buy__title {
   font-family: var(--s-display) !important;
-  font-weight: 500 !important;
-  letter-spacing: -0.012em !important;
+  font-weight: 400 !important;
+  letter-spacing: 0 !important;
 }
 
 /* ══ Editor (poster studio) ══
@@ -693,8 +693,8 @@
 .studio-buy__amount,
 .studio-buy-bar__price {
   font-family: var(--s-display) !important;
-  font-weight: 500 !important;
-  letter-spacing: -0.01em !important;
+  font-weight: 400 !important;
+  letter-spacing: 0 !important;
 }
 
 .studio-buy__cta,

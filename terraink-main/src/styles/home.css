@@ -150,7 +150,7 @@
 .photo-hero__title {
   margin: 0;
   color: #2a2420;
-  font-family: "Playfair Display", "Cairo", Georgia, serif !important;
+  font-family: var(--s-display) !important;
   font-size: clamp(2.6rem, 5vw, 4.4rem) !important;
   font-weight: 500 !important;
   letter-spacing: -0.01em !important;

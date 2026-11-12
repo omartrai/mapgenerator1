@@ -32,7 +32,7 @@
   --s-shadow-sm: 0 1px 2px rgba(27, 27, 25, 0.04);
   --s-shadow: 0 1px 2px rgba(27, 27, 25, 0.04), 0 12px 32px rgba(27, 27, 25, 0.06);
   --s-shadow-lg: 0 4px 12px rgba(27, 27, 25, 0.05), 0 28px 64px rgba(27, 27, 25, 0.12);
-  --s-display: "Playfair Display", "Cairo", Georgia, "Times New Roman", serif;
+  --s-display: "Marcellus", "Cairo", Georgia, "Times New Roman", serif;
   --s-serif: "Plus Jakarta Sans", "Cairo", system-ui, -apple-system, "Segoe UI", sans-serif;
   --s-sans: "Plus Jakarta Sans", "Cairo", system-ui, -apple-system, "Segoe UI", sans-serif;
   --s-ease: cubic-bezier(0.22, 0.8, 0.24, 1);
