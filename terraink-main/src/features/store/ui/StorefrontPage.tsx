@@ -38,11 +38,25 @@ import { useStoreText, type StoreTextKey } from "./storeText";
 
 /** The four things the shop sells; each has a hero photo and its own page. */
 type LineId = "maps" | "sky" | "sport" | "prints";
-const LINES: { id: LineId; image: string; to: string; focus?: string }[] = [
-  { id: "maps", image: "/assets/hero/marrakech.webp", to: "/create", focus: "86% 50%" },
-  { id: "sky", image: "/assets/hero/night-sky.webp", to: "/create?type=sky" },
-  { id: "sport", image: "/assets/hero/sport.webp", to: "/create?type=sport" },
-  { id: "prints", image: "/assets/hero/collection.webp", to: "/collection" },
+interface Line {
+  id: LineId;
+  image: string;
+  to: string;
+  /** Brightness of the photo behind the copy. */
+  tone: "light" | "dark";
+  /** Keeps the poster in view when the photo is cropped. */
+  focus: string;
+  /**
+   * Square room photos sit on the right and fade into this wall colour, so
+   * the poster is not cropped by a wide hero. Wide photos fill it instead.
+   */
+  wall?: string;
+}
+const LINES: Line[] = [
+  { id: "maps", image: "/assets/hero/marrakech.webp", to: "/create", tone: "light", focus: "70% 45%" },
+  { id: "sky", image: "/assets/hero/night-sky.webp", to: "/create?type=sky", tone: "dark", focus: "50% 30%", wall: "#363231" },
+  { id: "sport", image: "/assets/hero/sport.webp", to: "/create?type=sport", tone: "dark", focus: "50% 38%", wall: "#373730" },
+  { id: "prints", image: "/assets/hero/collection.webp", to: "/collection", tone: "dark", focus: "60% 30%", wall: "#553821" },
 ];
 const lineKey = (id: LineId, part: string) => `home.${id}.${part}` as StoreTextKey;
 const LOWEST_PRINT_PRICE = Math.min(...PRINT_SIZES.map((size) => size.price));
@@ -159,6 +173,8 @@ function HeroSlider() {
   return (
     <section
       className="split-hero"
+      data-tone={current.tone}
+      style={current.wall ? { backgroundColor: current.wall } : undefined}
       aria-roledescription="carousel"
       aria-label={t("hero.label")}
       onMouseEnter={() => setPaused(true)}
@@ -201,8 +217,8 @@ function HeroSlider() {
             key={line.id}
             src={line.image}
             alt=""
-            className={`split-hero__image${line.id === current.id ? " is-active" : ""}`}
-            style={line.focus ? { objectPosition: line.focus } : undefined}
+            className={`split-hero__image${line.wall ? " split-hero__image--side" : ""}${line.id === current.id ? " is-active" : ""}`}
+            style={{ objectPosition: line.focus }}
             loading={lineIndex === 0 ? "eager" : "lazy"}
             decoding="async"
           />
@@ -234,7 +250,7 @@ function Categories() {
                 alt=""
                 loading="lazy"
                 decoding="async"
-                style={line.focus ? { objectPosition: line.focus } : undefined}
+                style={{ objectPosition: line.id === "maps" ? "86% 50%" : "50% 50%" }}
               />
               <span className="home-cat__body">
                 <strong className="home-cat__name">{t(lineKey(line.id, "tab"))}</strong>

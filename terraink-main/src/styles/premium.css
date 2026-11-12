@@ -726,19 +726,60 @@
 
 /* ══ Home page: one hero photo per product line ══ */
 
+/* The photo fills the whole hero; the copy sits over it on a soft veil
+   that follows the photo's tone (light photo, dark text and the reverse). */
 .split-hero {
-  display: grid;
-  grid-template-columns: minmax(0, 0.92fr) minmax(0, 1.08fr);
-  min-height: clamp(540px, 47vw, 700px);
-  background: var(--s-hero);
+  --hero-ink: var(--s-ink);
+  --hero-soft: var(--s-ink-soft);
+  --hero-eyebrow: var(--s-gold-text);
+  --hero-rule: rgba(27, 27, 25, 0.28);
+  --hero-veil: 250, 243, 232;
+  position: relative;
+  display: flex;
+  min-height: clamp(580px, 50vw, 780px);
+  overflow: hidden;
+  background: #2a2826;
+  transition: background-color 0.8s ease;
+}
+
+.split-hero[data-tone="dark"] {
+  --hero-ink: #fff;
+  --hero-soft: rgba(255, 255, 255, 0.84);
+  --hero-eyebrow: var(--s-gold-light);
+  --hero-rule: rgba(255, 255, 255, 0.34);
+  --hero-veil: 14, 16, 15;
+}
+
+.split-hero::after {
+  content: "";
+  position: absolute;
+  inset: 0;
+  z-index: 1;
+  background: linear-gradient(
+    90deg,
+    rgba(var(--hero-veil), 0.86) 0%,
+    rgba(var(--hero-veil), 0.62) 26%,
+    rgba(var(--hero-veil), 0) 56%
+  );
+  pointer-events: none;
+  transition: background 0.6s ease;
+}
+
+[dir="rtl"] .split-hero::after {
+  transform: scaleX(-1);
 }
 
 .split-hero__copy {
+  position: relative;
+  z-index: 2;
   display: flex;
   flex-direction: column;
   justify-content: space-between;
   gap: 40px;
-  padding: clamp(40px, 6vw, 88px) clamp(24px, 6vw, 96px) clamp(28px, 3vw, 44px);
+  width: min(600px, 48vw);
+  padding: clamp(40px, 6vw, 88px) 0 clamp(28px, 3vw, 44px);
+  padding-inline-start: clamp(24px, 6vw, 96px);
+  color: var(--hero-ink);
 }
 
 .split-hero__text {
@@ -757,6 +798,10 @@
   }
 }
 
+.split-hero__eyebrow {
+  color: var(--hero-eyebrow) !important;
+}
+
 .split-hero__eyebrow,
 .home-eyebrow {
   margin: 0 0 18px !important;
@@ -772,6 +817,7 @@
 }
 
 .store-page .split-hero__title {
+  color: var(--hero-ink);
   font-family: var(--s-display);
   font-size: clamp(2.5rem, 4.6vw, 4.3rem);
   font-weight: 400;
@@ -782,7 +828,7 @@
 .split-hero__lede {
   max-width: 400px;
   margin: 22px 0 32px !important;
-  color: var(--s-ink-soft);
+  color: var(--hero-soft);
   font-size: 1.05rem;
   line-height: 1.55;
 }
@@ -808,6 +854,15 @@
   background: var(--s-accent-hover);
 }
 
+.split-hero[data-tone="dark"] .split-hero__cta {
+  background: var(--s-cream);
+  color: var(--s-green) !important;
+}
+
+.split-hero[data-tone="dark"] .split-hero__cta:hover {
+  background: #fff;
+}
+
 .split-hero__cta svg {
   width: 17px;
   height: 17px;
@@ -823,9 +878,9 @@
   flex: 1;
   padding: 14px 0 0;
   border: 0;
-  border-top: 1px solid var(--s-line-strong);
+  border-top: 1px solid var(--hero-rule);
   background: none;
-  color: var(--s-muted);
+  color: var(--hero-soft);
   font: 600 0.68rem var(--s-sans);
   letter-spacing: 0.14em;
   text-align: start;
@@ -836,7 +891,7 @@
 
 .split-hero__tab:hover,
 .split-hero__tab.is-active {
-  color: var(--s-ink);
+  color: var(--hero-ink);
 }
 
 /* The rule above the current tab fills while its slide is on screen. */
@@ -847,7 +902,7 @@
   inset-inline-start: 0;
   width: 0;
   height: 2px;
-  background: var(--s-green);
+  background: var(--hero-ink);
 }
 
 .split-hero__tab.is-active::before {
@@ -866,9 +921,8 @@
 }
 
 .split-hero__media {
-  position: relative;
-  overflow: hidden;
-  background: #2a2826;
+  position: absolute;
+  inset: 0;
 }
 
 .split-hero__image {
@@ -885,6 +939,17 @@
 .split-hero__image.is-active {
   opacity: 1;
   transform: scale(1);
+}
+
+/* A square photo keeps to the right and melts into the hero's wall colour. */
+.split-hero__image--side {
+  inset-inline: 36% 0;
+  width: 64%;
+  mask-image: linear-gradient(90deg, transparent 0, #000 30%);
+}
+
+[dir="rtl"] .split-hero__image--side {
+  mask-image: linear-gradient(270deg, transparent 0, #000 30%);
 }
 
 /* Product lines */
@@ -1008,22 +1073,48 @@
 }
 
 @media (max-width: 860px) {
-  .split-hero {
-    grid-template-columns: 1fr;
-    min-height: 0;
+  /* Phones: copy at the bottom of the photo, always on a dark veil. */
+  .split-hero,
+  .split-hero[data-tone] {
+    --hero-ink: #fff;
+    --hero-soft: rgba(255, 255, 255, 0.86);
+    --hero-eyebrow: var(--s-gold-light);
+    --hero-rule: rgba(255, 255, 255, 0.34);
+    min-height: min(680px, 88vh);
+  }
+
+  .split-hero::after,
+  [dir="rtl"] .split-hero::after {
+    background: linear-gradient(180deg, rgba(14, 16, 15, 0) 22%, rgba(14, 16, 15, 0.72) 58%, rgba(14, 16, 15, 0.92) 100%);
+    transform: none;
   }
 
   .split-hero__copy {
-    gap: 28px;
-    padding: 36px 20px 24px;
+    justify-content: flex-end;
+    gap: 26px;
+    width: 100%;
+    padding: 24px 20px;
   }
 
   .split-hero__text {
-    min-height: 300px;
+    flex: none;
+    justify-content: flex-end;
   }
 
-  .split-hero__media {
-    height: 380px;
+  .split-hero[data-tone] .split-hero__cta {
+    background: var(--s-cream);
+    color: var(--s-green) !important;
+  }
+
+  .split-hero__image {
+    object-position: 50% 12% !important;
+  }
+
+  .split-hero__image--side,
+  [dir="rtl"] .split-hero__image--side {
+    inset-inline: 0;
+    width: 100%;
+    mask-image: none;
   }
 
   .split-hero__tabs {
