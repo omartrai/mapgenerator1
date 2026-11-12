@@ -1532,3 +1532,139 @@
   border-top-width: 14px;
   border-left-width: 14px;
 }
+
+/* ── Buy box as steps: one open at a time, the others show the choice ── */
+.buy-steps {
+  display: grid;
+  gap: 10px;
+  margin: 6px 0 0;
+  padding: 0;
+  list-style: none;
+}
+
+.buy-step {
+  border: 1px solid var(--s-line);
+  border-radius: 14px;
+  background: #fff;
+  transition: border-color 0.15s ease, box-shadow 0.15s ease;
+}
+
+.buy-step.is-open {
+  border-color: color-mix(in srgb, var(--s-accent) 45%, var(--s-line));
+  box-shadow: 0 6px 18px rgba(40, 30, 20, 0.06);
+}
+
+.buy-step__head {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  width: 100%;
+  padding: 14px 16px;
+  border: 0;
+  background: transparent;
+  color: inherit;
+  font: inherit;
+  text-align: start;
+  cursor: pointer;
+}
+
+.buy-step.is-open .buy-step__head {
+  cursor: default;
+  padding-bottom: 4px;
+}
+
+.buy-step__num {
+  display: grid;
+  place-items: center;
+  flex: none;
+  width: 26px;
+  height: 26px;
+  border-radius: 50%;
+  background: var(--s-paper-deep);
+  color: var(--s-muted);
+  font-size: 0.8rem;
+  font-weight: 800;
+}
+
+.buy-step.is-open .buy-step__num {
+  background: var(--s-accent);
+  color: #fff;
+}
+
+.buy-step__text {
+  display: grid;
+  flex: 1;
+  min-width: 0;
+  gap: 2px;
+}
+
+.buy-step__title {
+  font-size: 0.95rem;
+  font-weight: 700;
+}
+
+.buy-step__summary {
+  overflow: hidden;
+  color: var(--s-muted);
+  font-size: 0.82rem;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+.buy-step__change {
+  display: inline-flex;
+  flex: none;
+  align-items: center;
+  gap: 4px;
+  color: var(--s-accent);
+  font-size: 0.8rem;
+  font-weight: 600;
+}
+
+.buy-step__body {
+  padding: 0 16px 16px;
+}
+
+/* Inside a step the groups need no top rule; the step card is the frame. */
+.buy-step__body .studio-buy__group,
+.buy-step__body .studio-buy__group:first-of-type {
+  margin-top: 0;
+  padding-top: 12px;
+  border-top: 0;
+}
+
+.buy-step__body > .studio-buy__group:first-child {
+  padding-top: 8px;
+}
+
+.buy-step__body .studio-buy__group h3 {
+  color: var(--s-muted);
+  font-size: 0.8rem;
+  font-weight: 600;
+}
+
+.buy-step__next {
+  margin-top: 14px;
+}
+
+/* Price and button stay in reach while the steps scroll. */
+.studio-buy__checkout {
+  position: sticky;
+  bottom: -28px;
+  z-index: 1;
+  display: grid;
+  gap: 10px;
+  margin: 4px -26px -28px;
+  padding: 0 26px 22px;
+  background: var(--s-paper);
+  box-shadow: 0 -10px 16px -12px rgba(40, 30, 20, 0.18);
+}
+
+/* Shorter pictures inside the finishing step. */
+.buy-step__body :is(.buy-mat, .buy-depth) .buy-frame__swatch {
+  aspect-ratio: 2.4;
+}
+
+.studio-buy__checkout .studio-buy__price {
+  margin-top: 0 !important;
+}
