@@ -160,7 +160,7 @@ export default function PurchasePanel({ isMobile }: { isMobile: boolean }) {
                   >
                     <strong>{formatRatio(size.id, product.orientation)}</strong>
                     <small>{shapeName(size.id, product.orientation)}</small>
-                    <span>{money(unitPrice({ ...product, sizeId: size.id }))}</span>
+                    <span>{money(size.price)}</span>
                   </button>
                 );
               })}
