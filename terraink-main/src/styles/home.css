@@ -3648,3 +3648,70 @@
 .message-look__font.message-look__opt--caps {
   font-size: 0.72rem;
 }
+
+/* ── Routes: the customer's own start / finish icon ── */
+.endpoint-own {
+  grid-column: 1 / -1;
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+  margin-top: 6px;
+  padding-top: 10px;
+  border-top: 1px solid var(--s-line, #e7dfd3);
+}
+
+.endpoint-own__title {
+  margin: 0;
+  color: var(--s-ink, #1f2a26);
+  font-size: 0.8rem;
+  font-weight: 700;
+}
+
+.endpoint-own__hint {
+  margin: 0;
+  display: block !important;
+  overflow: visible !important;
+  white-space: normal !important;
+  -webkit-line-clamp: unset !important;
+  color: var(--s-muted, #6b6259);
+  font-size: 0.72rem;
+  line-height: 1.35;
+}
+
+.endpoint-own__grid {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: 4px;
+}
+
+.endpoint-own__upload {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  min-height: 34px;
+  padding: 0 12px;
+  border: 1px dashed var(--s-line-strong, #d8cfc2);
+  border-radius: 999px;
+  background: #fff;
+  color: var(--s-ink, #1f2a26);
+  font-size: 0.78rem;
+  font-weight: 600;
+  cursor: pointer;
+}
+
+.endpoint-own__upload:hover {
+  border-style: solid;
+  border-color: var(--s-accent, #e8622c);
+  color: var(--s-accent, #e8622c);
+}
+
+.endpoint-own__error {
+  margin: 0;
+  color: #b42318;
+  font-size: 0.74rem;
+}
+
+.endpoint-own__grid .route-card__endpoint-option.is-selected {
+  box-shadow: 0 0 0 2px var(--s-accent, #e8622c) !important;
+}

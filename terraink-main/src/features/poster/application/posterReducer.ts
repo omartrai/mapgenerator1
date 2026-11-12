@@ -161,6 +161,24 @@ export type PosterAction =
 
 /* ────── Reducer ────── */
 
+/** Points route start/finish markers that use a removed icon back to the defaults. */
+function resetRouteEndpointIcons(state: PosterState, removed: Set<string>): Route[] {
+  return state.routes.map((route) => {
+    const start = removed.has(route.startMarker.iconId);
+    const finish = removed.has(route.finishMarker.iconId);
+    if (!start && !finish) return route;
+    return {
+      ...route,
+      startMarker: start
+        ? { ...route.startMarker, iconId: state.routeDefaults.startIconId }
+        : route.startMarker,
+      finishMarker: finish
+        ? { ...route.finishMarker, iconId: state.routeDefaults.finishIconId }
+        : route.finishMarker,
+    };
+  });
+}
+
 export function posterReducer(
   state: PosterState,
   action: PosterAction,
@@ -388,7 +406,7 @@ export function posterReducer(
           marker.iconId === action.iconId
             ? { ...marker, iconId: fallbackIconId }
             : marker,
-        ),
+        ),        routes: resetRouteEndpointIcons(state, new Set([action.iconId])),
       };
     }
 
@@ -403,6 +421,7 @@ export function posterReducer(
             ? { ...marker, iconId: fallbackIconId }
             : marker,
         ),
+        routes: resetRouteEndpointIcons(state, customIconIdSet),
       };
     }
 

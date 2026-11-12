@@ -30,6 +30,12 @@ import { getThemeColorByPath } from "@/features/theme/domain/colorPaths";
 import { CheckIcon, CloseIcon, TrashIcon } from "@/shared/ui/Icons";
 import MarkerVisual from "@/features/markers/ui/MarkerVisual";
 import {
+  createUploadedMarkerIcon,
+  getUploadLabel,
+  isSvgFile,
+  readIconFileAsDataUrl,
+} from "@/features/markers/infrastructure/helpers";
+import {
   findMarkerIcon,
   predefinedMarkerIcons,
 } from "@/features/markers/infrastructure/iconRegistry";
@@ -270,6 +276,13 @@ export default function RoutesSection() {
     [],
   );
 
+  const endpointUploadRef = useRef<HTMLInputElement>(null);
+  const [endpointUploadError, setEndpointUploadError] = useState("");
+  const uploadedIcons = useMemo(
+    () => customMarkerIcons.filter((icon) => icon.source === "custom"),
+    [customMarkerIcons],
+  );
+
   const closeEndpointEditor = useCallback(() => {
     setActiveEndpoint(null);
     setIsEndpointIconOpen(false);
@@ -297,6 +310,33 @@ export default function RoutesSection() {
     },
     [dispatch, routes],
   );
+  /** Uploads the customer's own start/finish icon and applies it at once. */
+  const handleEndpointUpload = useCallback(
+    async (event: ChangeEvent<HTMLInputElement>) => {
+      const file = event.target.files?.[0];
+      event.target.value = "";
+      if (!file || !activeEndpoint) return;
+      if (!file.type.startsWith("image/") && !isSvgFile(file)) {
+        setEndpointUploadError(t("icons.uploadTypeError"));
+        return;
+      }
+      setEndpointUploadError("");
+      try {
+        const dataUrl = await readIconFileAsDataUrl(file);
+        const icon = createUploadedMarkerIcon({
+          label: getUploadLabel(file.name),
+          dataUrl,
+          tintWithMarkerColor: isSvgFile(file),
+        });
+        dispatch({ type: "ADD_CUSTOM_MARKER_ICON", icon });
+        updateEndpoint(activeEndpoint.routeId, activeEndpoint.kind, { iconId: icon.id });
+      } catch {
+        setEndpointUploadError(t("icons.uploadError"));
+      }
+    },
+    [activeEndpoint, dispatch, t, updateEndpoint],
+  );
+
 
   return (
     <section className="panel-block routes-settings-screen">
@@ -524,6 +564,46 @@ export default function RoutesSection() {
                               />
                             </button>
                           ))}
+                          <div className="endpoint-own">
+                            <p className="endpoint-own__title">{t("routes.ownIcon")}</p>
+                            <p className="endpoint-own__hint">{t("routes.ownIconHint")}</p>
+                            <div className="endpoint-own__grid">
+                              {uploadedIcons.map((option) => (
+                                <button
+                                  key={option.id}
+                                  type="button"
+                                  className={`route-card__endpoint-option${
+                                    option.id === endpoint.iconId ? " is-selected" : ""
+                                  }`}
+                                  onClick={() =>
+                                    updateEndpoint(route.id, endpointKind!, { iconId: option.id })
+                                  }
+                                  title={option.label}
+                                  aria-label={option.label}
+                                >
+                                  <MarkerVisual icon={option} size={24} color={endpoint.color} />
+                                </button>
+                              ))}
+                              <button
+                                type="button"
+                                className="endpoint-own__upload"
+                                onClick={() => endpointUploadRef.current?.click()}
+                              >
+                                <LuUpload aria-hidden="true" />
+                                {t("routes.ownIconUpload")}
+                              </button>
+                            </div>
+                            <input
+                              ref={endpointUploadRef}
+                              type="file"
+                              accept="image/png,image/svg+xml,image/webp,image/jpeg,.svg"
+                              hidden
+                              onChange={handleEndpointUpload}
+                            />
+                            {endpointUploadError ? (
+                              <p className="endpoint-own__error" role="alert">{endpointUploadError}</p>
+                            ) : null}
+                          </div>
                         </div>
                       ) : null}
                     </div>

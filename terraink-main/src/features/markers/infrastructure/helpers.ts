@@ -59,3 +59,50 @@ export function getUploadLabel(filename: string) {
   const baseName = filename.replace(/\.[^.]+$/, "").trim();
   return baseName || "Custom Marker";
 }
+
+export function isSvgFile(file: File) {
+  return file.type === "image/svg+xml" || file.name.toLowerCase().endsWith(".svg");
+}
+
+/** Longest side, in pixels, an uploaded raster icon is stored at. */
+const UPLOAD_MAX_PX = 256;
+
+/**
+ * Reads an uploaded icon as a data URL. Raster images larger than 256 px are
+ * scaled down (PNG keeps transparency) so designs stay light in the cart.
+ */
+export function readIconFileAsDataUrl(file: File): Promise<string> {
+  return new Promise<string>((resolve, reject) => {
+    const reader = new FileReader();
+    reader.onerror = () => reject(new Error("Could not read icon upload."));
+    reader.onload = () => {
+      const dataUrl = String(reader.result ?? "");
+      if (isSvgFile(file) || typeof document === "undefined") {
+        resolve(dataUrl);
+        return;
+      }
+      const image = new Image();
+      image.onload = () => {
+        const longest = Math.max(image.naturalWidth, image.naturalHeight);
+        if (!longest || longest <= UPLOAD_MAX_PX) {
+          resolve(dataUrl);
+          return;
+        }
+        const scale = UPLOAD_MAX_PX / longest;
+        const canvas = document.createElement("canvas");
+        canvas.width = Math.round(image.naturalWidth * scale);
+        canvas.height = Math.round(image.naturalHeight * scale);
+        const ctx = canvas.getContext("2d");
+        if (!ctx) {
+          resolve(dataUrl);
+          return;
+        }
+        ctx.drawImage(image, 0, 0, canvas.width, canvas.height);
+        resolve(canvas.toDataURL("image/png"));
+      };
+      image.onerror = () => reject(new Error("Could not read icon upload."));
+      image.src = dataUrl;
+    };
+    reader.readAsDataURL(file);
+  });
+}

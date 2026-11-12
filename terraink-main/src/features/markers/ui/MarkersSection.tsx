@@ -10,6 +10,8 @@ import {
   createMarkerItem,
   createUploadedMarkerIcon,
   getUploadLabel,
+  isSvgFile,
+  readIconFileAsDataUrl,
 } from "@/features/markers/infrastructure/helpers";
 import { findMarkerIcon } from "@/features/markers/infrastructure/iconRegistry";
 import {
@@ -36,20 +38,6 @@ import { getThemeColorByPath } from "@/features/theme/domain/colorPaths";
 import { normalizeHexColor } from "@/shared/utils/color";
 import { useLanguage } from "@/shared/i18n/LanguageContext";
 
-function readFileAsDataUrl(file: File) {
-  return new Promise<string>((resolve, reject) => {
-    const reader = new FileReader();
-    reader.onload = () => resolve(String(reader.result ?? ""));
-    reader.onerror = () => reject(new Error("Could not read marker upload."));
-    reader.readAsDataURL(file);
-  });
-}
-
-function isSvgFile(file: File) {
-  return (
-    file.type === "image/svg+xml" || file.name.toLowerCase().endsWith(".svg")
-  );
-}
 
 function formatCoordinate(value: number) {
   return Number(value).toFixed(6);
@@ -211,7 +199,7 @@ export default function MarkersSection() {
 
   const handleUploadIcon = useCallback(
     async (file: File) => {
-      const dataUrl = await readFileAsDataUrl(file);
+      const dataUrl = await readIconFileAsDataUrl(file);
       const icon = createUploadedMarkerIcon({
         label: getUploadLabel(file.name),
         dataUrl,
