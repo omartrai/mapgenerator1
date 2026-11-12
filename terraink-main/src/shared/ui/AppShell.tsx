@@ -100,6 +100,8 @@ export interface AppShellSlots {
   initialTab?: MobileTab;
   /** Extra attributes for styling (e.g. frame colour, scene). */
   dataAttributes?: Record<string, string>;
+  /** Inline CSS variables for styling (e.g. the poster's real size in cm). */
+  style?: React.CSSProperties;
   /** Desktop: the "Location" rail button opens a settings tab instead of the floating search bar. */
   locationAsTab?: boolean;
   /** Extra content such as modals. */
@@ -117,6 +119,7 @@ export default function AppShell({
   showStartupModal = true,
   initialTab = "theme",
   dataAttributes,
+  style,
   locationAsTab = false,
   children,
 }: AppShellSlots = {}) {
@@ -289,6 +292,7 @@ export default function AppShell({
       data-od-id="maploom-editor"
       data-mobile-tab={mobileTab}
       data-desktop-tab={desktopTab}
+      style={style}
       {...dataAttributes}
     >
       {header ?? <GeneralHeader />}

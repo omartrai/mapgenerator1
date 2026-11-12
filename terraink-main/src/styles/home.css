@@ -4270,3 +4270,124 @@
     margin-top: auto !important;
   }
 }
+
+/* ── "Au mur": the poster hangs to scale in the room photo ──
+   The photo's sideboard is ~180 cm wide (732 of 900 px), so 1 cm on the wall
+   is 0.6738% of the photo height. The frame adds a 2 cm moulding each side,
+   hangs 25 cm above the sideboard top (76.5% down the photo) and casts a
+   shadow away from the window light on the left; deeper frames, longer
+   shadow. Glass gets a faint sheen and the room's light falloff. */
+@media (min-width: 769px) and (hover: hover) and (pointer: fine) {
+  .app-shell[data-store-studio][data-scene="wall"] {
+    --cm: calc(var(--wall-h) * 0.006738);
+    --moulding: 2;
+    --frame-w-cm: calc(var(--poster-w-cm, 30) + var(--moulding) * 2);
+    --frame-h-cm: calc(var(--poster-h-cm, 40) + var(--moulding) * 2);
+  }
+
+  .app-shell[data-store-studio][data-scene="wall"][data-frame="none"] {
+    --moulding: 0;
+  }
+
+  .app-shell[data-store-studio][data-scene="wall"] .poster-frame {
+    top: calc(42cqh + var(--wall-h) * 0.345 - var(--cm) * (25 + var(--frame-h-cm) / 2)) !important;
+    width: calc(var(--cm) * var(--frame-w-cm)) !important;
+    border-width: calc(var(--cm) * var(--moulding)) !important;
+    border-radius: 1px !important;
+    transform: translate(-50%, 0) translateY(-50%) !important;
+    transition:
+      width 0.45s var(--s-ease, ease),
+      top 0.45s var(--s-ease, ease),
+      border-color 0.35s ease,
+      box-shadow 0.35s ease !important;
+  }
+
+  /* Shadows on the wall: light from the window on the left. */
+  .app-shell[data-store-studio][data-scene="wall"][data-depth="1.5"] .poster-frame {
+    box-shadow:
+      calc(var(--cm) * 0.35) calc(var(--cm) * 0.5) calc(var(--cm) * 0.7) rgba(38, 30, 22, 0.32),
+      calc(var(--cm) * 1.4) calc(var(--cm) * 2.2) calc(var(--cm) * 4.5) rgba(38, 30, 22, 0.2) !important;
+  }
+
+  .app-shell[data-store-studio][data-scene="wall"][data-depth="3"] .poster-frame {
+    box-shadow:
+      calc(var(--cm) * 0.7) calc(var(--cm) * 1) calc(var(--cm) * 1.2) rgba(38, 30, 22, 0.34),
+      calc(var(--cm) * 2.6) calc(var(--cm) * 4) calc(var(--cm) * 7) rgba(38, 30, 22, 0.22) !important;
+  }
+
+  .app-shell[data-store-studio][data-scene="wall"][data-frame="none"] .poster-frame {
+    box-shadow:
+      calc(var(--cm) * 0.12) calc(var(--cm) * 0.2) calc(var(--cm) * 0.35) rgba(38, 30, 22, 0.22),
+      calc(var(--cm) * 0.6) calc(var(--cm) * 1) calc(var(--cm) * 2.4) rgba(38, 30, 22, 0.12) !important;
+  }
+
+  /* Mount 5 cm wide; the frame lip shades the print's top-left edges. */
+  .app-shell[data-store-studio][data-scene="wall"][data-mat="true"] .poster-frame::after {
+    border-width: calc(var(--cm) * 5) !important;
+    box-shadow:
+      inset calc(var(--cm) * 0.12) calc(var(--cm) * 0.15) 0 rgba(0, 0, 0, 0.14),
+      inset 0 calc(var(--cm) * 0.25) calc(var(--cm) * 0.5) rgba(0, 0, 0, 0.12) !important;
+  }
+
+  .app-shell[data-store-studio][data-scene="wall"][data-mat="false"]:not([data-frame="none"]) .poster-frame::after {
+    box-shadow:
+      inset calc(var(--cm) * 0.25) calc(var(--cm) * 0.35) calc(var(--cm) * 0.6) rgba(0, 0, 0, 0.26) !important;
+  }
+
+  /* Room light over the poster, plus a glass sheen when framed. */
+  .app-shell[data-store-studio][data-scene="wall"] .poster-frame::before {
+    content: "";
+    position: absolute;
+    inset: 0;
+    z-index: 5;
+    pointer-events: none;
+    background: linear-gradient(100deg, rgba(255, 248, 236, 0.1) 0%, rgba(255, 248, 236, 0) 45%, rgba(40, 30, 20, 0.07) 100%);
+  }
+
+  .app-shell[data-store-studio][data-scene="wall"]:not([data-frame="none"]) .poster-frame::before {
+    background:
+      linear-gradient(118deg, rgba(255, 255, 255, 0.2) 0%, rgba(255, 255, 255, 0.04) 26%, rgba(255, 255, 255, 0) 38%,
+        rgba(255, 255, 255, 0) 58%, rgba(255, 255, 255, 0.08) 64%, rgba(255, 255, 255, 0) 72%),
+      linear-gradient(100deg, rgba(255, 248, 236, 0.1) 0%, rgba(255, 248, 236, 0) 45%, rgba(40, 30, 20, 0.08) 100%);
+  }
+
+  /* Editing controls would break the illusion; they live in "Studio". */
+  .app-shell[data-store-studio][data-scene="wall"] .map-controls,
+  .app-shell[data-store-studio][data-scene="wall"] .poster-message.is-movable {
+    pointer-events: none;
+  }
+
+  .app-shell[data-store-studio][data-scene="wall"] .map-controls {
+    display: none !important;
+  }
+
+  .app-shell[data-store-studio][data-scene="wall"] .poster-message.is-movable:hover {
+    outline-color: transparent;
+  }
+
+  .room-decor__scale {
+    position: absolute;
+    left: 50%;
+    bottom: 18px;
+    z-index: 2;
+    margin: 0;
+    padding: 6px 12px;
+    border-radius: 999px;
+    background: rgba(255, 255, 255, 0.82);
+    color: var(--s-ink, #1f2a26);
+    font-size: 0.74rem;
+    font-weight: 600;
+    white-space: nowrap;
+    transform: translateX(-50%);
+    backdrop-filter: blur(6px);
+    -webkit-backdrop-filter: blur(6px);
+    box-shadow: 0 2px 8px rgba(40, 30, 20, 0.12);
+    pointer-events: none;
+  }
+}
+
+@media (max-width: 768px), (hover: none) and (pointer: coarse) {
+  .room-decor__scale {
+    display: none;
+  }
+}

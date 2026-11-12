@@ -4,7 +4,7 @@ import { useRouter } from "@/core/router/router";
 import { adminApi, geocodeLocation } from "@/core/services";
 import { useDesignSnapshot } from "../application/useDesignSnapshot";
 import { useProductSync } from "../application/useProductSync";
-import { FRAME_OPTIONS, PRINT_SIZES, hasMat, type FrameId } from "../domain/catalog";
+import { FRAME_OPTIONS, PRINT_SIZES, frameDepthOf, hasMat, resolveDimensions, type FrameId } from "../domain/catalog";
 import { DESIGN_PRESETS, getPreset } from "../domain/presets";
 import AddedToCartDialog from "./AddedToCartDialog";
 import AdminExportPanel from "./AdminExportPanel";
@@ -196,7 +196,14 @@ export default function StudioPage() {
         "data-mat": hasMat(store.product) ? "true" : "false",
         "data-scene": store.scene,
         "data-orientation": store.product.orientation,
+        "data-depth": store.product.frameId === "none" ? "none" : frameDepthOf(store.product),
       }}
+      style={
+        {
+          "--poster-w-cm": resolveDimensions(store.product).widthCm,
+          "--poster-h-cm": resolveDimensions(store.product).heightCm,
+        } as React.CSSProperties
+      }
     >
       {loadError ? (
         <p className="studio-load-error" role="alert">

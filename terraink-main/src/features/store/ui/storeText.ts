@@ -366,6 +366,7 @@ const en = {
   "view.label": "Preview background",
   "view.studio": "Studio",
   "view.wall": "On the wall",
+  "wall.scale": "{size} — shown to scale above a 180 cm sideboard",
 };
 
 export type StoreTextKey = keyof typeof en;
@@ -718,6 +719,7 @@ const fr: Dictionary = {
   "view.label": "Fond de l'aperçu",
   "view.studio": "Studio",
   "view.wall": "Au mur",
+  "wall.scale": "{size} — à l’échelle, au-dessus d’un buffet de 180 cm",
 };
 
 const ar: Dictionary = {
@@ -1067,6 +1069,7 @@ const ar: Dictionary = {
   "view.label": "خلفية المعاينة",
   "view.studio": "استوديو",
   "view.wall": "على الجدار",
+  "wall.scale": "{size} — بالحجم الحقيقي فوق خزانة بطول 180 سم",
 };
 
 const DICTIONARIES: Record<AppLanguage, Dictionary> = { en, fr, ar };
