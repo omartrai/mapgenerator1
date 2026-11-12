@@ -1,4 +1,5 @@
 import {
+  DEFAULT_MARGIN_PERCENT,
   toCollectionMockups,
   toCollectionProduct,
   type CollectionMockup,
@@ -33,6 +34,15 @@ export function createUrbanArtCatalog(env: Record<string, string | undefined>): 
   const apiKey = String(env.URBANART_API_KEY ?? "").trim();
   if (!apiKey) return null;
   const baseUrl = (String(env.URBANART_API_URL ?? "").trim() || DEFAULT_BASE_URL).replace(/\/+$/, "");
+  // Selling price = reseller cost + this margin (%), for every product.
+  // URBANART_MARGIN_PERCENT=dashboard keeps the prices set per product there.
+  const marginSetting = String(env.URBANART_MARGIN_PERCENT ?? "").trim();
+  const marginPercent =
+    marginSetting.toLowerCase() === "dashboard"
+      ? undefined
+      : Number.isFinite(Number(marginSetting)) && marginSetting !== ""
+        ? Math.max(0, Number(marginSetting))
+        : DEFAULT_MARGIN_PERCENT;
 
   let products: Cached<CollectionProduct[]> | null = null;
   let pending: Promise<CollectionProduct[]> | null = null;
@@ -55,7 +65,7 @@ export function createUrbanArtCatalog(env: Record<string, string | undefined>): 
     pending ??= call("/products")
       .then(async (data) => {
         const value = (Array.isArray(data) ? data : [])
-          .map(toCollectionProduct)
+          .map((raw) => toCollectionProduct(raw, marginPercent))
           .filter((product): product is CollectionProduct => product !== null);
         await attachCardMockups(value);
         products = { at: Date.now(), value };

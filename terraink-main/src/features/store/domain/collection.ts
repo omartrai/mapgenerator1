@@ -83,8 +83,29 @@ const httpsUrl = (value: unknown) => {
   return /^https:\/\//i.test(url) ? url : "";
 };
 
-/** Maps one raw catalogue product; returns null when it can't be shown. */
-export function toCollectionProduct(raw: unknown): CollectionProduct | null {
+/** Our margin on the partner's reseller price, in percent (as in its dashboard). */
+export const DEFAULT_MARGIN_PERCENT = 33;
+
+/** Nearest price ending in 9 (250.04 → 249, 397.67 → 399), in whole dirhams. */
+export function roundToNine(value: number): number {
+  return Math.max(9, Math.round((value - 9) / 10) * 10 + 9);
+}
+
+/**
+ * Selling price (centimes) from the reseller price: cost + margin, rounded
+ * to end in 9, exactly like the partner dashboard's "adjust profit" tool.
+ */
+export function priceFromResellerCost(resellerDh: number, marginPercent = DEFAULT_MARGIN_PERCENT): number {
+  return roundToNine(resellerDh * (1 + marginPercent / 100)) * 100;
+}
+
+/**
+ * Maps one raw catalogue product; returns null when it can't be shown.
+ * With a margin, prices come from the reseller cost + margin (the same rule
+ * for every product); without one, from the price set in the dashboard.
+ * Only the final price is kept, so costs never reach the browser.
+ */
+export function toCollectionProduct(raw: unknown, marginPercent?: number): CollectionProduct | null {
   if (!raw || typeof raw !== "object") return null;
   const source = raw as Record<string, unknown>;
   const id = Number(source.id);
@@ -96,7 +117,11 @@ export function toCollectionProduct(raw: unknown): CollectionProduct | null {
   (Array.isArray(source.variants) ? source.variants : []).forEach((entry, index) => {
     if (!entry || typeof entry !== "object") return;
     const variant = entry as Record<string, unknown>;
-    const price = Math.round(Number(variant.retail_price) * 100);
+    const reseller = Number(variant.reseller_price);
+    const price =
+      marginPercent !== undefined && Number.isFinite(reseller) && reseller > 0
+        ? priceFromResellerCost(reseller, marginPercent)
+        : Math.round(Number(variant.retail_price) * 100);
     const size = text(variant.size);
     if (!size || !Number.isFinite(price) || price <= 0) return;
     variants.push({
