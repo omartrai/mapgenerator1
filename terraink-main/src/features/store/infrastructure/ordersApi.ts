@@ -10,7 +10,7 @@ import type { FramedPriceTable } from "../domain/catalog";
 import type { Review, ReviewInput, ReviewStatus, ReviewSummary } from "../domain/review";
 
 const API_BASE = "/api";
-const ADMIN_TOKEN_KEY = "maploom.admin.token";
+const ADMIN_TOKEN_KEY = "noria.admin.token";
 
 export class ApiError extends Error {
   constructor(

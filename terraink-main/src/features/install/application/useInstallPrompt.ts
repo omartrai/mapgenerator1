@@ -10,7 +10,7 @@ import {
 
 declare global {
   interface Window {
-    __terrainkDeferredInstallPrompt?: Event;
+    __noriaDeferredInstallPrompt?: Event;
   }
 }
 
@@ -50,7 +50,7 @@ export default function useInstallPrompt() {
   useEffect(() => {
     if (isNativePlatform()) return;
 
-    setBeforeInstallPromptFired(Boolean(window.__terrainkDeferredInstallPrompt));
+    setBeforeInstallPromptFired(Boolean(window.__noriaDeferredInstallPrompt));
     setSwControlled(Boolean(navigator.serviceWorker?.controller));
     if (navigator.serviceWorker?.ready) {
       void navigator.serviceWorker.ready
@@ -70,9 +70,9 @@ export default function useInstallPrompt() {
       return;
     }
 
-    if (window.__terrainkDeferredInstallPrompt) {
+    if (window.__noriaDeferredInstallPrompt) {
       setDeferredPrompt(
-        window.__terrainkDeferredInstallPrompt as BeforeInstallPromptEvent,
+        window.__noriaDeferredInstallPrompt as BeforeInstallPromptEvent,
       );
     }
 
@@ -81,12 +81,12 @@ export default function useInstallPrompt() {
       setDeferredPrompt(e as BeforeInstallPromptEvent);
       setBeforeInstallPromptFired(true);
       setShowAndroidHint(false);
-      window.__terrainkDeferredInstallPrompt = e;
+      window.__noriaDeferredInstallPrompt = e;
     };
     window.addEventListener("beforeinstallprompt", handler);
 
     const fallbackTimer = window.setTimeout(() => {
-      if (isAndroid() && !window.__terrainkDeferredInstallPrompt) {
+      if (isAndroid() && !window.__noriaDeferredInstallPrompt) {
         setShowAndroidHint(true);
       }
     }, 4000);
@@ -140,7 +140,7 @@ export default function useInstallPrompt() {
     isAndroid: isAndroid(),
     isStandaloneMode: isInStandaloneMode(),
     deferredPromptAvailable: Boolean(deferredPrompt),
-    deferredPromptCached: Boolean(window.__terrainkDeferredInstallPrompt),
+    deferredPromptCached: Boolean(window.__noriaDeferredInstallPrompt),
     beforeInstallPromptFired,
     promptOutcome,
     swControlled,

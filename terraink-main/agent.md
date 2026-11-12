@@ -1,4 +1,4 @@
-# TerraInk — Agent Architecture Guide
+# Noria — Agent Architecture Guide
 
 > **For any AI coding agent working on this codebase.**
 > Read this file fully before writing, editing, or deleting any code.

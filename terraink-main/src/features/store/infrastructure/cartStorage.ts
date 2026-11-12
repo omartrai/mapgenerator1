@@ -1,8 +1,8 @@
 import type { CartItem, LastOrderRef } from "../domain/cart";
 
-const CART_KEY = "maploom.cart.v1";
-const LAST_ORDER_KEY = "maploom.lastOrder.v1";
-const CUSTOMER_KEY = "maploom.customer.v1";
+const CART_KEY = "noria.cart.v1";
+const LAST_ORDER_KEY = "noria.lastOrder.v1";
+const CUSTOMER_KEY = "noria.customer.v1";
 
 function read<T>(key: string, fallback: T): T {
   try {

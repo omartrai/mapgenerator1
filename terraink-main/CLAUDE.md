@@ -1,4 +1,4 @@
-# Terraink — Claude Code Guide
+# Noria — Claude Code Guide
 
 ## Commands
 

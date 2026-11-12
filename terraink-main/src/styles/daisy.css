@@ -5,7 +5,7 @@
 }
 
 @plugin "daisyui/theme" {
-  name: "maploom";
+  name: "noria";
   default: true;
   prefersdark: false;
   color-scheme: light;

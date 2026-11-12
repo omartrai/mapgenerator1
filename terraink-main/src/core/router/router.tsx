@@ -22,7 +22,7 @@ interface RouterValue {
 }
 
 const RouterContext = createContext<RouterValue | null>(null);
-const NAVIGATE_EVENT = "maploom:navigate";
+const NAVIGATE_EVENT = "noria:navigate";
 
 function readLocation() {
   return {

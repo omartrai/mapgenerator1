@@ -34,7 +34,7 @@ import {
 } from "@/core/config";
 import { trackEvent, setUserProperty } from "@/core/services";
 
-const EXPORT_COUNT_STORAGE_KEY = "terraink.poster.count";
+const EXPORT_COUNT_STORAGE_KEY = "noria.poster.count";
 
 export type SupportPromptVariant = "follow";
 
@@ -43,7 +43,7 @@ export interface SupportPromptState {
   variant: SupportPromptVariant;
 }
 
-export const SUPPORT_PROMPT_EVENT = "terraink:support-prompt";
+export const SUPPORT_PROMPT_EVENT = "noria:support-prompt";
 
 // Use a 1-year TTL so the export count persists across sessions.
 const EXPORT_COUNT_TTL_MS = 365 * 24 * 60 * 60 * 1000;

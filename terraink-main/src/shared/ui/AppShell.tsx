@@ -290,7 +290,7 @@ export default function AppShell({
   return (
     <div
       className="app-shell"
-      data-od-id="maploom-editor"
+      data-od-id="noria-editor"
       data-mobile-tab={mobileTab}
       data-desktop-tab={desktopTab}
       style={style}

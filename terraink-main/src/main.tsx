@@ -1,3 +1,5 @@
+// Must stay first: moves data saved under the previous brand names.
+import "@/core/cache/migrateLegacyKeys";
 import React from "react";
 import ReactDOM from "react-dom/client";
 import { isNativePlatform, onPlatformAdapterChange } from "@/core/platform";
@@ -82,7 +84,7 @@ if ("serviceWorker" in navigator && !isNativePlatform()) {
           .then((keys) =>
             Promise.all(
               keys
-                .filter((key) => key.startsWith("maploom-static-"))
+                .filter((key) => key.startsWith("noria-static-"))
                 .map((key) => caches.delete(key)),
             ),
           );

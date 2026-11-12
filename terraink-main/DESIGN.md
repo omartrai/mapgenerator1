@@ -1,6 +1,6 @@
-# Maploom design contract
+# Noria design contract
 
-Maploom is a working map-poster studio, not a generic landing page. The interface should feel quiet, precise, and useful enough for long editing sessions.
+Noria is a working map-poster studio, not a generic landing page. The interface should feel quiet, precise, and useful enough for long editing sessions.
 
 ## Foundations
 
@@ -16,7 +16,7 @@ Maploom is a working map-poster studio, not a generic landing page. The interfac
 
 ## Product-specific character
 
-- The black tool rail, white editor pane, and gray poster stage are the recognizable Maploom composition.
+- The black tool rail, white editor pane, and gray poster stage are the recognizable Noria composition.
 - Poster controls should feel like print-production tools: compact, labeled, and reversible.
 - Export copy uses concrete formats and actions; avoid vague CTA language.
 - Button presses move down by 2px. Selected tools use a narrow indicator or a clear border, not a glow.
@@ -24,7 +24,7 @@ Maploom is a working map-poster studio, not a generic landing page. The interfac
 ## Component foundation
 
 - DaisyUI v5 provides semantic primitives (`navbar`, `btn`, `input`, `card`, and `modal-box`).
-- The only enabled theme is the custom `maploom` theme in `src/styles/daisy.css`.
+- The only enabled theme is the custom `noria` theme in `src/styles/daisy.css`.
 - Existing product classes remain the final styling authority so component adoption can be incremental and regression-safe.
 - Prefer a DaisyUI semantic class plus one product class over long Tailwind utility chains.
 

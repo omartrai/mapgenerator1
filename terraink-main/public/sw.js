@@ -1,5 +1,5 @@
-const CACHE_NAME = "maploom-static-v3";
-const TILE_CACHE_NAME = "maploom-tiles-v1";
+const CACHE_NAME = "noria-static-v1";
+const TILE_CACHE_NAME = "noria-tiles-v1";
 const TILE_ORIGINS = ["https://tiles.openfreemap.org"];
 const APP_SHELL_ASSETS = [
   "/site.webmanifest",

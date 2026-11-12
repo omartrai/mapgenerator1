@@ -1138,7 +1138,7 @@ interface LanguageContextValue {
 }
 
 const LanguageContext = createContext<LanguageContextValue | null>(null);
-const STORAGE_KEY = "maploom-language";
+const STORAGE_KEY = "noria-language";
 
 function getInitialLanguage(): AppLanguage {
   if (typeof window === "undefined") return "en";
