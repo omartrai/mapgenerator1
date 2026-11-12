@@ -193,14 +193,18 @@ export const adminApi = {
 
     if (health.storage === "blob") {
       const { upload } = await import("@vercel/blob/client");
+      // Send the file as a plain Blob (no progress stream, no multipart): a
+      // streamed body can't be re-sent, so any retry used to fail with
+      // "The provided ReadableStream is disturbed". A Blob retries cleanly.
+      onProgress?.(5);
       await upload(`orders/${number}/${fileName}`, blob, {
         access: "private",
         handleUploadUrl: `${API_BASE}/admin/blob-upload`,
         headers: adminHeaders(),
         contentType,
-        multipart: blob.size > 8_000_000,
-        onUploadProgress: (event) => onProgress?.(Math.round(event.percentage)),
+        multipart: false,
       });
+      onProgress?.(95);
       const { order } = await request<{ order: Order }>(
         `/admin/orders/${encodeURIComponent(number)}/files`,
         {
