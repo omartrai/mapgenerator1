@@ -39,6 +39,16 @@ export interface PosterForm {
   posterLayout?: string;
   /** Map cut-out: none, circle, heart or star; missing = none. */
   mapShape?: string;
+  /** Sport layout: date/distance line and four stats (value + label). */
+  activitySubtitle?: string;
+  activityStat1?: string;
+  activityStat1Label?: string;
+  activityStat2?: string;
+  activityStat2Label?: string;
+  activityStat3?: string;
+  activityStat3Label?: string;
+  activityStat4?: string;
+  activityStat4Label?: string;
   /** Per-line switches inside the poster text (all on by default). */
   showCity?: boolean;
   showDivider?: boolean;

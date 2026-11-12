@@ -547,3 +547,19 @@
   border-top-style: solid;
   transform: translateY(-50%);
 }
+
+/* Sport layout parts */
+.poster-accent-rule {
+  position: absolute;
+  left: 50%;
+  transform: translate(-50%, -50%);
+}
+
+.poster-activity-sub,
+.poster-stat {
+  position: absolute;
+  margin: 0;
+  line-height: 1.1;
+  text-align: center;
+  transform: translateY(-50%);
+}

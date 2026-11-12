@@ -10,6 +10,8 @@ import {
 import { useLanguage, type TranslationKey } from "@/shared/i18n/LanguageContext";
 import { MAP_SHAPES, POSTER_LAYOUTS, DEFAULT_POSTER_LAYOUT } from "@/features/poster/domain/posterLayout";
 import { LuBan, LuCircle, LuHeart, LuStar } from "react-icons/lu";
+import { usePosterContext } from "@/features/poster/ui/PosterContext";
+import { useActivityPoster } from "@/features/routes/application/useActivityPoster";
 
 /** Lines of the poster text that can each be hidden on their own. */
 const TEXT_PARTS = [
@@ -38,6 +40,10 @@ export default function TypographySection({
 }: TypographySectionProps) {
   const { t } = useLanguage();
   const previewsRequested = useRef(false);
+  const { state } = usePosterContext();
+  const { fillFromRoute } = useActivityPoster();
+  const sportRoute = state.routes.find((route) => route.stats && route.stats.distanceM > 0);
+  const isSport = form.posterLayout === "activity";
 
   // Each <option> previews itself in its own typeface, which means every family
   // has to be loaded for the dropdown to look right. That is a lot of bytes for
@@ -104,6 +110,51 @@ export default function TypographySection({
             })}
           </div>
         </fieldset>
+        {isSport ? (
+          <fieldset className="sport-fields">
+            <legend>{t("activity.title")}</legend>
+            <p className="sport-fields__hint">{t("activity.hint")}</p>
+            <label>
+              {t("activity.subtitle")}
+              <input
+                className="form-control-tall"
+                name="activitySubtitle"
+                value={form.activitySubtitle ?? ""}
+                onChange={onChange}
+                placeholder="42,195 KM  |  12.04.2026"
+                maxLength={40}
+              />
+            </label>
+            {[1, 2, 3, 4].map((n) => (
+              <div key={n} className="sport-fields__row">
+                <span className="sport-fields__num">{t("activity.stat")} {n}</span>
+                <input
+                  className="form-control-tall"
+                  name={`activityStat${n}`}
+                  aria-label={`${t("activity.stat")} ${n} · ${t("activity.value")}`}
+                  placeholder={t("activity.value")}
+                  value={String(form[`activityStat${n}` as keyof PosterForm] ?? "")}
+                  onChange={onChange}
+                  maxLength={14}
+                />
+                <input
+                  className="form-control-tall"
+                  name={`activityStat${n}Label`}
+                  aria-label={`${t("activity.stat")} ${n} · ${t("activity.label")}`}
+                  placeholder={t("activity.label")}
+                  value={String(form[`activityStat${n}Label` as keyof PosterForm] ?? "")}
+                  onChange={onChange}
+                  maxLength={16}
+                />
+              </div>
+            ))}
+            {sportRoute ? (
+              <button type="button" className="sport-fields__refill" onClick={() => fillFromRoute(sportRoute)}>
+                {t("activity.refill")}
+              </button>
+            ) : null}
+          </fieldset>
+        ) : null}
         <label className="toggle-field">
           <span>{t("style.posterText")}</span>
           <span className="theme-switch">

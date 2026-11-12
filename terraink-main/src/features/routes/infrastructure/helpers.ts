@@ -68,6 +68,7 @@ export function createRoute(input: {
     source,
     sourceFilename: input.sourceFilename,
     segments: input.parsed.segments,
+    stats: input.parsed.stats,
     color: input.defaults.color,
     strokeWidth: input.defaults.strokeWidth,
     opacity: input.defaults.opacity,

@@ -10,6 +10,7 @@ import { drawRoutesOnCanvas } from "@/features/routes/infrastructure/rendering";
 import { routeEndpointMarkerItems } from "@/features/routes/infrastructure/helpers";
 import { applyFades } from "@/features/poster/infrastructure/renderer/layers";
 import { effectiveFades, getPosterLayout } from "@/features/poster/domain/posterLayout";
+import type { ActivityPrint } from "@/features/poster/domain/activityPoster";
 import { drawPosterText } from "@/features/poster/infrastructure/renderer/typography";
 import type { PosterTextParts } from "@/features/poster/domain/textLayout";
 import type { ResolvedTheme } from "@/features/theme/domain/types";
@@ -35,6 +36,7 @@ interface LayeredSvgOptions {
   textParts?: PosterTextParts;
   posterLayout?: string;
   mapShape?: string;
+  activity?: ActivityPrint;
   markers: MarkerItem[];
   markerIcons: MarkerIconDefinition[];
   routes?: Route[];
@@ -94,6 +96,7 @@ export async function createLayeredSvgBlobFromMap({
   textParts,
   posterLayout,
   mapShape,
+  activity,
   markers,
   markerIcons,
   routes = [],
@@ -271,6 +274,7 @@ export async function createLayeredSvgBlobFromMap({
           textParts,
           posterLayout,
           mapShape,
+          activity,
         );
       }),
     });

@@ -17,6 +17,7 @@ import RouteOverlay from "@/features/routes/ui/RouteOverlay";
 import RouteEndpointsOverlay from "@/features/routes/ui/RouteEndpointsOverlay";
 import GradientFades from "./GradientFades";
 import { effectiveFades, getPosterLayout } from "@/features/poster/domain/posterLayout";
+import { activityFromForm } from "@/features/poster/domain/activityPoster";
 import PosterTextOverlay from "./PosterTextOverlay";
 import SettingsInfo from "./SettingsInfo";
 import MapPrimaryControls from "./MapPrimaryControls";
@@ -483,6 +484,7 @@ export default function PreviewPanel({ sidePanel, belowPoster }: PreviewPanelPro
             paperColor={effectiveTheme.ui.bg}
             layout={form.posterLayout}
             mapShape={form.mapShape}
+            activity={activityFromForm(form as unknown as Record<string, unknown>, state.routes)}
             showPosterText={form.showPosterText}
             message={form.customMessage}
             textParts={textPartsFromForm(form)}

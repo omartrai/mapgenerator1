@@ -67,6 +67,15 @@ export const DEFAULT_FORM: PosterForm = {
   showPosterText: true,
   posterLayout: "classic",
   mapShape: "none",
+  activitySubtitle: "",
+  activityStat1: "",
+  activityStat1Label: "DISTANCE",
+  activityStat2: "",
+  activityStat2Label: "TEMPS",
+  activityStat3: "",
+  activityStat3Label: "ALLURE",
+  activityStat4: "",
+  activityStat4Label: "DÉNIVELÉ",
   showCity: true,
   showDivider: true,
   showCountry: true,
@@ -159,6 +168,9 @@ export function PosterProvider({ children }: { children: ReactNode }) {
     return applyThemeColorOverrides(selectedTheme, state.customColors);
   }, [selectedTheme, state.customColors]);
 
+  const posterLayoutRef = useRef(state.form.posterLayout);
+  posterLayoutRef.current = state.form.posterLayout;
+
   useEffect(() => {
     const routeThemeColor = effectiveTheme.ui.text;
     if (lastSyncedRouteThemeColorRef.current === routeThemeColor) {
@@ -168,7 +180,8 @@ export function PosterProvider({ children }: { children: ReactNode }) {
     dispatch({
       type: "SET_ROUTE_DEFAULTS",
       defaults: { color: routeThemeColor },
-      applyToRoutes: true,
+      // The sport layout keeps its accent-coloured route.
+      applyToRoutes: posterLayoutRef.current !== "activity",
     });
   }, [dispatch, effectiveTheme.ui.text]);
 

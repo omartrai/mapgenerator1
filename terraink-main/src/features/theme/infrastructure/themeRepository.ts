@@ -113,6 +113,8 @@ const preferredThemeOrder = [
   "slate",
   "vintage",
   "steel_blue",
+  "carbon",
+  "tangerine",
   "carrara",
   "blush",
   "sandstone",

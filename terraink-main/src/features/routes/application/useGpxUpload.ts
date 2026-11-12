@@ -16,7 +16,7 @@ import {
 const MAX_COMBINED_HALF_WIDTH_METERS = 500_000;
 
 export type UploadGpxResult =
-  | { status: "added" }
+  | { status: "added"; route: Route }
   | {
       status: "needs-confirmation";
       pendingRoute: Route;
@@ -73,20 +73,21 @@ export function useGpxUpload(): UseGpxUploadResult {
         parsed,
         defaults: routeDefaults,
         source: "gpx",
-        label: getGpxUploadLabel(file.name),
+        // The track's own name (e.g. "Marathon de Marrakech"), else the file name.
+        label: parsed.label,
         sourceFilename: file.name,
       });
 
       if (routes.length === 0) {
         dispatch({ type: "ADD_ROUTE", route: pendingRoute });
         fitBoundsToForm(parsed.bounds);
-        return { status: "added" };
+        return { status: "added", route: pendingRoute };
       }
 
       const combined = combinedRoutesBounds(routes, parsed.bounds);
       if (!combined) {
         dispatch({ type: "ADD_ROUTE", route: pendingRoute });
-        return { status: "added" };
+        return { status: "added", route: pendingRoute };
       }
 
       const combinedHalfWidth = boundsHalfWidthMeters(combined);
@@ -112,7 +113,7 @@ export function useGpxUpload(): UseGpxUploadResult {
 
       dispatch({ type: "ADD_ROUTE", route: pendingRoute });
       fitBoundsToForm(combined);
-      return { status: "added" };
+      return { status: "added", route: pendingRoute };
     },
     [dispatch, fitBoundsToForm, form.distance, routeDefaults, routes],
   );

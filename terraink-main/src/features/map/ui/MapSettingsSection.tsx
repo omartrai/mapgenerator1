@@ -107,6 +107,7 @@ export default function MapSettingsSection({
     ocean: "theme.desc.ocean", pastel_dream: "theme.desc.pastel_dream",
     monochrome: "theme.desc.monochrome", slate: "theme.desc.slate",
     vintage: "theme.desc.vintage", steel_blue: "theme.desc.steel_blue",
+    carbon: "theme.desc.carbon", tangerine: "theme.desc.tangerine",
   };
   const layoutGroupKeys: Record<string, TranslationKey> = {
     print: "layout.groupPrint",

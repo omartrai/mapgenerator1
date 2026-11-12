@@ -16,7 +16,7 @@ import {
   TEXT_MESSAGE_Y_RATIO,
 } from "./textLayout";
 
-export const POSTER_LAYOUTS = ["classic", "border", "label", "band", "fade", "header", "script", "signature"] as const;
+export const POSTER_LAYOUTS = ["classic", "border", "label", "band", "fade", "header", "script", "signature", "activity"] as const;
 export type PosterLayoutId = (typeof POSTER_LAYOUTS)[number];
 export const DEFAULT_POSTER_LAYOUT: PosterLayoutId = "classic";
 
@@ -35,8 +35,8 @@ export interface Rect {
 
 /** How the city name is set. */
 export interface CityStyle {
-  /** "spaced": upper case with wide letter spacing; "plain": as typed. */
-  case: "spaced" | "plain";
+  /** "spaced": upper case with wide letter spacing; "upper": capitals; "plain": as typed. */
+  case: "spaced" | "upper" | "plain";
   /** Font family for the city; null = the poster font chosen by the customer. */
   family: string | null;
   weight: number;
@@ -51,6 +51,15 @@ export interface PosterLayoutSpec {
   cityStyle: CityStyle;
   /** Country set in spaced capitals (header layouts). */
   countrySpaced: boolean;
+  /** Sport poster parts (activity layout): accent rules, profile and stats. */
+  activity: null | {
+    /** Short accent rules under the title and above the closing line. */
+    accentRules: number[];
+    accentRuleWidth: number; // ratio of width
+    subtitleY: number;
+    profile: Rect;
+    stats: { x: number; w: number; valueY: number; labelY: number };
+  };
   /** Full-width hairline rule (header layout); y and x ratios, width in ref px. */
   rule: null | { y: number; x1: number; x2: number; width: number };
   /** Fade heights (ratio of height) at the top and bottom; 0 = none. */
@@ -88,6 +97,7 @@ const CLASSIC: PosterLayoutSpec = {
   mapWindow: null,
   cityStyle: { case: "spaced", family: null, weight: 700 },
   countrySpaced: false,
+  activity: null,
   rule: null,
   fades: { top: 0.25, bottom: 0.25 },
   border: null,
@@ -209,6 +219,26 @@ export const POSTER_LAYOUT_SPECS: Record<PosterLayoutId, PosterLayoutSpec> = {
     scale: { city: 0.95, country: 0.6, coords: 0.85, message: 0.55 },
     maxWidth: 0.5,
   },
+
+  /** Sport poster: race title, route map, elevation profile and stats. */
+  activity: {
+    ...CLASSIC,
+    fades: { top: 0, bottom: 0 },
+    mapWindow: { x: 0.1, y: 0.185, w: 0.8, h: 0.465 },
+    cityStyle: { case: "upper", family: null, weight: 600 },
+    city: { x: 0.5, y: 0.082, align: "center" },
+    message: { x: 0.5, y: 0.935, align: "center" },
+    divider: null,
+    scale: { city: 0.4, country: 1, coords: 1, message: 0.62 },
+    maxWidth: 0.8,
+    activity: {
+      accentRules: [0.11, 0.905],
+      accentRuleWidth: 0.05,
+      subtitleY: 0.135,
+      profile: { x: 0.1, y: 0.665, w: 0.8, h: 0.075 },
+      stats: { x: 0.1, w: 0.8, valueY: 0.8, labelY: 0.828 },
+    },
+  },
 };
 
 /* ── Map shapes: the map shows only inside a circle, heart or star ── */
@@ -290,7 +320,8 @@ export function effectiveFades(layout: PosterLayoutSpec, shape: string | undefin
 
 /** City text as printed. */
 export function cityText(layout: PosterLayoutSpec, city: string, spaced: (value: string) => string): string {
-  return layout.cityStyle.case === "spaced" ? spaced(city) : city;
+  if (layout.cityStyle.case === "spaced") return spaced(city);
+  return layout.cityStyle.case === "upper" ? city.toUpperCase() : city;
 }
 
 /** "MOROCCO" → "M O R O C C O" when the layout spaces it. */
@@ -298,6 +329,14 @@ export function countryText(layout: PosterLayoutSpec, country: string): string {
   const upper = country.toUpperCase();
   return layout.countrySpaced ? upper.split("").join(" ") : upper;
 }
+
+/** Sport layout type sizes, in ref px (see textLayout.ts). */
+export const ACTIVITY_TYPE = {
+  subtitle: 46,
+  statValue: 92,
+  statLabel: 38,
+  accentRule: 6,
+} as const;
 
 export function getPosterLayout(id: string | undefined | null): PosterLayoutSpec {
   return POSTER_LAYOUT_SPECS[(POSTER_LAYOUTS as readonly string[]).includes(id ?? "") ? (id as PosterLayoutId) : DEFAULT_POSTER_LAYOUT];

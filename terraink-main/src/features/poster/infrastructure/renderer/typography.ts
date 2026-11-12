@@ -6,8 +6,13 @@ import {
   countryText,
   getPosterLayout,
   paperMaskPath,
+  ACTIVITY_TYPE,
+  type PosterLayoutSpec,
   type TextSlot,
 } from "@/features/poster/domain/posterLayout";
+import type { ActivityPrint } from "@/features/poster/domain/activityPoster";
+import { profileAreaPath } from "@/features/routes/domain/activity";
+import { withAlpha } from "@/shared/utils/color";
 import {
   TEXT_DIMENSION_REFERENCE_PX,
   MESSAGE_FONT_BASE_PX,
@@ -58,6 +63,7 @@ export function drawPosterText(
   textParts: PosterTextParts = ALL_TEXT_PARTS,
   layoutId: string = DEFAULT_POSTER_LAYOUT,
   mapShape: string = "none",
+  activity?: ActivityPrint,
 ): void {
   const layout = getPosterLayout(layoutId);
   const themeText = theme.ui?.text || "#111111";
@@ -143,6 +149,10 @@ export function drawPosterText(
       ctx.fillText(cityLabel, ...at(layout.city));
     }
 
+    if (layout.activity) {
+      drawActivityParts(ctx, width, height, dimScale, layout.activity, activity, textColor, bodyFontFamily, titleFontFamily);
+    }
+
     if (textParts.divider && layout.divider) {
       ctx.strokeStyle = textColor;
       ctx.lineWidth = 3 * dimScale;
@@ -152,7 +162,7 @@ export function drawPosterText(
       ctx.stroke();
     }
 
-    if (textParts.country) {
+    if (textParts.country && !layout.activity) {
       const label = countryText(layout, country);
       setFittedFont(ctx, label, 300, countryFontSize, titleFontFamily, maxTextWidth);
       const [x, y] = at(layout.country);
@@ -172,7 +182,7 @@ export function drawPosterText(
       }
     }
 
-    if (textParts.coordinates) {
+    if (textParts.coordinates && !layout.activity) {
       ctx.globalAlpha = 0.75;
       ctx.font = `400 ${coordinateFontSize}px ${bodyFontFamily}`;
       ctx.fillText(formatCoordinates(center.lat, center.lon), ...at(layout.coords));
@@ -189,8 +199,15 @@ export function drawPosterText(
         titleFontFamily,
         Math.min(width * 0.7, maxTextWidth),
       );
-      ctx.font = `italic ${ctx.font}`;
-      ctx.fillText(message, ...at(layout.message));
+      if (layout.activity) {
+        // Sport layout: an upright, capitalised closing line.
+        const upper = message.toUpperCase();
+        setFittedFont(ctx, upper, 500, MESSAGE_FONT_BASE_PX * dimScale * layout.scale.message, titleFontFamily, maxTextWidth);
+        ctx.fillText(upper, ...at(layout.message));
+      } else {
+        ctx.font = `italic ${ctx.font}`;
+        ctx.fillText(message, ...at(layout.message));
+      }
     }
   }
 
@@ -206,4 +223,62 @@ export function drawPosterText(
     height * (1 - TEXT_EDGE_MARGIN_RATIO) - creditInset,
   );
   ctx.globalAlpha = 1;
+}
+
+/** Sport layout: accent rules, date line, elevation profile and the stats row. */
+function drawActivityParts(
+  ctx: CanvasRenderingContext2D,
+  width: number,
+  height: number,
+  dimScale: number,
+  spec: NonNullable<PosterLayoutSpec["activity"]>,
+  activity: ActivityPrint | undefined,
+  textColor: string,
+  bodyFontFamily: string,
+  titleFontFamily: string,
+): void {
+  const accent = activity?.accent || "#e8622c";
+  ctx.save();
+  ctx.fillStyle = accent;
+  const ruleWidth = width * spec.accentRuleWidth;
+  const ruleHeight = ACTIVITY_TYPE.accentRule * dimScale;
+  for (const y of spec.accentRules) {
+    ctx.fillRect((width - ruleWidth) / 2, height * y - ruleHeight / 2, ruleWidth, ruleHeight);
+  }
+
+  ctx.fillStyle = textColor;
+  ctx.textAlign = "center";
+  ctx.textBaseline = "middle";
+  if (activity?.subtitle) {
+    setFittedFont(ctx, activity.subtitle, 500, ACTIVITY_TYPE.subtitle * dimScale, bodyFontFamily, width * 0.8);
+    ctx.fillText(activity.subtitle, width / 2, height * spec.subtitleY);
+  }
+
+  const profile = activity?.profile ?? [];
+  if (profile.length > 1) {
+    const box = {
+      x: width * spec.profile.x,
+      y: height * spec.profile.y,
+      w: width * spec.profile.w,
+      h: height * spec.profile.h,
+    };
+    ctx.fillStyle = withAlpha(accent, 0.9);
+    ctx.fill(new Path2D(profileAreaPath(profile, box)));
+  }
+
+  const stats = activity?.stats ?? [];
+  stats.forEach((stat, index) => {
+    const x = width * (spec.stats.x + (spec.stats.w * (index + 0.5)) / stats.length);
+    const column = (width * spec.stats.w) / stats.length - width * 0.02;
+    ctx.fillStyle = textColor;
+    setFittedFont(ctx, stat.value, 600, ACTIVITY_TYPE.statValue * dimScale, titleFontFamily, column);
+    ctx.fillText(stat.value, x, height * spec.stats.valueY);
+    if (stat.label) {
+      ctx.globalAlpha = 0.75;
+      setFittedFont(ctx, stat.label, 500, ACTIVITY_TYPE.statLabel * dimScale, titleFontFamily, column);
+      ctx.fillText(stat.label, x, height * spec.stats.labelY);
+      ctx.globalAlpha = 1;
+    }
+  });
+  ctx.restore();
 }

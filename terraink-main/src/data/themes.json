@@ -597,6 +597,58 @@
           "minor_low": "#C3D9E3"
         }
       }
+    },
+    "carbon": {
+      "name": "Carbon",
+      "description": "Charcoal paper with soft grey streets - lets a bright route stand out",
+      "ui": {
+        "bg": "#1B1B1B",
+        "text": "#F2F2F2"
+      },
+      "map": {
+        "land": "#1B1B1B",
+        "landcover": "#1F1F1F",
+        "water": "#141414",
+        "waterway": "#141414",
+        "parks": "#232323",
+        "buildings": "#2C2C2C",
+        "aeroway": "#222222",
+        "rail": "#3A3A3A",
+        "roads": {
+          "major": "#6A6A6A",
+          "path": "#2A2A2A",
+          "outline": "#1B1B1B",
+          "minor_high": "#505050",
+          "minor_mid": "#3C3C3C",
+          "minor_low": "#303030"
+        }
+      }
+    },
+    "tangerine": {
+      "name": "Tangerine",
+      "description": "Bold orange land with dark streets on white paper - sporty and loud",
+      "ui": {
+        "bg": "#FFFFFF",
+        "text": "#111111"
+      },
+      "map": {
+        "land": "#F26B21",
+        "landcover": "#EE6620",
+        "water": "#D95A1A",
+        "waterway": "#D95A1A",
+        "parks": "#E8631F",
+        "buildings": "#E4601E",
+        "aeroway": "#EA6420",
+        "rail": "#7A2E0B",
+        "roads": {
+          "major": "#4A1E08",
+          "path": "#C0521D",
+          "outline": "#F26B21",
+          "minor_high": "#6B2A0C",
+          "minor_mid": "#8A3812",
+          "minor_low": "#A8461A"
+        }
+      }
     }
   }
 }

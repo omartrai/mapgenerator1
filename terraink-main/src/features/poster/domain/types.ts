@@ -31,6 +31,8 @@ export interface ExportOptions {
   posterLayout?: string;
   /** Map cut-out shape: none, circle, heart or star. */
   mapShape?: string;
+  /** Sport layout extras (subtitle, stats, profile, accent). */
+  activity?: import("./activityPoster").ActivityPrint;
   showOverlay?: boolean;
   includeCredits?: boolean;
   markers?: MarkerItem[];

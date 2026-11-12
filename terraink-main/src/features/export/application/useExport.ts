@@ -2,6 +2,7 @@ import { useCallback, useMemo } from "react";
 import { usePosterContext } from "@/features/poster/ui/PosterContext";
 import { textPartsFromForm } from "@/features/poster/domain/textLayout";
 import { getPosterLayout } from "@/features/poster/domain/posterLayout";
+import { activityFromForm } from "@/features/poster/domain/activityPoster";
 import { localStorageCache } from "@/core/cache/localStorageCache";
 import type { ExportFormat } from "@/features/export/domain/types";
 import { captureMapAsCanvas } from "@/features/export/infrastructure/mapExporter";
@@ -172,6 +173,7 @@ export function useExport() {
         textParts: textPartsFromForm(form),
         posterLayout: form.posterLayout,
         mapShape: form.mapShape,
+        activity: activityFromForm(form as unknown as Record<string, unknown>, state.routes),
         markers: hasVisibleMarkers ? state.markers : [],
         markerIcons: hasVisibleOverlays
           ? getAllMarkerIcons(state.customMarkerIcons)
@@ -191,6 +193,7 @@ export function useExport() {
       hasVisibleMarkers,
       hasVisibleOverlays,
       visibleRoutes,
+      state.routes,
       state.markers,
       state.customMarkerIcons,
     ],
@@ -245,6 +248,7 @@ export function useExport() {
         textParts: textPartsFromForm(form),
         posterLayout: form.posterLayout,
         mapShape: form.mapShape,
+        activity: activityFromForm(form as unknown as Record<string, unknown>, state.routes),
           markers: hasVisibleMarkers ? state.markers : [],
           markerIcons: hasVisibleOverlays
             ? getAllMarkerIcons(state.customMarkerIcons)
@@ -268,6 +272,7 @@ export function useExport() {
       hasVisibleMarkers,
       hasVisibleOverlays,
       visibleRoutes,
+      state.routes,
       state.markers,
       state.customMarkerIcons,
       renderPosterCanvas,

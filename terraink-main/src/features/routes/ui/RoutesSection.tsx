@@ -33,6 +33,7 @@ import {
   predefinedMarkerIcons,
 } from "@/features/markers/infrastructure/iconRegistry";
 import { useLanguage } from "@/shared/i18n/LanguageContext";
+import { useActivityPoster } from "@/features/routes/application/useActivityPoster";
 
 type RouteEndpointKind = "start" | "finish";
 
@@ -122,6 +123,8 @@ export default function RoutesSection() {
   const { form, routes, customMarkerIcons } = state;
   const { uploadGpxFile, confirmAddRoute, confirmReplaceRoutes } =
     useGpxUpload();
+  const { fillFromRoute, makeSportPoster } = useActivityPoster();
+  const sportRoute = routes.find((route) => route.stats && route.stats.distanceM > 0);
 
   const inputRef = useRef<HTMLInputElement | null>(null);
   const [uploadError, setUploadError] = useState<string | null>(null);
@@ -159,6 +162,8 @@ export default function RoutesSection() {
       setIsUploading(true);
       try {
         const result = await uploadGpxFile(file);
+        // Pre-fill the sport poster's stats from the new track.
+        if (result.status === "added") fillFromRoute(result.route);
         if (result.status === "needs-confirmation") {
           setPendingConfirmation({
             pendingRoute: result.pendingRoute,
@@ -180,7 +185,7 @@ export default function RoutesSection() {
         setIsUploading(false);
       }
     },
-    [uploadGpxFile],
+    [uploadGpxFile, fillFromRoute],
   );
 
   const updateRoute = useCallback(
@@ -328,6 +333,21 @@ export default function RoutesSection() {
         <p className="routes-section__error" role="alert">
           {uploadError}
         </p>
+      ) : null}
+
+      {sportRoute ? (
+        <div className="sport-cta">
+          <p className="sport-cta__title">{t("activity.make")}</p>
+          <p className="sport-cta__hint">{t("activity.makeHint")}</p>
+          <button
+            type="button"
+            className="sport-cta__button"
+            onClick={() => makeSportPoster(sportRoute)}
+            disabled={form.posterLayout === "activity"}
+          >
+            {form.posterLayout === "activity" ? "✓ " + t("style.layout.activity") : t("activity.make")}
+          </button>
+        </div>
       ) : null}
 
       <div className="routes-section__content">

@@ -1,5 +1,6 @@
 import type { Coordinate } from "@/shared/geo/types";
 import type { ROUTE_LINE_STYLES } from "./constants";
+import type { ActivityStats } from "./activity";
 
 export type RouteLineStyle = (typeof ROUTE_LINE_STYLES)[number];
 
@@ -25,6 +26,8 @@ export interface Route {
   showEndpoints: boolean;
   startMarker: RouteEndpointMarker;
   finishMarker: RouteEndpointMarker;
+  /** Sport figures read from the GPX (distance, climb, time, profile). */
+  stats?: ActivityStats;
 }
 
 export interface RouteDefaults {
@@ -48,4 +51,5 @@ export interface ParsedGpx {
   segments: Coordinate[][];
   bounds: RouteBounds;
   pointCount: number;
+  stats: ActivityStats;
 }

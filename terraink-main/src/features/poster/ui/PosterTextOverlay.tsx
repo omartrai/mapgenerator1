@@ -6,8 +6,11 @@ import {
   countryText,
   getPosterLayout,
   paperMaskPath,
+  ACTIVITY_TYPE,
   type TextSlot,
 } from "@/features/poster/domain/posterLayout";
+import type { ActivityPrint } from "@/features/poster/domain/activityPoster";
+import { profileAreaPath } from "@/features/routes/domain/activity";
 import {
   TEXT_DIMENSION_REFERENCE_PX,
   MESSAGE_FONT_BASE_PX,
@@ -39,6 +42,8 @@ interface PosterTextOverlayProps {
   layout?: string;
   /** Map cut-out shape (none, circle, heart, star). */
   mapShape?: string;
+  /** Sport layout extras: date line, stats, elevation profile, accent colour. */
+  activity?: ActivityPrint;
   includeCredits: boolean;
   showOverlay: boolean;
 }
@@ -61,8 +66,8 @@ function useFitText(rootRef: RefObject<HTMLDivElement>, maxWidthRatio: number, d
     const root = rootRef.current;
     if (!root) return undefined;
     const fit = () => {
-      const limit = root.clientWidth * maxWidthRatio;
       root.querySelectorAll<HTMLElement>("[data-fit]").forEach((line) => {
+        const limit = root.clientWidth * (Number(line.dataset.fit) || maxWidthRatio);
         const text = line.firstElementChild as HTMLElement | null;
         if (!text) return;
         line.style.setProperty("--fit", "1");
@@ -102,6 +107,7 @@ export default function PosterTextOverlay({
   textParts = ALL_TEXT_PARTS,
   layout: layoutId,
   mapShape = "none",
+  activity,
   includeCredits,
   showOverlay,
 }: PosterTextOverlayProps) {
@@ -153,7 +159,21 @@ export default function PosterTextOverlay({
   const attributionOpacity = showOverlay ? 0.55 : 0.9;
   const creditInset = layout.border ? `calc(${layout.border.inset * 100}cqmin + ${toCqMin(40)}cqmin)` : "0px";
 
-  useFitText(rootRef, layout.maxWidth, [cityLabel, countryLabel, trimmedMessage, fontFamily, layoutId, showPosterText]);
+  const sport = layout.activity;
+  const accent = activity?.accent || "#e8622c";
+  const stats = activity?.stats ?? [];
+  const profile = activity?.profile ?? [];
+  const statColumn = sport && stats.length ? sport.stats.w / stats.length : 0;
+  useFitText(rootRef, layout.maxWidth, [
+    cityLabel,
+    countryLabel,
+    trimmedMessage,
+    fontFamily,
+    layoutId,
+    showPosterText,
+    activity?.subtitle,
+    stats.map((stat) => stat.value + stat.label).join("|"),
+  ]);
   // Re-fit once a script face has loaded (it changes the measured width).
   useEffect(() => {
     if (!layout.cityStyle.family) return;
@@ -240,13 +260,97 @@ export default function PosterTextOverlay({
               <span>{cityLabel}</span>
             </p>
           ) : null}
+          {sport ? (
+            <>
+              {sport.accentRules.map((y) => (
+                <div
+                  key={y}
+                  className="poster-accent-rule"
+                  style={{
+                    top: pct(y),
+                    width: pct(sport.accentRuleWidth),
+                    height: `${toCqMin(ACTIVITY_TYPE.accentRule)}cqmin`,
+                    background: accent,
+                  }}
+                />
+              ))}
+              {activity?.subtitle ? (
+                <p
+                  className="poster-activity-sub poster-line"
+                  data-fit=""
+                  style={{
+                    top: pct(sport.subtitleY),
+                    left: 0,
+                    right: 0,
+                    fontFamily: bodyFont,
+                    fontSize: fitted(ACTIVITY_TYPE.subtitle),
+                  }}
+                >
+                  <span>{activity.subtitle}</span>
+                </p>
+              ) : null}
+              {profile.length > 1 && size.width > 0 ? (
+                <svg className="poster-layout-mask" viewBox={`0 0 ${size.width} ${size.height}`} preserveAspectRatio="none" aria-hidden="true">
+                  <path
+                    d={profileAreaPath(profile, {
+                      x: size.width * sport.profile.x,
+                      y: size.height * sport.profile.y,
+                      w: size.width * sport.profile.w,
+                      h: size.height * sport.profile.h,
+                    })}
+                    fill={accent}
+                    fillOpacity={0.9}
+                  />
+                </svg>
+              ) : null}
+              {stats.map((stat, index) => {
+                const left = sport.stats.x + statColumn * index;
+                const fit = String(Math.max(0.01, statColumn - 0.02));
+                return (
+                  <div key={index}>
+                    <p
+                      className="poster-stat poster-line"
+                      data-fit={fit}
+                      style={{
+                        top: pct(sport.stats.valueY),
+                        left: pct(left),
+                        width: pct(statColumn),
+                        fontFamily: titleFont,
+                        fontWeight: 600,
+                        fontSize: fitted(ACTIVITY_TYPE.statValue),
+                      }}
+                    >
+                      <span>{stat.value}</span>
+                    </p>
+                    {stat.label ? (
+                      <p
+                        className="poster-stat poster-line"
+                        data-fit={fit}
+                        style={{
+                          top: pct(sport.stats.labelY),
+                          left: pct(left),
+                          width: pct(statColumn),
+                          fontFamily: titleFont,
+                          fontWeight: 500,
+                          opacity: 0.75,
+                          fontSize: fitted(ACTIVITY_TYPE.statLabel),
+                        }}
+                      >
+                        <span>{stat.label}</span>
+                      </p>
+                    ) : null}
+                  </div>
+                );
+              })}
+            </>
+          ) : null}
           {textParts.divider && layout.divider ? (
             <hr
               className="poster-divider"
               style={{ borderColor: textColor, top: pct(layout.divider.y) }}
             />
           ) : null}
-          {textParts.country ? (
+          {textParts.country && !sport ? (
             <p
               className="poster-country poster-line"
               data-fit=""
@@ -277,7 +381,7 @@ export default function PosterTextOverlay({
               </span>
             </p>
           ) : null}
-          {textParts.coordinates ? (
+          {textParts.coordinates && !sport ? (
             <p
               className="poster-coords poster-line"
               style={{ ...slotStyle(layout.coords), fontFamily: bodyFont, fontSize: coordsFontSize }}
@@ -289,9 +393,14 @@ export default function PosterTextOverlay({
             <p
               className="poster-message poster-line"
               data-fit=""
-              style={{ ...slotStyle(layout.message), fontFamily: titleFont, fontSize: messageFontSize }}
+              style={{
+                ...slotStyle(layout.message),
+                fontFamily: titleFont,
+                fontSize: messageFontSize,
+                ...(sport ? { fontStyle: "normal", fontWeight: 500 } : {}),
+              }}
             >
-              <span>{trimmedMessage}</span>
+              <span>{sport ? trimmedMessage.toUpperCase() : trimmedMessage}</span>
             </p>
           ) : null}
         </>

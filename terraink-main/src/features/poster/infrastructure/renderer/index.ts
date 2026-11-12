@@ -32,6 +32,7 @@ export async function compositeExport(
     textParts,
     posterLayout,
     mapShape,
+    activity,
     showOverlay = true,
     includeCredits = true,
     markers = [],
@@ -119,6 +120,7 @@ export async function compositeExport(
     textParts,
     posterLayout,
     mapShape,
+    activity,
   );
 
   const size: CanvasSize = {
