@@ -37,6 +37,8 @@ export interface PosterForm {
   showPosterText: boolean;
   /** Text layout (classic, border, label, band, fade); missing = classic. */
   posterLayout?: string;
+  /** Map cut-out: none, circle, heart or star; missing = none. */
+  mapShape?: string;
   /** Per-line switches inside the poster text (all on by default). */
   showCity?: boolean;
   showDivider?: boolean;

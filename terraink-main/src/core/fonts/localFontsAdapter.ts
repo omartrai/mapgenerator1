@@ -65,6 +65,9 @@ const FONT_LOADERS: Record<string, () => Promise<unknown>> = {
       import("@fontsource/merriweather/700.css"),
     ]),
   "bebas neue": () => import("@fontsource/bebas-neue/400.css"),
+  /* Script faces used by the "script" and "signature" poster layouts. */
+  "great vibes": () => import("@fontsource/great-vibes/400.css"),
+  "caveat brush": () => import("@fontsource/caveat-brush/400.css"),
 };
 
 export const localFontsAdapter: IFontLoader = {

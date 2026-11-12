@@ -2094,3 +2094,151 @@
   top: 90%;
   width: 24%;
 }
+
+/* Layout picker: 8 layouts on two rows. */
+.layout-picker__grid {
+  grid-template-columns: repeat(4, minmax(0, 1fr));
+}
+
+/* Inset map with paper margins (header / script / signature). */
+.layout-thumb--header .layout-thumb__map,
+.layout-thumb--script .layout-thumb__map {
+  inset: 26% 6% 5%;
+}
+
+.layout-thumb--signature .layout-thumb__map {
+  inset: 5% 6% 16%;
+}
+
+.layout-thumb--header .layout-thumb__title,
+.layout-thumb--script .layout-thumb__title,
+.layout-thumb--signature .layout-thumb__title {
+  left: 7%;
+  transform: none;
+}
+
+.layout-thumb--header .layout-thumb__title {
+  top: 8%;
+  width: 46%;
+  height: 5px;
+}
+
+.layout-thumb--header .layout-thumb__deco {
+  top: 18%;
+  left: 6%;
+  right: 6%;
+  height: 1px;
+  background: #2a2a2a;
+}
+
+.layout-thumb--header .layout-thumb__sub {
+  top: 9%;
+  left: auto;
+  right: 7%;
+  width: 22%;
+  transform: none;
+}
+
+/* Script titles drawn as a looped stroke. */
+.layout-thumb--script .layout-thumb__title,
+.layout-thumb--signature .layout-thumb__title {
+  height: 7px;
+  width: 44%;
+  border-radius: 0;
+  background: none;
+  border-bottom: 2px solid #2a2a2a;
+  border-left: 2px solid #2a2a2a;
+  transform: skewX(-18deg);
+}
+
+.layout-thumb--script .layout-thumb__title {
+  top: 9%;
+}
+
+.layout-thumb--signature .layout-thumb__title {
+  top: 86%;
+}
+
+.layout-thumb--script .layout-thumb__sub,
+.layout-thumb--signature .layout-thumb__sub {
+  left: auto;
+  right: 7%;
+  width: 22%;
+  transform: none;
+}
+
+.layout-thumb--script .layout-thumb__sub {
+  top: 10%;
+}
+
+.layout-thumb--signature .layout-thumb__sub {
+  top: 89%;
+}
+
+/* Map shape picker */
+.shape-picker__grid {
+  display: grid;
+  grid-template-columns: repeat(4, minmax(0, 1fr));
+  gap: 8px;
+}
+
+.shape-picker__option {
+  display: grid;
+  justify-items: center;
+  gap: 5px;
+  cursor: pointer;
+}
+
+.shape-picker__option input {
+  position: absolute;
+  opacity: 0;
+  pointer-events: none;
+}
+
+.shape-picker__tile {
+  display: grid;
+  place-items: center;
+  width: 100%;
+  aspect-ratio: 1;
+  border: 1.5px solid #e5ddd2;
+  border-radius: 8px;
+  background: #fff;
+  color: #7d97a8;
+  transition: border-color 0.15s ease, box-shadow 0.15s ease;
+}
+
+.shape-picker__tile svg {
+  width: 52%;
+  height: 52%;
+}
+
+.shape-picker__tile:not(.shape-picker__tile--none) svg {
+  fill: #b8ccd8;
+}
+
+.shape-picker__tile--none {
+  color: #b9b2a8;
+}
+
+.shape-picker__tile--none svg {
+  width: 36%;
+  height: 36%;
+}
+
+.shape-picker__option:hover .shape-picker__tile {
+  border-color: #cfc3b4;
+}
+
+.shape-picker__option input:checked + .shape-picker__tile {
+  border-color: var(--s-accent, #e05a2b);
+  box-shadow: 0 0 0 2px color-mix(in srgb, var(--s-accent, #e05a2b) 25%, transparent);
+}
+
+.shape-picker__option input:focus-visible + .shape-picker__tile {
+  outline: 2px solid var(--s-accent, #e05a2b);
+  outline-offset: 2px;
+}
+
+.shape-picker__option input:checked ~ .layout-picker__name {
+  color: var(--s-accent, #e05a2b);
+}

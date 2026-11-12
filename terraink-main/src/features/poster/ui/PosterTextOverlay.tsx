@@ -1,6 +1,13 @@
-import { useLayoutEffect, useRef, type CSSProperties, type RefObject } from "react";
+import { useEffect, useLayoutEffect, useRef, useState, type CSSProperties, type RefObject } from "react";
+import { ensureFont } from "@/core/services";
 import { formatCoordinates } from "@/shared/geo/posterBounds";
-import { getPosterLayout, type TextSlot } from "@/features/poster/domain/posterLayout";
+import {
+  cityText,
+  countryText,
+  getPosterLayout,
+  paperMaskPath,
+  type TextSlot,
+} from "@/features/poster/domain/posterLayout";
 import {
   TEXT_DIMENSION_REFERENCE_PX,
   MESSAGE_FONT_BASE_PX,
@@ -30,6 +37,8 @@ interface PosterTextOverlayProps {
   message?: string;
   textParts?: PosterTextParts;
   layout?: string;
+  /** Map cut-out shape (none, circle, heart, star). */
+  mapShape?: string;
   includeCredits: boolean;
   showOverlay: boolean;
 }
@@ -65,7 +74,11 @@ function useFitText(rootRef: RefObject<HTMLDivElement>, maxWidthRatio: number, d
     const observer = new ResizeObserver(fit);
     observer.observe(root);
     void document.fonts?.ready.then(fit);
-    return () => observer.disconnect();
+    root.addEventListener("fontload", fit);
+    return () => {
+      observer.disconnect();
+      root.removeEventListener("fontload", fit);
+    };
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, deps);
 }
@@ -88,6 +101,7 @@ export default function PosterTextOverlay({
   message = "",
   textParts = ALL_TEXT_PARTS,
   layout: layoutId,
+  mapShape = "none",
   includeCredits,
   showOverlay,
 }: PosterTextOverlayProps) {
@@ -103,27 +117,73 @@ export default function PosterTextOverlay({
     : '"IBM Plex Mono", monospace';
 
   const textColor = layout.box ? layout.box.text : themeText;
-  const cityLabel = formatCityLabel(city);
-  const countryLabel = country.toUpperCase();
+  const cityLabel = cityText(layout, city, formatCityLabel);
+  const countryLabel = countryText(layout, country);
+  const spacedCity = layout.cityStyle.case === "spaced";
+  const cityFont = layout.cityStyle.family ? `"${layout.cityStyle.family}", ${titleFont}` : titleFont;
+
+  // The paper mask is an SVG path in pixels, so track the overlay's size.
+  const [size, setSize] = useState({ width: 0, height: 0 });
+  useLayoutEffect(() => {
+    const root = rootRef.current;
+    if (!root) return undefined;
+    const update = () => setSize({ width: root.clientWidth, height: root.clientHeight });
+    update();
+    const observer = new ResizeObserver(update);
+    observer.observe(root);
+    return () => observer.disconnect();
+  }, []);
+  const mask = size.width > 0 ? paperMaskPath(layout, mapShape, size.width, size.height) : null;
+
+  // Script layouts use their own face; load it so the preview shows it.
+  useEffect(() => {
+    if (layout.cityStyle.family) void ensureFont(layout.cityStyle.family);
+  }, [layout.cityStyle.family]);
   const trimmedMessage = message.trim();
   const fitted = (px: number) => `calc(${toCqMin(px)}cqmin * var(--fit, 1))`;
-  const cityFontSize = fitted(CITY_FONT_BASE_PX * computeCityFontScale(city) * layout.scale.city);
+  const cityFontSize = fitted(CITY_FONT_BASE_PX * (spacedCity ? computeCityFontScale(city) : 1) * layout.scale.city);
   const countryFontSize = fitted(COUNTRY_FONT_BASE_PX * layout.scale.country);
   const coordsFontSize = `${toCqMin(COORDS_FONT_BASE_PX * layout.scale.coords)}cqmin`;
   const messageFontSize = fitted(MESSAGE_FONT_BASE_PX * layout.scale.message);
   const attributionFontSize = `${toCqMin(ATTRIBUTION_FONT_BASE_PX)}cqmin`;
   const attributionColor =
-    layout.band || layout.border ? themeText : computeAttributionColor(themeText, landColor, showOverlay);
+    layout.band || layout.border || mapShape !== "none" || layout.mapWindow
+      ? themeText
+      : computeAttributionColor(themeText, landColor, showOverlay);
   const attributionOpacity = showOverlay ? 0.55 : 0.9;
   const creditInset = layout.border ? `calc(${layout.border.inset * 100}cqmin + ${toCqMin(40)}cqmin)` : "0px";
 
   useFitText(rootRef, layout.maxWidth, [cityLabel, countryLabel, trimmedMessage, fontFamily, layoutId, showPosterText]);
+  // Re-fit once a script face has loaded (it changes the measured width).
+  useEffect(() => {
+    if (!layout.cityStyle.family) return;
+    void document.fonts?.load(`400 32px "${layout.cityStyle.family}"`).then(() => {
+      rootRef.current?.dispatchEvent(new Event("fontload"));
+    });
+  }, [layout.cityStyle.family]);
 
   const border = layout.border;
   const outer = border ? toCqMin(border.outerWidth) : 0;
 
   return (
     <div ref={rootRef} className="poster-text-overlay" style={{ color: textColor }}>
+      {mask ? (
+        <svg className="poster-layout-mask" viewBox={`0 0 ${size.width} ${size.height}`} preserveAspectRatio="none" aria-hidden="true">
+          <path d={mask} fill={paperColor} fillRule="evenodd" />
+        </svg>
+      ) : null}
+      {layout.rule && showPosterText ? (
+        <div
+          className="poster-layout-hrule"
+          style={{
+            top: pct(layout.rule.y),
+            left: pct(layout.rule.x1),
+            width: pct(layout.rule.x2 - layout.rule.x1),
+            borderTopWidth: `${toCqMin(layout.rule.width)}cqmin`,
+            borderTopColor: themeText,
+          }}
+        />
+      ) : null}
       {border ? (
         <>
           <div className="poster-layout-mat" style={{ borderColor: paperColor, borderWidth: `${border.inset * 100}cqmin` }} />
@@ -169,7 +229,13 @@ export default function PosterTextOverlay({
             <p
               className="poster-city poster-line"
               data-fit=""
-              style={{ ...slotStyle(layout.city), fontFamily: titleFont, fontSize: cityFontSize }}
+              style={{
+                ...slotStyle(layout.city),
+                fontFamily: cityFont,
+                fontSize: cityFontSize,
+                fontWeight: layout.cityStyle.weight,
+                textTransform: spacedCity ? "uppercase" : "none",
+              }}
             >
               <span>{cityLabel}</span>
             </p>

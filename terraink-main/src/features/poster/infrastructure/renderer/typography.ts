@@ -2,7 +2,10 @@ import { formatCoordinates } from "@/shared/geo/posterBounds";
 import type { Coordinate } from "@/shared/geo/types";
 import {
   DEFAULT_POSTER_LAYOUT,
+  cityText,
+  countryText,
   getPosterLayout,
+  paperMaskPath,
   type TextSlot,
 } from "@/features/poster/domain/posterLayout";
 import {
@@ -54,6 +57,7 @@ export function drawPosterText(
   customMessage: string = "",
   textParts: PosterTextParts = ALL_TEXT_PARTS,
   layoutId: string = DEFAULT_POSTER_LAYOUT,
+  mapShape: string = "none",
 ): void {
   const layout = getPosterLayout(layoutId);
   const themeText = theme.ui?.text || "#111111";
@@ -74,6 +78,16 @@ export function drawPosterText(
   const attributionFontSize = ATTRIBUTION_FONT_BASE_PX * dimScale;
 
   // Layout decorations (drawn whether or not the text is shown).
+  const mask = paperMaskPath(layout, mapShape, width, height);
+  if (mask) {
+    ctx.fillStyle = paper;
+    ctx.fill(new Path2D(mask), "evenodd");
+  }
+  if (layout.rule && showPosterText) {
+    ctx.fillStyle = themeText;
+    const ruleHeight = layout.rule.width * dimScale;
+    ctx.fillRect(width * layout.rule.x1, height * layout.rule.y - ruleHeight / 2, width * (layout.rule.x2 - layout.rule.x1), ruleHeight);
+  }
   if (layout.border) {
     const { inset, gap, outerWidth, innerWidth } = layout.border;
     const edge = shortSide * inset;
@@ -107,8 +121,13 @@ export function drawPosterText(
   const textColor = layout.box ? layout.box.text : themeText;
 
   if (showPosterText) {
-    const cityLabel = formatCityLabel(city);
-    const cityFontSize = CITY_FONT_BASE_PX * dimScale * computeCityFontScale(city) * layout.scale.city;
+    const cityLabel = cityText(layout, city, formatCityLabel);
+    const spacedCity = layout.cityStyle.case === "spaced";
+    const cityFontSize =
+      CITY_FONT_BASE_PX * dimScale * (spacedCity ? computeCityFontScale(city) : 1) * layout.scale.city;
+    const cityFamily = layout.cityStyle.family
+      ? `"${layout.cityStyle.family}", ${titleFontFamily}`
+      : titleFontFamily;
     const countryFontSize = COUNTRY_FONT_BASE_PX * dimScale * layout.scale.country;
     const coordinateFontSize = COORDS_FONT_BASE_PX * dimScale * layout.scale.coords;
     const maxTextWidth = width * layout.maxWidth;
@@ -120,7 +139,7 @@ export function drawPosterText(
     ctx.fillStyle = textColor;
     ctx.textBaseline = "middle";
     if (textParts.city) {
-      setFittedFont(ctx, cityLabel, 700, cityFontSize, titleFontFamily, maxTextWidth);
+      setFittedFont(ctx, cityLabel, layout.cityStyle.weight, cityFontSize, cityFamily, maxTextWidth);
       ctx.fillText(cityLabel, ...at(layout.city));
     }
 
@@ -134,7 +153,7 @@ export function drawPosterText(
     }
 
     if (textParts.country) {
-      const label = country.toUpperCase();
+      const label = countryText(layout, country);
       setFittedFont(ctx, label, 300, countryFontSize, titleFontFamily, maxTextWidth);
       const [x, y] = at(layout.country);
       ctx.fillText(label, x, y);
@@ -175,7 +194,7 @@ export function drawPosterText(
     }
   }
 
-  ctx.fillStyle = layout.band || layout.border ? themeText : attributionColor;
+  ctx.fillStyle = layout.band || layout.border || mask ? themeText : attributionColor;
   ctx.globalAlpha = attributionAlpha;
   ctx.textAlign = "right";
   ctx.textBaseline = "bottom";

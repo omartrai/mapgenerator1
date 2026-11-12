@@ -16,7 +16,7 @@ import MarkerOverlay from "@/features/markers/ui/MarkerOverlay";
 import RouteOverlay from "@/features/routes/ui/RouteOverlay";
 import RouteEndpointsOverlay from "@/features/routes/ui/RouteEndpointsOverlay";
 import GradientFades from "./GradientFades";
-import { getPosterLayout } from "@/features/poster/domain/posterLayout";
+import { effectiveFades, getPosterLayout } from "@/features/poster/domain/posterLayout";
 import PosterTextOverlay from "./PosterTextOverlay";
 import SettingsInfo from "./SettingsInfo";
 import MapPrimaryControls from "./MapPrimaryControls";
@@ -444,7 +444,7 @@ export default function PreviewPanel({ sidePanel, belowPoster }: PreviewPanelPro
             onMoveEnd={handleMoveEnd}
           />
           {form.showMarkers ? (
-            <GradientFades color={effectiveTheme.ui.bg} fades={getPosterLayout(form.posterLayout).fades} />
+            <GradientFades color={effectiveTheme.ui.bg} fades={effectiveFades(getPosterLayout(form.posterLayout), form.mapShape)} />
           ) : null}
           <RouteOverlay
             routes={state.routes}
@@ -482,6 +482,7 @@ export default function PreviewPanel({ sidePanel, belowPoster }: PreviewPanelPro
             landColor={effectiveTheme.map.land}
             paperColor={effectiveTheme.ui.bg}
             layout={form.posterLayout}
+            mapShape={form.mapShape}
             showPosterText={form.showPosterText}
             message={form.customMessage}
             textParts={textPartsFromForm(form)}

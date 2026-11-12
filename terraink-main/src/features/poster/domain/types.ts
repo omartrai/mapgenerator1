@@ -29,6 +29,8 @@ export interface ExportOptions {
   textParts?: import("./textLayout").PosterTextParts;
   /** Poster layout id (see posterLayout.ts). */
   posterLayout?: string;
+  /** Map cut-out shape: none, circle, heart or star. */
+  mapShape?: string;
   showOverlay?: boolean;
   includeCredits?: boolean;
   markers?: MarkerItem[];

@@ -16,7 +16,7 @@ import {
   TEXT_MESSAGE_Y_RATIO,
 } from "./textLayout";
 
-export const POSTER_LAYOUTS = ["classic", "border", "label", "band", "fade"] as const;
+export const POSTER_LAYOUTS = ["classic", "border", "label", "band", "fade", "header", "script", "signature"] as const;
 export type PosterLayoutId = (typeof POSTER_LAYOUTS)[number];
 export const DEFAULT_POSTER_LAYOUT: PosterLayoutId = "classic";
 
@@ -26,7 +26,33 @@ export interface TextSlot {
   align: "center" | "left" | "right";
 }
 
+export interface Rect {
+  x: number;
+  y: number;
+  w: number;
+  h: number;
+}
+
+/** How the city name is set. */
+export interface CityStyle {
+  /** "spaced": upper case with wide letter spacing; "plain": as typed. */
+  case: "spaced" | "plain";
+  /** Font family for the city; null = the poster font chosen by the customer. */
+  family: string | null;
+  weight: number;
+}
+
+/** Script faces (self-hosted, see core/fonts). */
+export const SCRIPT_FONTS = { elegant: "Great Vibes", brush: "Caveat Brush" } as const;
+
 export interface PosterLayoutSpec {
+  /** The map shows only inside this window; paper fills the rest. null = full bleed. */
+  mapWindow: null | Rect;
+  cityStyle: CityStyle;
+  /** Country set in spaced capitals (header layouts). */
+  countrySpaced: boolean;
+  /** Full-width hairline rule (header layout); y and x ratios, width in ref px. */
+  rule: null | { y: number; x1: number; x2: number; width: number };
   /** Fade heights (ratio of height) at the top and bottom; 0 = none. */
   fades: { top: number; bottom: number };
   /** Double rule inset from the edges, with the poster colour outside it. */
@@ -59,6 +85,10 @@ export interface PosterLayoutSpec {
 const center = (y: number): TextSlot => ({ x: 0.5, y, align: "center" });
 
 const CLASSIC: PosterLayoutSpec = {
+  mapWindow: null,
+  cityStyle: { case: "spaced", family: null, weight: 700 },
+  countrySpaced: false,
+  rule: null,
   fades: { top: 0.25, bottom: 0.25 },
   border: null,
   box: null,
@@ -130,7 +160,144 @@ export const POSTER_LAYOUT_SPECS: Record<PosterLayoutId, PosterLayoutSpec> = {
     message: center(0.952),
     scale: { city: 1.1, country: 1, coords: 1, message: 1 },
   },
+
+  /** Big title over a rule at the top; the map sits in paper margins below. */
+  header: {
+    ...CLASSIC,
+    fades: { top: 0, bottom: 0 },
+    mapWindow: { x: 0.045, y: 0.2, w: 0.91, h: 0.765 },
+    cityStyle: { case: "plain", family: null, weight: 800 },
+    countrySpaced: true,
+    rule: { y: 0.138, x1: 0.045, x2: 0.955, width: 5 },
+    city: { x: 0.045, y: 0.088, align: "left" },
+    country: { x: 0.955, y: 0.1, align: "right" },
+    coords: { x: 0.045, y: 0.168, align: "left" },
+    message: { x: 0.955, y: 0.168, align: "right" },
+    divider: null,
+    scale: { city: 1.05, country: 0.6, coords: 0.75, message: 0.7 },
+    maxWidth: 0.6,
+  },
+
+  /** Handwritten title at the top left, place details at the right. */
+  script: {
+    ...CLASSIC,
+    fades: { top: 0, bottom: 0 },
+    mapWindow: { x: 0.045, y: 0.12, w: 0.91, h: 0.845 },
+    cityStyle: { case: "plain", family: SCRIPT_FONTS.elegant, weight: 400 },
+    countrySpaced: true,
+    city: { x: 0.04, y: 0.062, align: "left" },
+    country: { x: 0.955, y: 0.048, align: "right" },
+    coords: { x: 0.955, y: 0.08, align: "right" },
+    message: { x: 0.955, y: 0.105, align: "right" },
+    divider: null,
+    scale: { city: 0.8, country: 0.6, coords: 0.85, message: 0.6 },
+    maxWidth: 0.5,
+  },
+
+  /** Map on top in paper margins, a brush-lettered title signed underneath. */
+  signature: {
+    ...CLASSIC,
+    fades: { top: 0, bottom: 0 },
+    mapWindow: { x: 0.045, y: 0.045, w: 0.91, h: 0.83 },
+    cityStyle: { case: "plain", family: SCRIPT_FONTS.brush, weight: 400 },
+    countrySpaced: true,
+    city: { x: 0.045, y: 0.935, align: "left" },
+    country: { x: 0.955, y: 0.918, align: "right" },
+    coords: { x: 0.955, y: 0.948, align: "right" },
+    message: { x: 0.5, y: 0.975, align: "center" },
+    divider: null,
+    scale: { city: 0.95, country: 0.6, coords: 0.85, message: 0.55 },
+    maxWidth: 0.5,
+  },
 };
+
+/* ── Map shapes: the map shows only inside a circle, heart or star ── */
+
+export const MAP_SHAPES = ["none", "circle", "heart", "star"] as const;
+export type MapShapeId = (typeof MAP_SHAPES)[number];
+
+/** Where a shape sits when the layout has no map window: above the poster text. */
+const SHAPE_REGION: Rect = { x: 0.06, y: 0.05, w: 0.88, h: 0.71 };
+
+const n = (value: number) => Math.round(value * 100) / 100;
+
+/** SVG path of the shape, fitted (square) and centred in the box. */
+function shapePath(shape: MapShapeId, box: { x: number; y: number; w: number; h: number }): string {
+  const size = Math.min(box.w, box.h);
+  const x0 = box.x + (box.w - size) / 2;
+  const y0 = box.y + (box.h - size) / 2;
+  const cx = x0 + size / 2;
+  const cy = y0 + size / 2;
+  if (shape === "circle") {
+    const r = size / 2;
+    return `M${n(cx - r)} ${n(cy)}A${n(r)} ${n(r)} 0 1 0 ${n(cx + r)} ${n(cy)}A${n(r)} ${n(r)} 0 1 0 ${n(cx - r)} ${n(cy)}Z`;
+  }
+  if (shape === "heart") {
+    // Unit heart, 1 wide and 0.92 tall, centred vertically.
+    const p = (x: number, y: number) => `${n(x0 + x * size)} ${n(y0 + (y + 0.04) * size)}`;
+    return [
+      `M${p(0.5, 0.92)}`,
+      `C${p(0.2, 0.7)} ${p(0, 0.52)} ${p(0, 0.3)}`,
+      `C${p(0, 0.12)} ${p(0.14, 0)} ${p(0.29, 0)}`,
+      `C${p(0.4, 0)} ${p(0.47, 0.07)} ${p(0.5, 0.16)}`,
+      `C${p(0.53, 0.07)} ${p(0.6, 0)} ${p(0.71, 0)}`,
+      `C${p(0.86, 0)} ${p(1, 0.12)} ${p(1, 0.3)}`,
+      `C${p(1, 0.52)} ${p(0.8, 0.7)} ${p(0.5, 0.92)}Z`,
+    ].join("");
+  }
+  if (shape === "star") {
+    const outer = size / 2;
+    const inner = outer * 0.45;
+    // Nudge down so the star's visual centre sits in the box.
+    const sy = cy + outer * 0.1;
+    const points = Array.from({ length: 10 }, (_, i) => {
+      const r = i % 2 === 0 ? outer : inner;
+      const angle = -Math.PI / 2 + (i * Math.PI) / 5;
+      return `${n(cx + r * Math.cos(angle))} ${n(sy + r * Math.sin(angle))}`;
+    });
+    return `M${points.join("L")}Z`;
+  }
+  return "";
+}
+
+/**
+ * Path (in pixels of a width × height poster) covering everything that is
+ * paper rather than map: the whole poster minus the map window or shape.
+ * Fill it with the paper colour using the even-odd rule. null = full bleed.
+ */
+export function paperMaskPath(
+  layout: PosterLayoutSpec,
+  shape: string | undefined,
+  width: number,
+  height: number,
+): string | null {
+  const shapeId = (MAP_SHAPES as readonly string[]).includes(shape ?? "") ? (shape as MapShapeId) : "none";
+  const window = layout.mapWindow;
+  if (shapeId === "none" && !window) return null;
+  const outer = `M0 0H${n(width)}V${n(height)}H0Z`;
+  const region = window ?? SHAPE_REGION;
+  const box = { x: region.x * width, y: region.y * height, w: region.w * width, h: region.h * height };
+  if (shapeId === "none") {
+    return `${outer}M${n(box.x)} ${n(box.y)}H${n(box.x + box.w)}V${n(box.y + box.h)}H${n(box.x)}Z`;
+  }
+  return `${outer}${shapePath(shapeId, box)}`;
+}
+
+/** Fades only make sense on a full-bleed map. */
+export function effectiveFades(layout: PosterLayoutSpec, shape: string | undefined) {
+  return layout.mapWindow || (shape && shape !== "none") ? { top: 0, bottom: 0 } : layout.fades;
+}
+
+/** City text as printed. */
+export function cityText(layout: PosterLayoutSpec, city: string, spaced: (value: string) => string): string {
+  return layout.cityStyle.case === "spaced" ? spaced(city) : city;
+}
+
+/** "MOROCCO" → "M O R O C C O" when the layout spaces it. */
+export function countryText(layout: PosterLayoutSpec, country: string): string {
+  const upper = country.toUpperCase();
+  return layout.countrySpaced ? upper.split("").join(" ") : upper;
+}
 
 export function getPosterLayout(id: string | undefined | null): PosterLayoutSpec {
   return POSTER_LAYOUT_SPECS[(POSTER_LAYOUTS as readonly string[]).includes(id ?? "") ? (id as PosterLayoutId) : DEFAULT_POSTER_LAYOUT];

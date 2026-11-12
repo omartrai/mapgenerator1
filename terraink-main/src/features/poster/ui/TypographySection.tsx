@@ -8,7 +8,8 @@ import {
   PLACEHOLDER_EXAMPLE_COUNTRY,
 } from "@/features/location/ui/constants";
 import { useLanguage, type TranslationKey } from "@/shared/i18n/LanguageContext";
-import { POSTER_LAYOUTS, DEFAULT_POSTER_LAYOUT } from "@/features/poster/domain/posterLayout";
+import { MAP_SHAPES, POSTER_LAYOUTS, DEFAULT_POSTER_LAYOUT } from "@/features/poster/domain/posterLayout";
+import { LuBan, LuCircle, LuHeart, LuStar } from "react-icons/lu";
 
 /** Lines of the poster text that can each be hidden on their own. */
 const TEXT_PARTS = [
@@ -18,6 +19,8 @@ const TEXT_PARTS = [
   { name: "showCoordinates", label: "style.part.coordinates" },
   { name: "showMessage", label: "style.part.message" },
 ] as const;
+
+const SHAPE_ICONS = { none: LuBan, circle: LuCircle, heart: LuHeart, star: LuStar } as const;
 
 interface TypographySectionProps {
   form: PosterForm;
@@ -76,6 +79,29 @@ export default function TypographySection({
                 <span className="layout-picker__name">{t(`style.layout.${id}` as TranslationKey)}</span>
               </label>
             ))}
+          </div>
+        </fieldset>
+        <fieldset className="layout-picker shape-picker">
+          <legend>{t("style.shape")}</legend>
+          <div className="shape-picker__grid">
+            {MAP_SHAPES.map((id) => {
+              const Icon = SHAPE_ICONS[id];
+              return (
+                <label key={id} className="shape-picker__option">
+                  <input
+                    type="radio"
+                    name="mapShape"
+                    value={id}
+                    checked={(form.mapShape || "none") === id}
+                    onChange={onChange}
+                  />
+                  <span className={`shape-picker__tile shape-picker__tile--${id}`} aria-hidden="true">
+                    <Icon />
+                  </span>
+                  <span className="layout-picker__name">{t(`style.shape.${id}` as TranslationKey)}</span>
+                </label>
+              );
+            })}
           </div>
         </fieldset>
         <label className="toggle-field">
