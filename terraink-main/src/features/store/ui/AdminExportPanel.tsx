@@ -10,8 +10,8 @@ const FORMATS: ExportFormat[] = ["png", "pdf", "svg"];
 /** Shown in the studio instead of the buy box while producing an order's print files. */
 export default function AdminExportPanel({ task, isMobile }: { task: AdminTask; isMobile: boolean }) {
   const { product } = useStore();
-  const { generate, status, progress, error, labels } = usePrintFiles(task.orderNumber, task.itemId);
-  const busy = Object.values(status).some((value) => value === "rendering" || value === "uploading");
+  const { generate, status, error, labels } = usePrintFiles(task.orderNumber, task.itemId);
+  const busy = Object.values(status).some((value) => value === "rendering");
 
   return (
     <aside className={`studio-buy studio-buy--admin${isMobile ? " is-mobile" : ""}`} aria-label="Print files">
@@ -19,8 +19,8 @@ export default function AdminExportPanel({ task, isMobile }: { task: AdminTask; 
       <h2 className="studio-buy__title">{task.orderNumber}</h2>
       <p className="studio-buy__subtitle">{describeProduct(product)}</p>
       <p className="studio-buy__note">
-        The customer's exact design is loaded. Don't change it — generate the files, and each one is
-        saved to the order and downloaded.
+        The customer's exact design is loaded. Don't change it — each button renders the file at
+        print size and downloads it to this computer. Nothing is stored online.
       </p>
       <div className="admin-export__buttons">
         {FORMATS.map((format) => {
@@ -33,18 +33,14 @@ export default function AdminExportPanel({ task, isMobile }: { task: AdminTask; 
               disabled={busy}
               onClick={() => void generate(format)}
             >
-              {state === "rendering" || state === "uploading" ? (
+              {state === "rendering" ? (
                 <LuLoader className="store-spin" aria-hidden="true" />
               ) : state === "done" ? (
                 <LuCheck aria-hidden="true" />
               ) : (
                 <LuDownload aria-hidden="true" />
               )}
-              {state === "rendering"
-                ? "Rendering…"
-                : state === "uploading"
-                  ? `Saving… ${progress}%`
-                  : labels[format]}
+              {state === "rendering" ? "Rendering…" : labels[format]}
             </button>
           );
         })}

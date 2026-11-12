@@ -418,7 +418,8 @@ export function createApiHandler(options: RouterOptions) {
             return json(200, { order });
           }
 
-          // POST /api/admin/orders/:number/files — record a client-uploaded blob
+          // POST /api/admin/orders/:number/files — note a print file the owner
+          // downloaded (downloadOnly: nothing stored) or a client-uploaded blob
           if (!rest[3] && method === "POST") {
             const body = await readJson<{
               itemId: string;
@@ -426,6 +427,7 @@ export function createApiHandler(options: RouterOptions) {
               contentType: string;
               size: number;
               label?: string;
+              downloadOnly?: boolean;
             }>(request);
             const name = assertFileName(body.name);
             if (!PRINT_CONTENT_TYPES.includes(body.contentType)) throw new HttpError(415, "Unsupported file type.");
@@ -435,6 +437,7 @@ export function createApiHandler(options: RouterOptions) {
               size: Math.max(0, Number(body.size) || 0),
               createdAt: new Date().toISOString(),
               label: String(body.label ?? "Print file").slice(0, 80),
+              ...(body.downloadOnly ? { downloadOnly: true } : {}),
             });
             return json(200, { order, path: filePath(number, name) });
           }

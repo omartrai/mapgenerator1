@@ -145,9 +145,9 @@ function OrdersList({ storage }: { storage: string }) {
                   </td>
                   <td>
                     {order.hasPrintFiles ? (
-                      <span className="admin-ready"><LuFileImage aria-hidden="true" /> Ready</span>
+                      <span className="admin-ready"><LuFileImage aria-hidden="true" /> Downloaded</span>
                     ) : (
-                      <span className="admin-subtle">To generate</span>
+                      <span className="admin-subtle">Not downloaded yet</span>
                     )}
                   </td>
                 </tr>

@@ -73,6 +73,8 @@ export interface StoredFile {
   size: number;
   createdAt: string;
   label?: string;
+  /** Print file downloaded to the owner's computer only; nothing is stored. */
+  downloadOnly?: boolean;
 }
 
 export interface OrderItem {

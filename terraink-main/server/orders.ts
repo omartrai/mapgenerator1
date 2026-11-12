@@ -576,7 +576,9 @@ export function createOrderService(
       const order = await load(number);
       const fileName = assertFileName(name);
       const known = order.items.some(
-        (item) => item.preview?.name === fileName || item.printFiles.some((file) => file.name === fileName),
+        (item) =>
+          item.preview?.name === fileName ||
+          item.printFiles.some((file) => file.name === fileName && !file.downloadOnly),
       );
       if (!known) throw new HttpError(404, "File not found.");
       const file = await storage.getFile(filePath(order.number, fileName));
@@ -591,7 +593,9 @@ export function createOrderService(
     order.history.push({
       at: new Date().toISOString(),
       type: "file",
-      message: `Print file ${file.name} saved (${Math.round(file.size / 1024)} KB).`,
+      message: file.downloadOnly
+        ? `Print file ${file.name} downloaded (${Math.round(file.size / 1024)} KB, not stored).`
+        : `Print file ${file.name} saved (${Math.round(file.size / 1024)} KB).`,
     });
     return save(order);
   }

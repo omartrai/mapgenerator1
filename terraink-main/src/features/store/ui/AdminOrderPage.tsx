@@ -290,7 +290,8 @@ function OrderItemCard({
             <h3>Print-ready files</h3>
             {item.printFiles.length === 0 ? (
               <p className="admin-subtle">
-                Not generated yet. Generate them from the customer's saved design. It takes about 10 seconds.
+                Not downloaded yet. Generate them from the customer's saved design — they download to this
+                computer (nothing is stored online). It takes about 10 seconds; you can regenerate them any time.
               </p>
             ) : (
               <ul className="admin-files">
@@ -298,11 +299,18 @@ function OrderItemCard({
                   <li key={file.name}>
                     <span>
                       <strong>{file.label ?? file.name}</strong>
-                      <span className="admin-subtle"> · {(file.size / 1024 / 1024).toFixed(1)} MB</span>
+                      <span className="admin-subtle">
+                        {" "}· {(file.size / 1024 / 1024).toFixed(1)} MB
+                        {file.downloadOnly
+                          ? ` · downloaded ${new Date(file.createdAt).toLocaleDateString(undefined, { dateStyle: "medium" })}`
+                          : ""}
+                      </span>
                     </span>
-                    <button type="button" className="store-btn store-btn--outline store-btn--sm" onClick={() => void onDownload(file.name)}>
-                      <LuDownload aria-hidden="true" /> Download
-                    </button>
+                    {file.downloadOnly ? null : (
+                      <button type="button" className="store-btn store-btn--outline store-btn--sm" onClick={() => void onDownload(file.name)}>
+                        <LuDownload aria-hidden="true" /> Download
+                      </button>
+                    )}
                   </li>
                 ))}
               </ul>

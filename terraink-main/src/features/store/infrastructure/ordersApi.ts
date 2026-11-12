@@ -164,6 +164,14 @@ export const adminApi = {
       headers: adminHeaders(),
     }),
 
+  /** Notes in the order that a print file was downloaded (the file itself is not stored). */
+  logPrintDownload: (number: string, file: { itemId: string; name: string; contentType: string; size: number; label: string }) =>
+    request<{ order: Order }>(`/admin/orders/${encodeURIComponent(number)}/files`, {
+      method: "POST",
+      headers: adminHeaders({ "Content-Type": "application/json" }),
+      body: JSON.stringify({ ...file, downloadOnly: true }),
+    }),
+
   sendWhatsAppConfirmation: (number: string) =>
     request<{ order: Order }>(`/admin/orders/${encodeURIComponent(number)}/whatsapp`, {
       method: "POST",
@@ -187,57 +195,4 @@ export const adminApi = {
     return response.blob();
   },
 
-  /**
-   * Stores a generated print file with the order. Large files go straight
-   * to Vercel Blob with a short-lived upload token; the local dev server
-   * accepts them directly.
-   */
-  async uploadPrintFile(
-    number: string,
-    itemId: string,
-    fileName: string,
-    blob: Blob,
-    label: string,
-    onProgress?: (percent: number) => void,
-  ): Promise<Order> {
-    const health = await request<{ storage: string }>("/health");
-    const contentType = blob.type || "application/octet-stream";
-
-    if (health.storage === "blob") {
-      const { upload } = await import("@vercel/blob/client");
-      // Send the file as a plain Blob (no progress stream, no multipart): a
-      // streamed body can't be re-sent, so any retry used to fail with
-      // "The provided ReadableStream is disturbed". A Blob retries cleanly.
-      onProgress?.(5);
-      await upload(`orders/${number}/${fileName}`, blob, {
-        access: "private",
-        handleUploadUrl: `${API_BASE}/admin/blob-upload`,
-        headers: adminHeaders(),
-        contentType,
-        multipart: false,
-      });
-      onProgress?.(95);
-      const { order } = await request<{ order: Order }>(
-        `/admin/orders/${encodeURIComponent(number)}/files`,
-        {
-          method: "POST",
-          headers: adminHeaders({ "Content-Type": "application/json" }),
-          body: JSON.stringify({ itemId, name: fileName, contentType, size: blob.size, label }),
-        },
-      );
-      return order;
-    }
-
-    const query = `item=${encodeURIComponent(itemId)}&label=${encodeURIComponent(label)}`;
-    const { order } = await request<{ order: Order }>(
-      `/admin/orders/${encodeURIComponent(number)}/files/${encodeURIComponent(fileName)}?${query}`,
-      {
-        method: "PUT",
-        headers: adminHeaders({ "Content-Type": contentType }),
-        body: blob,
-      },
-    );
-    onProgress?.(100);
-    return order;
-  },
 };
