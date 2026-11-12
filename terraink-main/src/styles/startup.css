@@ -4,7 +4,7 @@
   --sm-ink: #17322a;
   --sm-muted: #5d6460;
   --sm-line: #e6dccf;
-  --sm-accent: #e4572e;
+  --sm-accent: #1f3b33;
   --sm-card: #fdf7f0;
   position: fixed;
   inset: 0;
@@ -131,9 +131,9 @@
 
 .startup-modal__kind.is-selected {
   border-color: var(--sm-accent);
-  background: linear-gradient(180deg, #fff3ea, #fde3d3);
-  color: #c4461f;
-  box-shadow: 0 0 0 1px var(--sm-accent), 0 6px 14px rgba(228, 87, 46, 0.14);
+  background: #e7ede8;
+  color: var(--sm-accent);
+  box-shadow: 0 0 0 1px var(--sm-accent), 0 6px 14px rgba(31, 59, 51, 0.14);
 }
 
 .startup-modal__kind.is-selected svg {
@@ -176,7 +176,7 @@
 
 .startup-modal__field:focus-within {
   border-color: var(--sm-accent);
-  box-shadow: 0 0 0 4px rgba(228, 87, 46, 0.14);
+  box-shadow: 0 0 0 4px rgba(31, 59, 51, 0.14);
 }
 
 .startup-modal__field svg {
@@ -276,19 +276,19 @@
   padding: 0 24px;
   border: 0;
   border-radius: 14px;
-  background: linear-gradient(180deg, #ee6a33, #dc4f22);
+  background: var(--sm-accent);
   color: #fff;
   font: inherit;
   font-size: 1.08rem;
   font-weight: 700;
   cursor: pointer;
-  box-shadow: 0 10px 22px rgba(220, 79, 34, 0.28);
+  box-shadow: 0 10px 22px rgba(31, 59, 51, 0.18);
   transition: transform 0.2s ease, box-shadow 0.2s ease;
 }
 
 .startup-modal__start:hover:not(:disabled) {
   transform: translateY(-1px);
-  box-shadow: 0 14px 28px rgba(220, 79, 34, 0.34);
+  box-shadow: 0 14px 28px rgba(31, 59, 51, 0.24);
 }
 
 .startup-modal__start:hover:not(:disabled) .startup-modal__arrow {

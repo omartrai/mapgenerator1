@@ -4,29 +4,35 @@
    ══════════════════════════════════════════════════════════════════ */
 
 :root {
-  --s-ink: #222222;
-  --s-ink-soft: #444444;
-  --s-muted: #767676;
-  --s-faint: #a6a6a6;
-  --s-paper: #fbf7f2;
-  --s-paper-deep: #f2ece5;
+  --s-ink: #1b1b19;
+  --s-ink-soft: #3b3a36;
+  --s-muted: #6e6a62;
+  --s-faint: #a39d92;
+  --s-paper: #faf7f1;
+  --s-paper-deep: #f1ece3;
   --s-surface: #ffffff;
-  --s-line: #ebe3da;
-  --s-line-strong: #d9cec2;
-  --s-accent: #e4572e;
-  --s-accent-hover: #c9461f;
-  --s-accent-soft: #fce9e2;
-  --s-clay: #e4572e;
-  --s-clay-soft: #fce9e2;
-  --s-hero: #f6ebe0;
-  --s-green: #2f4a3c;
-  --s-danger: #d43d2a;
-  --s-success: #2e8a57;
-  --s-radius: 10px;
-  --s-radius-sm: 8px;
-  --s-shadow-sm: 0 1px 2px rgba(0, 0, 0, 0.05), 0 2px 8px rgba(0, 0, 0, 0.04);
-  --s-shadow: 0 2px 6px rgba(0, 0, 0, 0.04), 0 14px 32px rgba(0, 0, 0, 0.07);
-  --s-shadow-lg: 0 8px 20px rgba(0, 0, 0, 0.07), 0 30px 60px rgba(0, 0, 0, 0.12);
+  --s-line: #e7e0d4;
+  --s-line-strong: #cfc6b6;
+  /* Actions and selection use the brand green; gold is for small details. */
+  --s-accent: #1f3b33;
+  --s-accent-hover: #15302a;
+  --s-accent-soft: #e7ede8;
+  --s-clay: #1f3b33;
+  --s-clay-soft: #e7ede8;
+  --s-gold: #a5814b;
+  --s-gold-text: #8a6a36;
+  --s-gold-light: #dcc594;
+  --s-cream: #f5efdf;
+  --s-hero: #f3ece0;
+  --s-green: #1f3b33;
+  --s-danger: #b3392a;
+  --s-success: #2f7a52;
+  --s-radius: 3px;
+  --s-radius-sm: 2px;
+  --s-shadow-sm: 0 1px 2px rgba(27, 27, 25, 0.04);
+  --s-shadow: 0 1px 2px rgba(27, 27, 25, 0.04), 0 12px 32px rgba(27, 27, 25, 0.06);
+  --s-shadow-lg: 0 4px 12px rgba(27, 27, 25, 0.05), 0 28px 64px rgba(27, 27, 25, 0.12);
+  --s-display: "Playfair Display", "Cairo", Georgia, "Times New Roman", serif;
   --s-serif: "Plus Jakarta Sans", "Cairo", system-ui, -apple-system, "Segoe UI", sans-serif;
   --s-sans: "Plus Jakarta Sans", "Cairo", system-ui, -apple-system, "Segoe UI", sans-serif;
   --s-ease: cubic-bezier(0.22, 0.8, 0.24, 1);
@@ -3224,7 +3230,7 @@ button.store-btn--dark[type="submit"] {
 .store-header--studio .store-nav__link.is-active {
   padding: 9px 18px;
   border-radius: 12px;
-  background: #fbe4d8;
+  background: var(--s-accent-soft);
   color: var(--s-accent);
 }
 
@@ -3762,7 +3768,7 @@ button.store-btn--dark[type="submit"] {
 }
 
 .app-shell[data-store-studio] .studio-view-toggle .segmented__option.is-selected {
-  background: #fbe4d8;
+  background: var(--s-accent-soft);
   color: var(--s-accent);
   box-shadow: none;
 }
@@ -3865,7 +3871,7 @@ button.store-btn--dark[type="submit"] {
 .app-shell[data-store-studio] .desktop-settings-slide :is(input.form-control-tall, .location-input-wrap input):focus {
   border-color: var(--s-accent) !important;
   outline: 0 !important;
-  box-shadow: 0 0 0 3px rgba(228, 87, 46, 0.14) !important;
+  box-shadow: 0 0 0 3px rgba(31, 59, 51, 0.14) !important;
 }
 
 .app-shell[data-store-studio] .desktop-settings-slide .location-current-btn {
@@ -4031,7 +4037,7 @@ button.store-btn--dark[type="submit"] {
 
 .app-shell[data-store-studio] .marker-header-action-btn.is-active {
   border-color: var(--s-accent) !important;
-  background: #fbe4d8 !important;
+  background: var(--s-accent-soft) !important;
   color: var(--s-accent) !important;
 }
 

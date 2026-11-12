@@ -38,3 +38,12 @@ Noria is a working map-poster studio, not a generic landing page. The interface 
 - No rounded card with a colored left border.
 - Keep visible accent use sparse; neutral surfaces carry the interface.
 - Key editor regions include stable `data-od-id` attributes.
+
+## Storefront (shop pages)
+
+- Tokens live in `src/styles/store.css` (`--s-*`); the gallery look is applied in `src/styles/premium.css`, loaded last.
+- `--s-accent` is the brand green `#1f3b33`, used for actions and selection. No orange.
+- `--s-gold` / `--s-gold-light` are for small details only: heading rules, eyebrows, icons, footer headings.
+- Headings use `--s-display` (Playfair Display, weight 400–500). Body and controls stay in Plus Jakarta Sans.
+- Buttons, chips and nav labels are small uppercase with letter-spacing; corners are 2–3px (`--s-radius`).
+- Hairlines (`--s-line`) separate sections; avoid filled colour blocks and heavy shadows.
