@@ -116,33 +116,33 @@ function legalPagesPlugin() {
   <head>
     <meta charset="UTF-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-    <title>${title} – Terraink</title>
-    <link rel="icon" type="image/svg+xml" href="/assets/logo.svg" />
+    <title>${title} – Noria</title>
+    <link rel="icon" type="image/svg+xml" href="/assets/favicon.svg" />
     <style>
       body {
         margin: 0;
         padding: 40px 20px 64px;
-        background: #0a1824;
-        color: rgba(214, 228, 240, 0.92);
-        font-family: system-ui, -apple-system, "Segoe UI", sans-serif;
+        background: #fbf7f2;
+        color: #444444;
+        font-family: "Plus Jakarta Sans", system-ui, -apple-system, "Segoe UI", sans-serif;
         line-height: 1.6;
       }
       main { max-width: 720px; margin: 0 auto; }
-      h1, h2, h3 { color: #fff; line-height: 1.25; margin: 1.4em 0 0.5em; }
+      h1, h2, h3 { color: #222222; line-height: 1.25; margin: 1.4em 0 0.5em; }
       h1 { font-size: 1.6rem; }
       h2 { font-size: 1.2rem; }
       h3 { font-size: 1.05rem; }
       main > :first-child { margin-top: 0; }
-      a { color: #7fb4e6; word-break: break-word; }
+      a { color: #1f3b33; word-break: break-word; }
       ul, ol { padding-left: 1.4em; }
-      hr { border: none; border-top: 1px solid rgba(151, 183, 207, 0.22); margin: 1.6em 0; }
-      code { background: rgba(151, 183, 207, 0.14); padding: 0.1em 0.35em; border-radius: 4px; }
+      hr { border: none; border-top: 1px solid #ebe3da; margin: 1.6em 0; }
+      code { background: #f2ece5; padding: 0.1em 0.35em; border-radius: 4px; }
       .back-link { display: inline-block; margin-bottom: 28px; font-size: 0.9rem; }
     </style>
   </head>
   <body>
     <main>
-      <a class="back-link" href="/">&larr; Back to Terraink</a>
+      <a class="back-link" href="/">&larr; Back to Noria</a>
 ${body}
     </main>
   </body>
@@ -249,6 +249,89 @@ ${body}
 }
 
 /**
+ * Public address of the site, with no trailing slash. VITE_SITE_URL wins (set
+ * it once a custom domain is attached); otherwise Vercel's production domain
+ * is used. Empty for local builds.
+ */
+function resolveSiteUrl(env) {
+  const explicit = String(env.VITE_SITE_URL ?? "").trim();
+  const vercelHost = String(env.VERCEL_PROJECT_PRODUCTION_URL ?? "").trim();
+  const raw = explicit || (vercelHost ? `https://${vercelHost}` : "");
+  if (!raw) return "";
+  return (/^https?:\/\//.test(raw) ? raw : `https://${raw}`).replace(/\/+$/, "");
+}
+
+/**
+ * Everything that has to carry the site's absolute address: the canonical
+ * link and share-image URLs in index.html, sitemap.xml, and the sitemap line
+ * in robots.txt. Social scrapers ignore relative og:image paths.
+ */
+function seoPlugin() {
+  const PUBLIC_PATHS = [
+    { path: "/", priority: "1.0", changefreq: "weekly" },
+    { path: "/create", priority: "0.9", changefreq: "monthly" },
+    { path: "/collection", priority: "0.8", changefreq: "weekly" },
+    { path: "/suivi", priority: "0.3", changefreq: "yearly" },
+    { path: "/legal/cgv", priority: "0.2", changefreq: "yearly" },
+    { path: "/legal/confidentialite", priority: "0.2", changefreq: "yearly" },
+    { path: "/legal/mentions-legales", priority: "0.2", changefreq: "yearly" },
+  ];
+
+  let resolvedConfig;
+  let siteUrl = "";
+
+  return {
+    name: "seo",
+    configResolved(config) {
+      resolvedConfig = config;
+      siteUrl = resolveSiteUrl({
+        ...process.env,
+        ...loadEnv(config.mode, config.root, ""),
+      });
+    },
+    transformIndexHtml(html) {
+      if (!siteUrl) return html;
+      return html
+        .replaceAll('content="/assets/banner.png"', `content="${siteUrl}/assets/banner.png"`)
+        .replace(
+          "</head>",
+          `  <link rel="canonical" href="${siteUrl}/" />\n    <meta property="og:url" content="${siteUrl}/" />\n  </head>`,
+        );
+    },
+    closeBundle() {
+      if (!siteUrl) {
+        console.warn("[seo] no site URL (VITE_SITE_URL) — skipping sitemap.xml");
+        return;
+      }
+      const outDir = path.resolve(
+        resolvedConfig.root,
+        resolvedConfig.build.outDir,
+      );
+      const today = new Date().toISOString().slice(0, 10);
+      const urls = PUBLIC_PATHS.map(
+        ({ path: pagePath, priority, changefreq }) =>
+          `  <url>\n    <loc>${siteUrl}${pagePath === "/" ? "" : pagePath}</loc>\n    <lastmod>${today}</lastmod>\n    <changefreq>${changefreq}</changefreq>\n    <priority>${priority}</priority>\n  </url>`,
+      ).join("\n");
+      fs.writeFileSync(
+        path.join(outDir, "sitemap.xml"),
+        `<?xml version="1.0" encoding="UTF-8"?>\n<urlset xmlns="http://www.sitemaps.org/schemas/sitemap/0.9">\n${urls}\n</urlset>\n`,
+        "utf8",
+      );
+      const robotsPath = path.join(outDir, "robots.txt");
+      const robots = fs.existsSync(robotsPath)
+        ? fs.readFileSync(robotsPath, "utf8").trimEnd()
+        : "User-agent: *\nAllow: /";
+      fs.writeFileSync(
+        robotsPath,
+        `${robots}\n\nSitemap: ${siteUrl}/sitemap.xml\n`,
+        "utf8",
+      );
+      console.log(`[seo] wrote sitemap.xml and robots.txt for ${siteUrl}`);
+    },
+  };
+}
+
+/**
  * Serves the order API (/api/*) inside `vite dev`, using the same router as
  * the Vercel Function in api/index.ts. Without BLOB_READ_WRITE_TOKEN, orders
  * are written to ./.data and the admin password defaults to "admin".
@@ -306,6 +389,7 @@ export default defineConfig({
     react(),
     adsensePlugin(),
     legalPagesPlugin(),
+    seoPlugin(),
     ordersApiPlugin(),
   ],
   define: {
