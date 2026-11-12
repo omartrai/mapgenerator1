@@ -12,6 +12,7 @@ import LayersSection from "@/features/map/ui/LayersSection";
 import MarkersSection from "@/features/markers/ui/MarkersSection";
 import RoutesSection from "@/features/routes/ui/RoutesSection";
 import TypographySection from "@/features/poster/ui/TypographySection";
+import AdvancedSection from "@/features/map/ui/AdvancedSection";
 import {
   LocationIcon,
   ThemeIcon,
@@ -321,6 +322,14 @@ export default function SettingsPanel({
                 fontOptions={FONT_OPTIONS}
               />
             ) : null}
+          </div>
+        </div>
+      </div>
+
+      <div className="mobile-section mobile-section--advanced accordion-item accordion-item--open">
+        <div className="accordion-body is-open">
+          <div className="accordion-body-inner">
+            {!isColorEditorActive ? <AdvancedSection /> : null}
           </div>
         </div>
       </div>

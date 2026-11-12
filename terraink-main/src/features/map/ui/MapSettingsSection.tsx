@@ -1,4 +1,5 @@
 import { useEffect, useMemo, useRef, useState } from "react";
+import { onOpenSettingsTab } from "@/shared/ui/settingsTabs";
 import { createCustomLayoutOption } from "@/features/layout/infrastructure/layoutRepository";
 import {
   DISPLAY_PALETTE_KEYS,
@@ -243,6 +244,16 @@ export default function MapSettingsSection({
       seedPalette: [...currentThemePalette],
     });
   }
+
+  // The Advanced tab's "Map colours" shortcut opens the colour editor here.
+  useEffect(
+    () =>
+      onOpenSettingsTab(({ tab, focus }) => {
+        if (tab === "theme" && focus === "theme-editor") handleOpenThemeEditor();
+      }),
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+    [],
+  );
 
   function handleOpenThemeEditor() {
     setIsThemeEditing(true);

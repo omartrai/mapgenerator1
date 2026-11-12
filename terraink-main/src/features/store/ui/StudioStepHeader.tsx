@@ -2,7 +2,7 @@ import type { MobileTab } from "@/shared/ui/MobileNavBar";
 import { useStoreText, type StoreTextKey } from "./storeText";
 import { MAIN_STEPS } from "./StudioStepFooter";
 
-const SECTIONS: MobileTab[] = ["location", "theme", "style", "size", "layers", "markers", "routes"];
+const SECTIONS: MobileTab[] = ["location", "theme", "style", "size", "layers", "markers", "routes", "advanced"];
 
 interface StudioStepHeaderProps {
   tab: MobileTab;

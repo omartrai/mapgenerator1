@@ -5,6 +5,7 @@ import {
   LayersIcon,
   MarkersIcon,
   RouteIcon,
+  AdvancedIcon,
   StyleIcon,
 } from "./Icons";
 import type { MobileTab } from "./MobileNavBar";
@@ -21,6 +22,7 @@ const tabs: {
   { id: "layers", labelKey: "nav.layers", Icon: LayersIcon },
   { id: "markers", labelKey: "nav.icons", Icon: MarkersIcon },
   { id: "routes", labelKey: "nav.routes", Icon: RouteIcon },
+  { id: "advanced", labelKey: "nav.advanced", Icon: AdvancedIcon },
 ];
 
 interface DesktopNavBarProps {
@@ -63,7 +65,7 @@ export default function DesktopNavBar({
         <button
           key={id}
           type="button"
-          className={`btn btn-ghost desktop-nav-tab${panelOpen && activeTab === id ? " is-active" : ""}`}
+          className={`btn btn-ghost desktop-nav-tab desktop-nav-tab--${id}${panelOpen && activeTab === id ? " is-active" : ""}`}
           onClick={() => onTabChange(id)}
           title={label}
           aria-label={label}

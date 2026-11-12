@@ -360,6 +360,8 @@ const en = {
   "steps.markers.hint": "Optional. Pin your home, the place you met or a favourite café.",
   "steps.routes.title": "Add a route",
   "steps.routes.hint": "Optional. Upload a GPX file of a run, a ride or a road trip.",
+  "steps.advanced.title": "Advanced settings",
+  "steps.advanced.hint": "For the perfectionists: exact rotation, every map colour and every detail.",
 
   "view.label": "Preview background",
   "view.studio": "Studio",
@@ -710,6 +712,8 @@ const fr: Dictionary = {
   "steps.markers.hint": "Facultatif. Épinglez votre maison, le lieu de votre rencontre ou votre café préféré.",
   "steps.routes.title": "Ajouter un trajet",
   "steps.routes.hint": "Facultatif. Importez un fichier GPX de course, de vélo ou de road trip.",
+  "steps.advanced.title": "Réglages avancés",
+  "steps.advanced.hint": "Pour les perfectionnistes : rotation précise, chaque couleur et chaque détail de la carte.",
 
   "view.label": "Fond de l'aperçu",
   "view.studio": "Studio",
@@ -1057,6 +1061,8 @@ const ar: Dictionary = {
   "steps.markers.hint": "اختياري. ثبّت منزلك أو مكان لقائكما أو مقهاك المفضل.",
   "steps.routes.title": "أضف مساراً",
   "steps.routes.hint": "اختياري. ارفع ملف GPX لجري أو دراجة أو رحلة.",
+  "steps.advanced.title": "إعدادات متقدمة",
+  "steps.advanced.hint": "لمحبي الدقة: تدوير دقيق، وكل ألوان الخريطة وتفاصيلها.",
 
   "view.label": "خلفية المعاينة",
   "view.studio": "استوديو",

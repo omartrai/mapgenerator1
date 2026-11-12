@@ -5,6 +5,7 @@ import {
   LayersIcon,
   MarkersIcon,
   RouteIcon,
+  AdvancedIcon,
   StyleIcon,
 } from "./Icons";
 import { useLanguage, type TranslationKey } from "@/shared/i18n/LanguageContext";
@@ -17,7 +18,8 @@ export type MobileTab =
   | "style"
   | "layers"
   | "markers"
-  | "routes";
+  | "routes"
+  | "advanced";
 
 const tabs: {
   id: MobileTab;
@@ -31,6 +33,7 @@ const tabs: {
   { id: "layers", labelKey: "nav.layers", Icon: LayersIcon },
   { id: "markers", labelKey: "nav.icons", Icon: MarkersIcon },
   { id: "routes", labelKey: "nav.routes", Icon: RouteIcon },
+  { id: "advanced", labelKey: "nav.advanced", Icon: AdvancedIcon },
 ];
 
 interface MobileNavBarProps {
