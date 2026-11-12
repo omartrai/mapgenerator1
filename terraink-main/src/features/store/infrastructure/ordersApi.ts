@@ -5,6 +5,7 @@ import type {
   PublicOrder,
 } from "../domain/order";
 import type { CollectionMockup, CollectionProduct } from "../domain/collection";
+import type { Review, ReviewInput, ReviewStatus, ReviewSummary } from "../domain/review";
 
 const API_BASE = "/api";
 const ADMIN_TOKEN_KEY = "maploom.admin.token";
@@ -49,6 +50,21 @@ export const collectionApi = {
   list: () => request<{ products: CollectionProduct[]; configured: boolean }>("/collection"),
   get: (id: number) =>
     request<{ product: CollectionProduct; mockups: CollectionMockup[] }>(`/collection/${id}`),
+};
+
+/* ── Reviews ── */
+
+export const reviewsApi = {
+  list: () => request<ReviewSummary>("/reviews"),
+  forOrder: (number: string, accessKey: string) =>
+    request<{ review: Omit<Review, "orderNumber"> | null }>(
+      `/orders/${encodeURIComponent(number)}/review?key=${encodeURIComponent(accessKey)}`,
+    ),
+  submit: (number: string, accessKey: string, input: ReviewInput) =>
+    request<{ review: Omit<Review, "orderNumber"> }>(
+      `/orders/${encodeURIComponent(number)}/review?key=${encodeURIComponent(accessKey)}`,
+      { method: "POST", headers: { "Content-Type": "application/json" }, body: JSON.stringify(input) },
+    ),
 };
 
 /* ── Customer ── */
@@ -115,6 +131,15 @@ export const adminApi = {
   session: () =>
     request<{ ok: boolean; storage: string; fulfillment: string }>("/admin/session", {
       headers: adminHeaders(),
+    }),
+
+  listReviews: () => request<{ reviews: Review[] }>("/admin/reviews", { headers: adminHeaders() }),
+
+  setReviewStatus: (id: string, status: ReviewStatus) =>
+    request<{ review: Review }>(`/admin/reviews/${encodeURIComponent(id)}`, {
+      method: "PATCH",
+      headers: adminHeaders({ "Content-Type": "application/json" }),
+      body: JSON.stringify({ status }),
     }),
 
   listOrders: () =>

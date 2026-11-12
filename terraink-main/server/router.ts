@@ -6,6 +6,7 @@ import { createBlobStorage } from "./storage/blobStorage.js";
 import { createFsStorage } from "./storage/fsStorage.js";
 import { createFulfillmentProvider } from "./fulfillment/index.js";
 import { createUrbanArtCatalog } from "./urbanart.js";
+import { createReviewService, type ReviewService } from "./reviews.js";
 import {
   HttpError,
   assertFileName,
@@ -64,6 +65,14 @@ async function readJson<T>(request: Request): Promise<T> {
 
 export function createApiHandler(options: RouterOptions) {
   let service: OrderService | null = null;
+  let reviews: ReviewService | null = null;
+  const getReviews = () => {
+    if (reviews) return reviews;
+    const storage = resolveStorage(options);
+    if (!storage) throw new HttpError(503, "Review storage is not configured.");
+    reviews = createReviewService(storage);
+    return reviews;
+  };
   const getService = () => {
     if (service) return service;
     const storage = resolveStorage(options);
@@ -161,6 +170,12 @@ export function createApiHandler(options: RouterOptions) {
       }
     }
 
+    // GET /api/reviews — approved reviews for the site
+    if (head === "reviews" && rest.length === 0 && method === "GET") {
+      if (!resolveStorage(options)) return json(200, { reviews: [], count: 0, average: 0 });
+      return json(200, await getReviews().summary(), { "Cache-Control": "public, max-age=60, s-maxage=120" });
+    }
+
     // POST /api/orders — place an order
     if (head === "orders" && rest.length === 0 && method === "POST") {
       const order = await getService().create(await readJson(request));
@@ -174,6 +189,17 @@ export function createApiHandler(options: RouterOptions) {
       const order = await getService().load(number);
       if (!key || !safeEqual(key, order.accessKey)) throw new HttpError(404, "Order not found.");
       if (rest.length === 1 && method === "GET") return json(200, { order: toPublicOrder(order) });
+      // GET / POST /api/orders/:number/review?key=… — the customer's review
+      if (rest[1] === "review" && rest.length === 2) {
+        if (method === "GET") {
+          const review = await getReviews().forOrder(order.number);
+          return json(200, { review: review ? { ...review, orderNumber: undefined } : null });
+        }
+        if (method === "POST") {
+          const review = await getReviews().submit(order, await readJson(request));
+          return json(201, { review: { ...review, orderNumber: undefined } });
+        }
+      }
       // GET /api/orders/:number/files/:name?key=… — preview images only
       if (rest[1] === "files" && rest[2] && method === "GET") {
         const name = assertFileName(rest[2]);
@@ -219,6 +245,19 @@ export function createApiHandler(options: RouterOptions) {
           storage: getService().storageKind,
           fulfillment: getService().fulfillmentLabel,
         });
+      }
+
+      if (rest[0] === "reviews") {
+        // GET /api/admin/reviews
+        if (rest.length === 1 && method === "GET") {
+          return json(200, { reviews: await getReviews().listAll() });
+        }
+        // PATCH /api/admin/reviews/:id { status }
+        if (rest.length === 2 && method === "PATCH") {
+          const body = await readJson<{ status: string }>(request);
+          const review = await getReviews().setStatus(assertOrderNumber(rest[1]), body?.status as never);
+          return json(200, { review });
+        }
       }
 
       if (rest[0] === "orders") {

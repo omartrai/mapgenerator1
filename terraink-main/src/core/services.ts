@@ -67,4 +67,4 @@ export { drawRoutesOnCanvas } from "@/features/routes/infrastructure/rendering";
 /* ── Store: cart persistence and order API ── */
 
 export { cartStorage } from "@/features/store/infrastructure/cartStorage";
-export { ordersApi, adminApi, collectionApi, ApiError } from "@/features/store/infrastructure/ordersApi";
+export { ordersApi, adminApi, collectionApi, reviewsApi, ApiError } from "@/features/store/infrastructure/ordersApi";

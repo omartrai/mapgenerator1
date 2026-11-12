@@ -26,6 +26,12 @@ export default function AdminLayout({ children }: { children: (info: { storage: 
           <span className="admin-header__tag">Orders</span>
         </Link>
         <div className="admin-header__actions">
+          {session.status === "signed-in" ? (
+            <>
+              <Link to="/admin" className="store-link">Orders</Link>
+              <Link to="/admin/reviews" className="store-link">Reviews</Link>
+            </>
+          ) : null}
           <Link to="/" className="store-link">View shop</Link>
           {session.status === "signed-in" ? (
             <button type="button" className="store-btn store-btn--ghost store-btn--sm" onClick={session.signOut}>

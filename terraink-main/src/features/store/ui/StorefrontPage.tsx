@@ -30,6 +30,7 @@ import {
 import { DESIGN_PRESETS, MOROCCAN_PRESET_IDS, type DesignPreset } from "../domain/presets";
 import CollectionSection from "./CollectionSection";
 import FramedPoster from "./FramedPoster";
+import ReviewsSection from "./ReviewsSection";
 import StoreFooter from "./StoreFooter";
 import StoreHeader from "./StoreHeader";
 import { useStoreText, type StoreTextKey } from "./storeText";
@@ -97,6 +98,8 @@ export default function StorefrontPage() {
         <Configurator choice={choice} onChange={setChoice} />
 
         <TrustBar />
+
+        <ReviewsSection />
 
         <section className="home-block home-faq" id="faq" aria-labelledby="faq-title">
           <div>

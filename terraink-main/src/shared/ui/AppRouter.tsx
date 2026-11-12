@@ -9,6 +9,7 @@ const OrderConfirmationPage = lazy(() => import("@/features/store/ui/OrderConfir
 const CollectionPage = lazy(() => import("@/features/store/ui/CollectionPage"));
 const CollectionProductPage = lazy(() => import("@/features/store/ui/CollectionProductPage"));
 const AdminOrdersPage = lazy(() => import("@/features/store/ui/AdminOrdersPage"));
+const AdminReviewsPage = lazy(() => import("@/features/store/ui/AdminReviewsPage"));
 const AdminOrderPage = lazy(() => import("@/features/store/ui/AdminOrderPage"));
 
 const TITLES: [RegExp, string][] = [
@@ -44,6 +45,7 @@ export default function AppRouter() {
   else if (path === "/collection") page = <CollectionPage />;
   else if ((params = matchPath("/collection/:id", path))) page = <CollectionProductPage id={Number(params.id)} />;
   else if (path === "/admin") page = <AdminOrdersPage />;
+  else if (path === "/admin/reviews") page = <AdminReviewsPage />;
   else if ((params = matchPath("/admin/orders/:number", path))) page = <AdminOrderPage number={params.number} />;
 
   return <Suspense fallback={<PageFallback />}>{page}</Suspense>;

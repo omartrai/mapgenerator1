@@ -4,6 +4,7 @@ import { Link, useRouter } from "@/core/router/router";
 import { ordersApi } from "@/core/services";
 import type { PublicOrder } from "../domain/order";
 import FramedPoster from "./FramedPoster";
+import OrderReviewCard from "./OrderReviewCard";
 import OrderTotalsList from "./OrderTotalsList";
 import StoreFooter from "./StoreFooter";
 import StoreHeader from "./StoreHeader";
@@ -131,6 +132,8 @@ export default function OrderConfirmationPage({ number }: { number: string }) {
                 </p>
               </div>
             </section>
+
+            <OrderReviewCard order={order} accessKey={accessKey} />
 
             <div className="confirm-actions">
               <Link to="/create" className="store-btn store-btn--primary store-btn--lg">

@@ -1668,3 +1668,253 @@
 .studio-buy__checkout .studio-buy__price {
   margin-top: 0 !important;
 }
+
+/* ── Reviews ── */
+.sr-only {
+  position: absolute;
+  width: 1px;
+  height: 1px;
+  overflow: hidden;
+  clip: rect(0 0 0 0);
+  white-space: nowrap;
+}
+
+.stars {
+  display: inline-flex;
+  gap: 2px;
+  color: #d9d1c5;
+}
+
+.stars svg {
+  width: 16px;
+  height: 16px;
+}
+
+.stars--sm svg {
+  width: 14px;
+  height: 14px;
+}
+
+.stars--lg svg {
+  width: 20px;
+  height: 20px;
+}
+
+.stars svg.is-on {
+  color: #e2a32b;
+  fill: #e2a32b;
+}
+
+.reviews__head {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: flex-end;
+  justify-content: space-between;
+  gap: 16px;
+  margin-bottom: 28px;
+}
+
+.reviews__score {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  margin: 0;
+}
+
+.reviews__score > strong {
+  font-size: 2.6rem;
+  font-weight: 800;
+  letter-spacing: -0.04em;
+  line-height: 1;
+}
+
+.reviews__score > span {
+  display: grid;
+  gap: 4px;
+}
+
+.reviews__score small {
+  color: var(--s-muted);
+  font-size: 0.85rem;
+}
+
+.reviews__empty {
+  margin: 0;
+  padding: 22px 24px;
+  border: 1px dashed var(--s-line);
+  border-radius: 16px;
+  color: var(--s-muted);
+  text-align: center;
+}
+
+.reviews__grid {
+  display: grid;
+  grid-template-columns: repeat(3, minmax(0, 1fr));
+  gap: 16px;
+  margin: 0;
+  padding: 0;
+  list-style: none;
+}
+
+.review-card {
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+  padding: 22px;
+  border: 1px solid var(--s-line);
+  border-radius: 16px;
+  background: #fff;
+}
+
+.review-card.is-skeleton {
+  min-height: 180px;
+  background: linear-gradient(100deg, #f2ebe2 30%, #f8f3ed 50%, #f2ebe2 70%) 0 0 / 300% 100%;
+  animation: collection-shimmer 1.4s linear infinite;
+}
+
+.review-card__text {
+  flex: 1;
+  margin: 0;
+  font-size: 0.98rem;
+  line-height: 1.55;
+}
+
+.review-card__by {
+  font-size: 0.88rem;
+}
+
+.review-card__by > span:not(.review-card__meta) {
+  color: var(--s-muted);
+}
+
+.review-card__meta {
+  display: flex;
+  align-items: center;
+  gap: 4px;
+  margin-top: 4px;
+  color: var(--s-muted);
+  font-size: 0.78rem;
+}
+
+.review-card__meta svg {
+  width: 14px;
+  height: 14px;
+  color: #2f7a55;
+}
+
+@media (max-width: 900px) {
+  .reviews__grid {
+    grid-template-columns: 1fr;
+  }
+}
+
+/* Review form on a delivered order */
+.review-form {
+  display: grid;
+  gap: 12px;
+  margin-top: 20px;
+}
+
+.review-form h2,
+.review-form__lede,
+.review-form__status {
+  margin: 0;
+}
+
+.review-form__lede,
+.review-form__status {
+  color: var(--s-muted);
+}
+
+.review-form > button {
+  justify-self: start;
+}
+
+.review-form__stars {
+  display: flex;
+  gap: 4px;
+  margin: 0;
+  padding: 0;
+  border: 0;
+}
+
+.review-form__stars legend {
+  margin-bottom: 6px;
+  font-size: 0.9rem;
+  font-weight: 600;
+}
+
+.review-form__stars label {
+  position: relative;
+  color: #d9d1c5;
+  cursor: pointer;
+}
+
+.review-form__stars label.is-on {
+  color: #e2a32b;
+}
+
+.review-form__stars label.is-on svg {
+  fill: currentColor;
+}
+
+.review-form__stars input {
+  position: absolute;
+  opacity: 0;
+}
+
+.review-form__stars label:has(input:focus-visible) {
+  outline: 2px solid var(--s-accent);
+  outline-offset: 2px;
+  border-radius: 4px;
+}
+
+.review-form__stars svg {
+  width: 30px;
+  height: 30px;
+}
+
+/* Admin moderation */
+.admin-reviews {
+  display: grid;
+  gap: 12px;
+  margin: 16px 0 0;
+  padding: 0;
+  list-style: none;
+}
+
+.admin-review__head {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: 10px;
+}
+
+.admin-review__text {
+  margin: 10px 0;
+  white-space: pre-line;
+}
+
+.admin-review__actions {
+  display: flex;
+  gap: 8px;
+}
+
+.admin-review__status {
+  margin-inline-start: auto;
+  padding: 2px 8px;
+  border-radius: 999px;
+  background: #f1ece6;
+  font-size: 0.75rem;
+  text-transform: capitalize;
+}
+
+.admin-review__status.is-approved {
+  background: #dff1e6;
+  color: #22673f;
+}
+
+.admin-review__status.is-rejected {
+  background: #f6e1dc;
+  color: #93391f;
+}
