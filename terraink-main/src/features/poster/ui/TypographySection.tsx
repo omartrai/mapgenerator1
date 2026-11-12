@@ -24,6 +24,9 @@ const TEXT_PARTS = [
   { name: "showMessage", label: "style.part.message" },
 ] as const;
 
+/** One-tap ideas for the personal message. */
+const MESSAGE_IDEAS = ["style.idea.1", "style.idea.2", "style.idea.3"] as const;
+
 const SHAPE_ICONS = { none: LuBan, circle: LuCircle, heart: LuHeart, star: LuStar } as const;
 
 interface TypographySectionProps {
@@ -42,7 +45,7 @@ export default function TypographySection({
 }: TypographySectionProps) {
   const { t } = useLanguage();
   const previewsRequested = useRef(false);
-  const { state } = usePosterContext();
+  const { state, dispatch } = usePosterContext();
   const { fillFromRoute } = useActivityPoster();
   const sportRoute = state.routes.find((route) => route.stats && route.stats.distanceM > 0);
   const isSport = form.posterLayout === "activity";
@@ -138,7 +141,142 @@ export default function TypographySection({
                 placeholder={t("style.messagePlaceholder")}
               />
               <span className="poster-message-field__hint">{t("style.messageHint")}</span>
+            <span className="message-suggestions" role="group" aria-label={t("style.messageIdeas")}>
+              {MESSAGE_IDEAS.map((key) => {
+                const idea = t(key);
+                return (
+                  <button
+                    key={key}
+                    type="button"
+                    className={`message-suggestion${form.customMessage === idea ? " is-active" : ""}`}
+                    onClick={() => dispatch({ type: "SET_FIELD", name: "customMessage", value: idea })}
+                  >
+                    {idea}
+                  </button>
+                );
+              })}
+            </span>
             </label>
+        </PanelGroup>
+
+
+
+        {isSport ? (
+          <PanelGroup
+            id="sport"
+            title={t("activity.title")}
+            summary={form.activitySubtitle || ""}
+            open={openGroup === "sport"}
+            onToggle={() => toggleGroup("sport")}
+          >
+            <fieldset className="sport-fields">
+              <legend>{t("activity.title")}</legend>
+              <p className="sport-fields__hint">{t("activity.hint")}</p>
+              <label>
+                {t("activity.subtitle")}
+                <input
+                  className="form-control-tall"
+                  name="activitySubtitle"
+                  value={form.activitySubtitle ?? ""}
+                  onChange={onChange}
+                  placeholder="42,195 KM  |  12.04.2026"
+                  maxLength={40}
+                />
+              </label>
+              {[1, 2, 3, 4].map((n) => (
+                <div key={n} className="sport-fields__row">
+                  <span className="sport-fields__num">{t("activity.stat")} {n}</span>
+                  <input
+                    className="form-control-tall"
+                    name={`activityStat${n}`}
+                    aria-label={`${t("activity.stat")} ${n} · ${t("activity.value")}`}
+                    placeholder={t("activity.value")}
+                    value={String(form[`activityStat${n}` as keyof PosterForm] ?? "")}
+                    onChange={onChange}
+                    maxLength={14}
+                  />
+                  <input
+                    className="form-control-tall"
+                    name={`activityStat${n}Label`}
+                    aria-label={`${t("activity.stat")} ${n} · ${t("activity.label")}`}
+                    placeholder={t("activity.label")}
+                    value={String(form[`activityStat${n}Label` as keyof PosterForm] ?? "")}
+                    onChange={onChange}
+                    maxLength={16}
+                  />
+                </div>
+              ))}
+              {sportRoute ? (
+                <button type="button" className="sport-fields__refill" onClick={() => fillFromRoute(sportRoute)}>
+                  {t("activity.refill")}
+                </button>
+              ) : null}
+            </fieldset>
+        
+          </PanelGroup>
+        ) : null}
+
+        <PanelGroup
+          id="layout"
+          title={t("style.group.layout")}
+          summary={layoutSummary}
+          preview={
+            <span className={`layout-thumb layout-thumb--${layoutId} layout-thumb--mini`} aria-hidden="true">
+              <i className="layout-thumb__map" />
+              <i className="layout-thumb__deco" />
+              <i className="layout-thumb__title" />
+              <i className="layout-thumb__sub" />
+            </span>
+          }
+          open={openGroup === "layout"}
+          onToggle={() => toggleGroup("layout")}
+        >
+            <fieldset className="layout-picker">
+              <legend>{t("style.layout")}</legend>
+              <div className="layout-picker__grid">
+                {POSTER_LAYOUTS.map((id) => (
+                  <label key={id} className="layout-picker__option">
+                    <input
+                      type="radio"
+                      name="posterLayout"
+                      value={id}
+                      checked={(form.posterLayout || DEFAULT_POSTER_LAYOUT) === id}
+                      onChange={onChange}
+                    />
+                    <span className={`layout-thumb layout-thumb--${id}`} aria-hidden="true">
+                      <i className="layout-thumb__map" />
+                      <i className="layout-thumb__deco" />
+                      <i className="layout-thumb__title" />
+                      <i className="layout-thumb__sub" />
+                    </span>
+                    <span className="layout-picker__name">{t(`style.layout.${id}` as TranslationKey)}</span>
+                  </label>
+                ))}
+              </div>
+            </fieldset>
+            <fieldset className="layout-picker shape-picker">
+              <legend>{t("style.shape")}</legend>
+              <div className="shape-picker__grid">
+                {MAP_SHAPES.map((id) => {
+                  const Icon = SHAPE_ICONS[id];
+                  return (
+                    <label key={id} className="shape-picker__option">
+                      <input
+                        type="radio"
+                        name="mapShape"
+                        value={id}
+                        checked={(form.mapShape || "none") === id}
+                        onChange={onChange}
+                      />
+                      <span className={`shape-picker__tile shape-picker__tile--${id}`} aria-hidden="true">
+                        <Icon />
+                      </span>
+                      <span className="layout-picker__name">{t(`style.shape.${id}` as TranslationKey)}</span>
+                    </label>
+                  );
+                })}
+              </div>
+            </fieldset>
         </PanelGroup>
 
         <PanelGroup
@@ -215,116 +353,6 @@ export default function TypographySection({
                 ))}
               </select>
             </label>
-        </PanelGroup>
-
-        {isSport ? (
-          <PanelGroup
-            id="sport"
-            title={t("activity.title")}
-            summary={form.activitySubtitle || ""}
-            open={openGroup === "sport"}
-            onToggle={() => toggleGroup("sport")}
-          >
-            <fieldset className="sport-fields">
-              <legend>{t("activity.title")}</legend>
-              <p className="sport-fields__hint">{t("activity.hint")}</p>
-              <label>
-                {t("activity.subtitle")}
-                <input
-                  className="form-control-tall"
-                  name="activitySubtitle"
-                  value={form.activitySubtitle ?? ""}
-                  onChange={onChange}
-                  placeholder="42,195 KM  |  12.04.2026"
-                  maxLength={40}
-                />
-              </label>
-              {[1, 2, 3, 4].map((n) => (
-                <div key={n} className="sport-fields__row">
-                  <span className="sport-fields__num">{t("activity.stat")} {n}</span>
-                  <input
-                    className="form-control-tall"
-                    name={`activityStat${n}`}
-                    aria-label={`${t("activity.stat")} ${n} · ${t("activity.value")}`}
-                    placeholder={t("activity.value")}
-                    value={String(form[`activityStat${n}` as keyof PosterForm] ?? "")}
-                    onChange={onChange}
-                    maxLength={14}
-                  />
-                  <input
-                    className="form-control-tall"
-                    name={`activityStat${n}Label`}
-                    aria-label={`${t("activity.stat")} ${n} · ${t("activity.label")}`}
-                    placeholder={t("activity.label")}
-                    value={String(form[`activityStat${n}Label` as keyof PosterForm] ?? "")}
-                    onChange={onChange}
-                    maxLength={16}
-                  />
-                </div>
-              ))}
-              {sportRoute ? (
-                <button type="button" className="sport-fields__refill" onClick={() => fillFromRoute(sportRoute)}>
-                  {t("activity.refill")}
-                </button>
-              ) : null}
-            </fieldset>
-        
-          </PanelGroup>
-        ) : null}
-
-        <PanelGroup
-          id="layout"
-          title={t("style.group.layout")}
-          summary={layoutSummary}
-          open={openGroup === "layout"}
-          onToggle={() => toggleGroup("layout")}
-        >
-            <fieldset className="layout-picker">
-              <legend>{t("style.layout")}</legend>
-              <div className="layout-picker__grid">
-                {POSTER_LAYOUTS.map((id) => (
-                  <label key={id} className="layout-picker__option">
-                    <input
-                      type="radio"
-                      name="posterLayout"
-                      value={id}
-                      checked={(form.posterLayout || DEFAULT_POSTER_LAYOUT) === id}
-                      onChange={onChange}
-                    />
-                    <span className={`layout-thumb layout-thumb--${id}`} aria-hidden="true">
-                      <i className="layout-thumb__map" />
-                      <i className="layout-thumb__deco" />
-                      <i className="layout-thumb__title" />
-                      <i className="layout-thumb__sub" />
-                    </span>
-                    <span className="layout-picker__name">{t(`style.layout.${id}` as TranslationKey)}</span>
-                  </label>
-                ))}
-              </div>
-            </fieldset>
-            <fieldset className="layout-picker shape-picker">
-              <legend>{t("style.shape")}</legend>
-              <div className="shape-picker__grid">
-                {MAP_SHAPES.map((id) => {
-                  const Icon = SHAPE_ICONS[id];
-                  return (
-                    <label key={id} className="shape-picker__option">
-                      <input
-                        type="radio"
-                        name="mapShape"
-                        value={id}
-                        checked={(form.mapShape || "none") === id}
-                        onChange={onChange}
-                      />
-                      <span className={`shape-picker__tile shape-picker__tile--${id}`} aria-hidden="true">
-                        <Icon />
-                      </span>
-                      <span className="layout-picker__name">{t(`style.shape.${id}` as TranslationKey)}</span>
-                    </label>
-                  );
-                })}
-              </div>
-            </fieldset>
         </PanelGroup>
       </section>
     </>

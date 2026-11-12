@@ -9,6 +9,7 @@ export default function PanelGroup({
   id,
   title,
   summary,
+  preview,
   open,
   onToggle,
   children,
@@ -16,6 +17,8 @@ export default function PanelGroup({
   id: string;
   title: string;
   summary?: string;
+  /** Small visual of the current choice, shown at the start of the header. */
+  preview?: ReactNode;
   open: boolean;
   onToggle: () => void;
   children: ReactNode;
@@ -24,6 +27,7 @@ export default function PanelGroup({
   return (
     <div className={`panel-group${open ? " is-open" : ""}`} data-group={id}>
       <button type="button" className="panel-group__head" aria-expanded={open} aria-controls={bodyId} onClick={onToggle}>
+        {preview && !open ? <span className="panel-group__preview">{preview}</span> : null}
         <span className="panel-group__text">
           <span className="panel-group__title">{title}</span>
           {!open && summary ? <span className="panel-group__summary">{summary}</span> : null}

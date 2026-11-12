@@ -2910,3 +2910,79 @@
   text-decoration: underline;
   text-underline-offset: 3px;
 }
+
+/* ── Studio panel header: one heading per tab ── */
+.studio-step__eyebrow {
+  margin: 0 0 4px;
+  color: var(--s-accent, #e05a2b);
+  font-size: 0.72rem;
+  font-weight: 700;
+  letter-spacing: 0.12em;
+  text-transform: uppercase;
+}
+
+.app-shell[data-store-studio] .studio-step__title {
+  margin-top: 0;
+}
+
+/* The tab name is already the panel heading: drop the repeated small label. */
+.app-shell[data-store-studio] .section-summary-label {
+  display: none;
+}
+
+.app-shell[data-store-studio] .routes-head {
+  justify-content: flex-end;
+}
+
+.app-shell[data-store-studio] .routes-head:not(:has(button)) {
+  display: none;
+}
+
+/* Personal message ideas */
+.message-suggestions {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 6px;
+  margin-top: 8px;
+}
+
+.message-suggestion {
+  padding: 5px 10px;
+  border: 1px solid #e5ddd2;
+  border-radius: 999px;
+  background: #fff;
+  color: #4a443e;
+  font: inherit;
+  font-size: 0.78rem;
+  cursor: pointer;
+}
+
+.message-suggestion:hover {
+  border-color: #cfc3b4;
+}
+
+.message-suggestion.is-active {
+  border-color: var(--s-accent, #e05a2b);
+  background: #fff4ee;
+  color: var(--s-accent, #e05a2b);
+}
+
+/* Group header preview (current layout as a mini poster). */
+.panel-group__preview {
+  flex: none;
+  width: 30px;
+}
+
+.layout-thumb--mini {
+  display: block;
+  border-radius: 4px;
+  border-width: 1px;
+}
+
+.layout-thumb--mini .layout-thumb__title {
+  height: 2px;
+}
+
+.layout-thumb--mini .layout-thumb__sub {
+  height: 1px;
+}

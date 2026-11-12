@@ -13,16 +13,17 @@ export default function StudioStepHeader({ tab }: StudioStepHeaderProps) {
   const { t } = useStoreText();
   const known = SECTIONS.includes(tab);
 
+  // One heading per panel: the page name as a small eyebrow, then the
+  // open section's name and what to do there.
   return (
     <div className="studio-step">
-      <h2 className="studio-step__title">{t("studio.title")}</h2>
-      <p className="studio-step__hint">{t("studio.subtitle")}</p>
-      {known ? (
-        <div className="studio-step__section">
-          <h3>{t(`steps.${tab}.title` as StoreTextKey)}</h3>
-          <p>{t(`steps.${tab}.hint` as StoreTextKey)}</p>
-        </div>
-      ) : null}
+      <p className="studio-step__eyebrow">{t("studio.title")}</p>
+      <h2 className="studio-step__title">
+        {known ? t(`steps.${tab}.title` as StoreTextKey) : t("studio.title")}
+      </h2>
+      <p className="studio-step__hint">
+        {known ? t(`steps.${tab}.hint` as StoreTextKey) : t("studio.subtitle")}
+      </p>
     </div>
   );
 }
