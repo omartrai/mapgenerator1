@@ -224,7 +224,7 @@ export default function PreviewPanel({ sidePanel, belowPoster }: PreviewPanelPro
   const countryLabel = isCityCountryView
     ? form.displayCountry || "Maroc"
     : isCountryContinentView
-      ? form.displayContinent || "Europe"
+      ? form.displayContinent || "Africa"
       : "Earth";
 
   const handleStartEditing = useCallback(() => {
@@ -308,7 +308,7 @@ export default function PreviewPanel({ sidePanel, belowPoster }: PreviewPanelPro
         label: DEFAULT_LOCATION_LABEL,
         city: DEFAULT_CITY,
         country: DEFAULT_COUNTRY,
-        continent: "Europe",
+        continent: "Africa",
         lat: DEFAULT_LAT,
         lon: DEFAULT_LON,
       };
@@ -351,13 +351,13 @@ export default function PreviewPanel({ sidePanel, belowPoster }: PreviewPanelPro
 
     if (city && country) {
       // All display names known — single dispatch with coordinates + correct names.
-      applyTarget(city, country, continent || "Europe", label, true);
+      applyTarget(city, country, continent || "Africa", label, true);
       return;
     }
 
     // Coordinates known but names aren't — set coordinates with fallback names
     // immediately, then overwrite names once reverse-geocoding resolves.
-    applyTarget(DEFAULT_CITY, DEFAULT_COUNTRY, "Europe", label, true);
+    applyTarget(DEFAULT_CITY, DEFAULT_COUNTRY, "Africa", label, true);
 
     void reverseGeocodeCoordinates(target.lat, target.lon)
       .then((resolved) => {
@@ -370,7 +370,7 @@ export default function PreviewPanel({ sidePanel, belowPoster }: PreviewPanelPro
             displayCountry:
               String(resolved.country ?? "").trim() || DEFAULT_COUNTRY,
             displayContinent:
-              String(resolved.continent ?? "").trim() || "Europe",
+              String(resolved.continent ?? "").trim() || "Africa",
           },
         });
       })

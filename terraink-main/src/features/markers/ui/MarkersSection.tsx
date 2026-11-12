@@ -366,6 +366,8 @@ export default function MarkersSection() {
 
       <div className="markers-section-head">
         <p className="section-summary-label">{t("nav.icons")}</p>
+        {/* Edit / settings / help only matter once an icon is on the map. */}
+        {hasMarkers || isMarkerEditorActive || isSettingsOpen ? (
         <div className="markers-section-head-actions">
           {!isMarkerEditorActive ? (
             <button
@@ -423,6 +425,7 @@ export default function MarkersSection() {
             <div className="marker-info-popover" role="tooltip">{markerHelpText}</div>
           </div>
         </div>
+        ) : null}
       </div>
 
       <div className="markers-section__content">

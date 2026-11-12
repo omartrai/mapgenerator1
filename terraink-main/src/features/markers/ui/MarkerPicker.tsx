@@ -102,6 +102,53 @@ const MarkerPicker = memo(function MarkerPicker({
         </div>
       ) : null}
 
+      <label className="marker-picker__search-label" htmlFor="marker-icon-search">
+        {t("icons.add")}
+      </label>
+      <div className="marker-picker__search-field">
+        <SearchIcon aria-hidden="true" />
+        <input
+          id="marker-icon-search"
+          type="search"
+          value={searchQuery}
+          onChange={(event) => setSearchQuery(event.target.value)}
+          placeholder={t("icons.search")}
+          autoComplete="off"
+        />
+      </div>
+
+      <div className="marker-picker__grid">
+        {visibleAppIcons.map((icon) => (
+          <button
+            key={icon.id}
+            type="button"
+            className={`marker-picker__option${
+              selectedIconId === icon.id ? " is-selected" : ""
+            }`}
+            onClick={() => onIconClick(icon.id)}
+            title={icon.label}
+            aria-label={`${t("icons.addAria")} ${icon.label}`}
+          >
+            <MarkerVisual icon={icon} size={24} color={markerColor} />
+            <span className="marker-picker__label">{icon.label}</span>
+          </button>
+        ))}
+      </div>
+
+      {visibleAppIcons.length === 0 ? (
+        <p className="marker-picker__empty">{t("icons.noMatch")} “{searchQuery}”.</p>
+      ) : null}
+
+      {!searchQuery.trim() && appIcons.length > DEFAULT_VISIBLE_ICON_COUNT ? (
+        <button
+          type="button"
+          className="marker-picker__load-more"
+          onClick={() => setIsExpanded((prev) => !prev)}
+        >
+          {isExpanded ? t("icons.showLess") : t("icons.loadMore")}
+        </button>
+      ) : null}
+
       {showUploadedIcons ? (
         <div className="marker-picker__uploaded-section">
           <p className="marker-picker__section-title">{t("icons.yours")}</p>
@@ -172,53 +219,6 @@ const MarkerPicker = memo(function MarkerPicker({
             </button>
           ) : null}
         </div>
-      ) : null}
-
-      <label className="marker-picker__search-label" htmlFor="marker-icon-search">
-        {t("icons.add")}
-      </label>
-      <div className="marker-picker__search-field">
-        <SearchIcon aria-hidden="true" />
-        <input
-          id="marker-icon-search"
-          type="search"
-          value={searchQuery}
-          onChange={(event) => setSearchQuery(event.target.value)}
-          placeholder={t("icons.search")}
-          autoComplete="off"
-        />
-      </div>
-
-      <div className="marker-picker__grid">
-        {visibleAppIcons.map((icon) => (
-          <button
-            key={icon.id}
-            type="button"
-            className={`marker-picker__option${
-              selectedIconId === icon.id ? " is-selected" : ""
-            }`}
-            onClick={() => onIconClick(icon.id)}
-            title={icon.label}
-            aria-label={`${t("icons.addAria")} ${icon.label}`}
-          >
-            <MarkerVisual icon={icon} size={24} color={markerColor} />
-            <span className="marker-picker__label">{icon.label}</span>
-          </button>
-        ))}
-      </div>
-
-      {visibleAppIcons.length === 0 ? (
-        <p className="marker-picker__empty">{t("icons.noMatch")} “{searchQuery}”.</p>
-      ) : null}
-
-      {!searchQuery.trim() && appIcons.length > DEFAULT_VISIBLE_ICON_COUNT ? (
-        <button
-          type="button"
-          className="marker-picker__load-more"
-          onClick={() => setIsExpanded((prev) => !prev)}
-        >
-          {isExpanded ? t("icons.showLess") : t("icons.loadMore")}
-        </button>
       ) : null}
 
       {actionSlot ? (

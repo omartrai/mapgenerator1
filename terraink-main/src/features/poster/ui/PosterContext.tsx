@@ -62,7 +62,7 @@ export const DEFAULT_FORM: PosterForm = {
   layout: defaultLayoutId,
   displayCity: "Casablanca",
   displayCountry: "Maroc",
-  displayContinent: "Europe",
+  displayContinent: "Africa",
   fontFamily: "",
   showPosterText: true,
   posterLayout: "classic",

@@ -38,6 +38,16 @@ const PLACE_KINDS: { id: PlaceKind; distance: number; Icon: typeof LuMapPin }[] 
   { id: "zone", distance: 15_000, Icon: LuScan },
 ];
 
+/** One-tap starts for the shop's home market (coordinates of each centre). */
+const POPULAR_CITIES: PendingLocation[] = [
+  { label: "Casablanca, Maroc", lat: 33.5731, lon: -7.5898, city: "Casablanca", country: "Maroc", continent: "Africa" },
+  { label: "Marrakech, Maroc", lat: 31.6295, lon: -7.9811, city: "Marrakech", country: "Maroc", continent: "Africa" },
+  { label: "Rabat, Maroc", lat: 34.0209, lon: -6.8416, city: "Rabat", country: "Maroc", continent: "Africa" },
+  { label: "Fès, Maroc", lat: 34.0331, lon: -5.0003, city: "Fès", country: "Maroc", continent: "Africa" },
+  { label: "Tanger, Maroc", lat: 35.7595, lon: -5.834, city: "Tanger", country: "Maroc", continent: "Africa" },
+  { label: "Agadir, Maroc", lat: 30.4278, lon: -9.5981, city: "Agadir", country: "Maroc", continent: "Africa" },
+];
+
 interface PendingLocation {
   label: string;
   lat: number;
@@ -96,7 +106,7 @@ export default function StartupLocationModal({
           distance,
           displayCity: DEFAULT_CITY,
           displayCountry: DEFAULT_COUNTRY,
-          displayContinent: "Europe",
+          displayContinent: "Africa",
         },
       });
       return;
@@ -320,6 +330,25 @@ export default function StartupLocationModal({
             onClearRecent={clearRecent}
             variant="startup"
           />
+        </div>
+
+        <div className="startup-modal__popular">
+          <span className="startup-modal__popular-label">{t("startup.popular")}</span>
+          <div className="startup-modal__cities">
+            {POPULAR_CITIES.map((place) => (
+              <button
+                key={place.city}
+                type="button"
+                className="startup-modal__city"
+                onClick={() => {
+                  applyResolvedLocation(place);
+                  closeModal();
+                }}
+              >
+                {place.city}
+              </button>
+            ))}
+          </div>
         </div>
 
         <button
