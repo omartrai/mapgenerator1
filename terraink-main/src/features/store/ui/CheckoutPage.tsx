@@ -46,8 +46,8 @@ const MOROCCAN_CITIES = [
 export default function CheckoutPage() {
   const { cart, totals } = useStore();
   const { navigate } = useRouter();
-  const checkout = useCheckout();
   const { t, money, describeItem, language } = useStoreText();
+  const checkout = useCheckout(language);
 
   useEffect(() => {
     if (!checkout.customer.country) checkout.setField("country", t("checkout.defaultCountry"));

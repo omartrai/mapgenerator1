@@ -131,7 +131,7 @@ export const adminApi = {
   },
 
   session: () =>
-    request<{ ok: boolean; storage: string; fulfillment: string }>("/admin/session", {
+    request<{ ok: boolean; storage: string; fulfillment: string; whatsapp?: boolean }>("/admin/session", {
       headers: adminHeaders(),
     }),
 
@@ -149,6 +149,12 @@ export const adminApi = {
 
   getOrder: (number: string) =>
     request<{ order: Order }>(`/admin/orders/${encodeURIComponent(number)}`, {
+      headers: adminHeaders(),
+    }),
+
+  sendWhatsAppConfirmation: (number: string) =>
+    request<{ order: Order }>(`/admin/orders/${encodeURIComponent(number)}/whatsapp`, {
+      method: "POST",
       headers: adminHeaders(),
     }),
 

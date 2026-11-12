@@ -2,6 +2,7 @@ import { useCallback, useEffect, useState } from "react";
 import { ApiError, cartStorage, ordersApi } from "@/core/services";
 import { useStore } from "../ui/StoreContext";
 import { EMPTY_CUSTOMER, type CustomerInfo } from "../domain/order";
+import type { OrderLanguage } from "../domain/whatsapp";
 import {
   normalizeCustomer,
   validateCustomer,
@@ -9,7 +10,7 @@ import {
 } from "../domain/validation";
 
 /** Owns the checkout form: draft persistence, validation and order placement. */
-export function useCheckout() {
+export function useCheckout(language?: OrderLanguage) {
   const { cart, clearCart, rememberOrder } = useStore();
   const [customer, setCustomer] = useState<CustomerInfo>(() => ({
     ...EMPTY_CUSTOMER,
@@ -54,6 +55,7 @@ export function useCheckout() {
       const { order, accessKey } = await ordersApi.createOrder({
         customer: normalized,
         paymentMethod: "cash_on_delivery",
+        ...(language ? { language } : {}),
         website: honeypot,
         items: cart.map((item) => ({
           id: item.id,
@@ -80,7 +82,7 @@ export function useCheckout() {
     } finally {
       setIsSubmitting(false);
     }
-  }, [customer, cart, honeypot, rememberOrder, clearCart]);
+  }, [customer, cart, honeypot, rememberOrder, clearCart, language]);
 
   return {
     customer,

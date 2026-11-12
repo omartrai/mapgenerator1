@@ -8,6 +8,12 @@ import { createFsStorage } from "./storage/fsStorage.js";
 import { createFulfillmentProvider } from "./fulfillment/index.js";
 import { createUrbanArtCatalog } from "./urbanart.js";
 import { createReviewService, type ReviewService } from "./reviews.js";
+import { createWhatsApp, parseWebhook } from "./whatsapp.js";
+import {
+  confirmationReply,
+  parseConfirmationPayload,
+  parseYesNo,
+} from "../src/features/store/domain/whatsapp.js";
 import {
   HttpError,
   assertFileName,
@@ -88,6 +94,7 @@ export function createApiHandler(options: RouterOptions) {
       createFulfillmentProvider(options.env),
       catalog ? async (id) => (await catalog.getProduct(id))?.product ?? null : undefined,
       catalog ? async () => framedPricesFromCollection(await catalog.listProducts()) : undefined,
+      whatsapp,
     );
     return service;
   };
@@ -126,6 +133,44 @@ export function createApiHandler(options: RouterOptions) {
   }
 
   const catalog = createUrbanArtCatalog(options.env);
+  const whatsapp = createWhatsApp(options.env);
+
+  /** Handles one Meta webhook delivery: customer answers and receipts. */
+  async function handleWhatsAppWebhook(body: unknown) {
+    if (!whatsapp) return;
+    const { replies, statuses } = parseWebhook(body);
+    for (const reply of replies) {
+      try {
+        const fromPayload = reply.payload ? parseConfirmationPayload(reply.payload) : null;
+        const action = fromPayload?.action ?? (reply.text ? parseYesNo(reply.text) : null);
+        if (!action) {
+          if (reply.text) await getService().recordCustomerMessage(reply.from, reply.text);
+          continue;
+        }
+        const result = await getService().applyConfirmationAnswer(reply.from, action, fromPayload?.orderNumber);
+        if (!result) {
+          if (reply.text) await getService().recordCustomerMessage(reply.from, reply.text);
+          continue;
+        }
+        const target = action === "confirm" ? "confirmed" : "cancelled";
+        if (result.changed || result.order.status === target) {
+          await whatsapp.sendText(
+            reply.from,
+            confirmationReply(action, result.order.language ?? "fr", result.order.number),
+          );
+        }
+      } catch (error) {
+        console.warn("[whatsapp] reply not handled", error);
+      }
+    }
+    for (const status of statuses) {
+      try {
+        await getService().applyConfirmationReceipt(status.messageId, status.status, status.error);
+      } catch (error) {
+        console.warn("[whatsapp] receipt not handled", error);
+      }
+    }
+  }
   // Public catalogue data: let the CDN cache it briefly.
   const cached = { "Cache-Control": "public, max-age=60, s-maxage=600, stale-while-revalidate=3600" };
 
@@ -181,6 +226,34 @@ export function createApiHandler(options: RouterOptions) {
         if (!found) throw new HttpError(404, "Product not found.");
         return json(200, found, cached);
       }
+    }
+
+    // GET /api/whatsapp/webhook — Meta's verification handshake
+    if (head === "whatsapp" && rest[0] === "webhook" && method === "GET") {
+      const mode = url.searchParams.get("hub.mode");
+      const token = url.searchParams.get("hub.verify_token") ?? "";
+      const challenge = url.searchParams.get("hub.challenge") ?? "";
+      if (whatsapp?.verifyToken && mode === "subscribe" && safeEqual(token, whatsapp.verifyToken)) {
+        return new Response(challenge, { status: 200, headers: { "Content-Type": "text/plain" } });
+      }
+      throw new HttpError(403, "Verification failed.");
+    }
+
+    // POST /api/whatsapp/webhook — customer answers and delivery receipts
+    if (head === "whatsapp" && rest[0] === "webhook" && method === "POST") {
+      const raw = await request.text();
+      if (!whatsapp) return json(200, { ok: true, ignored: true });
+      if (!whatsapp.verifySignature(raw, request.headers.get("x-hub-signature-256"))) {
+        throw new HttpError(401, "Invalid signature.");
+      }
+      let body: unknown;
+      try {
+        body = JSON.parse(raw);
+      } catch {
+        throw new HttpError(400, "Invalid JSON body.");
+      }
+      await handleWhatsAppWebhook(body);
+      return json(200, { ok: true });
     }
 
     // GET /api/reviews — approved reviews for the site
@@ -257,6 +330,7 @@ export function createApiHandler(options: RouterOptions) {
           ok: true,
           storage: getService().storageKind,
           fulfillment: getService().fulfillmentLabel,
+          whatsapp: getService().whatsappEnabled,
         });
       }
 
@@ -285,6 +359,12 @@ export function createApiHandler(options: RouterOptions) {
         // GET /api/admin/orders/:number
         if (rest.length === 2 && method === "GET") {
           return json(200, { order: await getService().load(number) });
+        }
+
+        // POST /api/admin/orders/:number/whatsapp — (re)send the confirmation
+        if (rest[2] === "whatsapp" && rest.length === 3 && method === "POST") {
+          if (!whatsapp) throw new HttpError(400, "WhatsApp is not configured.");
+          return json(200, { order: await getService().sendConfirmation(number) });
         }
 
         // PATCH /api/admin/orders/:number

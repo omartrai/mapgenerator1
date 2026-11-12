@@ -131,6 +131,19 @@ export function useAdminOrder(number: string, enabled: boolean) {
     [number],
   );
 
+  const sendWhatsApp = useCallback(async () => {
+    setIsSaving(true);
+    setError("");
+    try {
+      const result = await adminApi.sendWhatsAppConfirmation(number);
+      setOrder(result.order);
+    } catch (err) {
+      setError(err instanceof Error ? err.message : "Could not send the WhatsApp message.");
+    } finally {
+      setIsSaving(false);
+    }
+  }, [number]);
+
   const downloadFile = useCallback(
     async (fileName: string) => {
       try {
@@ -152,5 +165,5 @@ export function useAdminOrder(number: string, enabled: boolean) {
     await triggerDownloadBlob(blob, `${order.number}-design.json`);
   }, [order]);
 
-  return { order, error, isSaving, update, previews, downloadFile, downloadDesign };
+  return { order, error, isSaving, update, sendWhatsApp, previews, downloadFile, downloadDesign };
 }

@@ -4391,3 +4391,40 @@
     display: none;
   }
 }
+
+/* ── Admin: WhatsApp confirmation ── */
+.admin-whatsapp h2 {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+}
+
+.admin-whatsapp h2 svg {
+  color: #25d366;
+}
+
+.admin-whatsapp__status {
+  margin: 0 0 6px;
+  font-weight: 600;
+}
+
+.admin-whatsapp__status--confirmed {
+  color: #1f7a45;
+}
+
+.admin-whatsapp__status--cancelled,
+.admin-whatsapp__status--failed {
+  color: #b42318;
+}
+
+.admin-whatsapp__actions {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 8px;
+  margin-top: 8px;
+}
+
+.admin-wa-badge {
+  margin-inline-start: 6px;
+  font-size: 0.85rem;
+}

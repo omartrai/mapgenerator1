@@ -28,6 +28,18 @@ import { ORDER_STATUSES } from "../src/features/store/domain/order.js";
 import { normalizeCustomer, validateCustomer } from "../src/features/store/domain/validation.js";
 import type { IOrderStorage } from "./storage/ports.js";
 import type { IFulfillmentProvider } from "./fulfillment/ports.js";
+import type { WhatsAppClient } from "./whatsapp.js";
+import {
+  toWhatsAppNumber,
+  type ConfirmationAction,
+  type OrderConfirmation,
+  type OrderLanguage,
+} from "../src/features/store/domain/whatsapp.js";
+
+const LANGUAGES: OrderLanguage[] = ["fr", "ar", "en"];
+const messageIndexPath = (messageId: string) =>
+  `whatsapp/messages/${messageId.replace(/[^A-Za-z0-9_.=-]/g, "_")}.json`;
+const phoneIndexPath = (phone: string) => `whatsapp/phones/${phone.replace(/\D/g, "")}.json`;
 
 export class HttpError extends Error {
   constructor(
@@ -138,6 +150,7 @@ export function createOrderService(
   fulfillment: IFulfillmentProvider,
   findCollectionProduct?: CollectionLookup,
   loadFramedPrices?: () => Promise<FramedPriceTable | null>,
+  whatsapp?: WhatsAppClient | null,
 ) {
   async function load(number: string): Promise<Order> {
     const order = await storage.getJson<Order>(orderPath(assertOrderNumber(number)));
@@ -151,8 +164,131 @@ export function createOrderService(
     return order;
   }
 
+  function setConfirmation(order: Order, next: Omit<OrderConfirmation, "channel" | "updatedAt">): void {
+    order.confirmation = { channel: "whatsapp", ...order.confirmation, ...next, updatedAt: new Date().toISOString() };
+    if (!next.error) delete order.confirmation.error;
+  }
+
+  /** Sends the WhatsApp confirmation template; never throws. */
+  async function sendConfirmation(order: Order): Promise<Order> {
+    if (!whatsapp) return order;
+    const at = new Date().toISOString();
+    const to = toWhatsAppNumber(order.customer.phone, order.customer.country);
+    if (!to) {
+      setConfirmation(order, { status: "skipped", error: "Phone number can't receive WhatsApp." });
+      order.history.push({ at, type: "note", message: "WhatsApp confirmation skipped: phone number not usable." });
+      return save(order);
+    }
+    try {
+      const { messageId } = await whatsapp.sendOrderConfirmation(order, to);
+      setConfirmation(order, { status: "sent", to, messageId });
+      order.history.push({ at, type: "note", message: `WhatsApp confirmation sent to +${to}.` });
+      if (messageId) await storage.putJson(messageIndexPath(messageId), { number: order.number });
+      const index = (await storage.getJson<{ numbers: string[] }>(phoneIndexPath(to))) ?? { numbers: [] };
+      await storage.putJson(phoneIndexPath(to), {
+        numbers: [order.number, ...index.numbers.filter((n) => n !== order.number)].slice(0, 10),
+      });
+    } catch (error) {
+      const message = error instanceof Error ? error.message : String(error);
+      console.warn("[whatsapp] confirmation not sent", order.number, message);
+      setConfirmation(order, { status: "failed", to, error: message.slice(0, 300) });
+      order.history.push({ at, type: "note", message: `WhatsApp confirmation failed: ${message.slice(0, 200)}` });
+    }
+    return save(order);
+  }
+
+  /** The customer's most recent order still waiting for an answer. */
+  async function pendingOrderFor(phone: string): Promise<Order | null> {
+    const index = await storage.getJson<{ numbers: string[] }>(phoneIndexPath(phone));
+    for (const number of index?.numbers ?? []) {
+      const order = await storage.getJson<Order>(orderPath(number));
+      if (order && ["sent", "delivered", "read", "failed"].includes(order.confirmation?.status ?? "")) return order;
+    }
+    return null;
+  }
+
   return {
     storageKind: storage.kind,
+    whatsappEnabled: !!whatsapp,
+    sendConfirmation: async (number: string) => sendConfirmation(await load(number)),
+
+    /**
+     * Applies a customer's ✅/❌ answer. Only the phone the message went to
+     * can answer, and only while the order has not gone to print.
+     * Returns the order and whether anything changed.
+     */
+    async applyConfirmationAnswer(
+      from: string,
+      action: ConfirmationAction,
+      orderNumber?: string,
+    ): Promise<{ order: Order; changed: boolean } | null> {
+      const phone = from.replace(/\D/g, "");
+      let order: Order | null = null;
+      if (orderNumber) {
+        try {
+          order = await load(orderNumber);
+        } catch {
+          return null;
+        }
+        const allowed = [order.confirmation?.to, toWhatsAppNumber(order.customer.phone, order.customer.country)];
+        if (!allowed.includes(phone)) return null;
+      } else {
+        order = await pendingOrderFor(phone);
+      }
+      if (!order) return null;
+
+      const at = new Date().toISOString();
+      const target = action === "confirm" ? "confirmed" : "cancelled";
+      const canChange =
+        order.status === "new" ||
+        (order.status === "confirmed" && action === "cancel") ||
+        (order.status === "cancelled" && action === "confirm" && order.confirmation?.status === "cancelled");
+      if (!canChange || order.status === target) {
+        return { order, changed: false };
+      }
+      order.status = target;
+      setConfirmation(order, { status: target });
+      order.history.push({
+        at,
+        type: "status",
+        message: action === "confirm" ? "Customer confirmed on WhatsApp." : "Customer cancelled on WhatsApp.",
+      });
+      return { order: await save(order), changed: true };
+    },
+
+    /** Delivery / read receipts for the confirmation message. */
+    async applyConfirmationReceipt(messageId: string, status: string, error?: string): Promise<void> {
+      const index = await storage.getJson<{ number: string }>(messageIndexPath(messageId));
+      if (!index) return;
+      const order = await storage.getJson<Order>(orderPath(index.number));
+      if (!order?.confirmation || order.confirmation.messageId !== messageId) return;
+      const rank = { sent: 1, delivered: 2, read: 3 } as Record<string, number>;
+      const current = order.confirmation.status;
+      if (status === "failed" && rank[current]) {
+        setConfirmation(order, { status: "failed", error: error || "Message not delivered." });
+        order.history.push({ at: new Date().toISOString(), type: "note", message: `WhatsApp message failed: ${error || "not delivered"}.` });
+      } else if (rank[status] && rank[current] && rank[status] > rank[current]) {
+        setConfirmation(order, { status: status as OrderConfirmation["status"] });
+      } else {
+        return;
+      }
+      await save(order);
+    },
+
+    /** Any other WhatsApp message from a customer goes into their order's history. */
+    async recordCustomerMessage(from: string, text: string): Promise<void> {
+      const index = await storage.getJson<{ numbers: string[] }>(phoneIndexPath(from));
+      const number = index?.numbers[0];
+      if (!number) return;
+      const order = await storage.getJson<Order>(orderPath(number));
+      if (!order) return;
+      order.history.push({
+        at: new Date().toISOString(),
+        type: "note",
+        message: `Customer wrote on WhatsApp: “${text.trim().slice(0, 500)}”`,
+      });
+      await save(order);
+    },
     fulfillmentLabel: fulfillment.label,
     load,
 
@@ -281,11 +417,12 @@ export function createOrderService(
         },
         history: [{ at: now.toISOString(), type: "created", message: "Order placed by customer." }],
         accessKey: randomBytes(18).toString("base64url"),
+        ...(LANGUAGES.includes(input?.language as OrderLanguage) ? { language: input.language } : {}),
       };
 
       await save(order);
       await fulfillment.onOrderCreated(order);
-      return order;
+      return sendConfirmation(order);
     },
 
     async list(): Promise<Order[]> {

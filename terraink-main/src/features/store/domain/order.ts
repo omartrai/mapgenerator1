@@ -1,3 +1,4 @@
+import type { OrderConfirmation, OrderLanguage } from "./whatsapp.js";
 import type { OrderTotals, ProductOptions } from "./catalog.js";
 import type { DesignSummary, PosterDesign } from "./design.js";
 import type { CollectionLine } from "./collection.js";
@@ -60,6 +61,8 @@ export interface CreateOrderInput {
   customer: CustomerInfo;
   items: OrderItemInput[];
   paymentMethod: PaymentMethod;
+  /** Site language at checkout; the WhatsApp confirmation uses it. */
+  language?: OrderLanguage;
   /** Honeypot — real customers never fill this in. */
   website?: string;
 }
@@ -117,6 +120,10 @@ export interface Order {
   history: OrderEvent[];
   /** Secret handed to the customer so only they can view their order. */
   accessKey: string;
+  /** Site language at checkout. */
+  language?: OrderLanguage;
+  /** Automatic WhatsApp confirmation, when enabled. */
+  confirmation?: OrderConfirmation;
 }
 
 /** The subset of an order a customer may see with their access key. */
@@ -140,6 +147,8 @@ export interface OrderSummaryRow {
   total: number;
   currency: string;
   hasPrintFiles: boolean;
+  /** WhatsApp confirmation state, when it was attempted. */
+  confirmation?: OrderConfirmation["status"];
 }
 
 export function toPublicOrder(order: Order): PublicOrder {
@@ -165,6 +174,7 @@ export function toSummaryRow(order: Order): OrderSummaryRow {
     total: order.totals.total,
     currency: order.totals.currency,
     hasPrintFiles: order.items.every((item) => !!item.collection || item.printFiles.length > 0),
+    ...(order.confirmation ? { confirmation: order.confirmation.status } : {}),
   };
 }
 

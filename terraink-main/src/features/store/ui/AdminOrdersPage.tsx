@@ -128,6 +128,20 @@ function OrdersList({ storage }: { storage: string }) {
                   <td>{formatMoney(order.total, order.currency)}</td>
                   <td>
                     <span className={`status-chip status-chip--${order.status}`}>{statusLabel(order.status)}</span>
+                    {order.confirmation ? (
+                      <span
+                        className="admin-wa-badge"
+                        title={`WhatsApp: ${order.confirmation}`}
+                      >
+                        {order.confirmation === "confirmed"
+                          ? "✅"
+                          : order.confirmation === "cancelled"
+                            ? "❌"
+                            : order.confirmation === "failed" || order.confirmation === "skipped"
+                              ? "⚠️"
+                              : "⏳"}
+                      </span>
+                    ) : null}
                   </td>
                   <td>
                     {order.hasPrintFiles ? (

@@ -7,7 +7,9 @@ import {
   LuFileText,
   LuLoader,
   LuPrinter,
+  LuSend,
 } from "react-icons/lu";
+import { FaWhatsapp } from "react-icons/fa";
 import { Link, useRouter } from "@/core/router/router";
 import { useAdminOrder } from "../application/useAdmin";
 import { formatMoney } from "../domain/catalog";
@@ -15,6 +17,12 @@ import { ORDER_STATUSES, statusLabel, type Order, type OrderItem } from "../doma
 import AdminLayout from "./AdminLayout";
 import FramedPoster from "./FramedPoster";
 import OrderTotalsList from "./OrderTotalsList";
+import {
+  formatMoneyPlain,
+  orderItemsLine,
+  toWhatsAppNumber,
+  type ConfirmationStatus,
+} from "../domain/whatsapp";
 
 export default function AdminOrderPage({ number }: { number: string }) {
   return <AdminLayout>{() => <OrderDetail number={number} />}</AdminLayout>;
@@ -35,7 +43,7 @@ function useCopy() {
 }
 
 function OrderDetail({ number }: { number: string }) {
-  const { order, error, isSaving, update, previews, downloadFile, downloadDesign } = useAdminOrder(number, true);
+  const { order, error, isSaving, update, sendWhatsApp, previews, downloadFile, downloadDesign } = useAdminOrder(number, true);
   const { copied, copy } = useCopy();
 
   if (error && !order) {
@@ -106,6 +114,8 @@ function OrderDetail({ number }: { number: string }) {
               <div><dt>Phone</dt><dd><a href={`tel:${customer.phone}`}>{customer.phone}</a></dd></div>
             </dl>
           </section>
+
+          <WhatsAppCard order={order} isSaving={isSaving} onSend={sendWhatsApp} />
 
           <section className="admin-card">
             <div className="admin-card__head">
@@ -377,6 +387,55 @@ function StatusCard({
       <button type="button" className="store-btn store-btn--primary store-btn--block" disabled={!dirty || isSaving} onClick={() => void save()}>
         {isSaving ? <LuLoader className="store-spin" aria-hidden="true" /> : null} Save changes
       </button>
+    </section>
+  );
+}
+
+const CONFIRMATION_LABELS: Record<ConfirmationStatus, string> = {
+  sent: "⏳ Sent — waiting for the customer",
+  delivered: "⏳ Delivered — waiting for the customer",
+  read: "👀 Read — waiting for the customer",
+  failed: "⚠️ Not delivered",
+  confirmed: "✅ Confirmed by the customer",
+  cancelled: "❌ Cancelled by the customer",
+  skipped: "— Not sent (phone can't receive WhatsApp)",
+};
+
+/** Automatic WhatsApp confirmation status, resend, and a manual fallback link. */
+function WhatsAppCard({ order, isSaving, onSend }: { order: Order; isSaving: boolean; onSend: () => Promise<void> }) {
+  const confirmation = order.confirmation;
+  const phone = toWhatsAppNumber(order.customer.phone, order.customer.country);
+  const firstName = order.customer.fullName.trim().split(/\s+/)[0] ?? "";
+  const manualText =
+    `Bonjour ${firstName}, merci pour votre commande ${order.number} chez Noria : ` +
+    `${orderItemsLine(order.items, "fr")}, ${formatMoneyPlain(order.totals.total)} à payer à la livraison. ` +
+    "Pouvez-vous confirmer votre commande en répondant OUI ?";
+  const final = confirmation?.status === "confirmed" || confirmation?.status === "cancelled";
+
+  return (
+    <section className="admin-card admin-whatsapp">
+      <h2><FaWhatsapp aria-hidden="true" /> WhatsApp confirmation</h2>
+      <p className={`admin-whatsapp__status admin-whatsapp__status--${confirmation?.status ?? "none"}`}>
+        {confirmation ? CONFIRMATION_LABELS[confirmation.status] : "Not sent (automatic confirmation is off)"}
+      </p>
+      {confirmation?.error ? <p className="admin-subtle">{confirmation.error}</p> : null}
+      <div className="admin-whatsapp__actions">
+        {!final ? (
+          <button type="button" className="store-btn store-btn--outline store-btn--sm" disabled={isSaving} onClick={() => void onSend()}>
+            <LuSend aria-hidden="true" /> {confirmation ? "Send again" : "Send now"}
+          </button>
+        ) : null}
+        {phone ? (
+          <a
+            className="store-btn store-btn--ghost store-btn--sm"
+            href={`https://wa.me/${phone}?text=${encodeURIComponent(manualText)}`}
+            target="_blank"
+            rel="noreferrer"
+          >
+            <FaWhatsapp aria-hidden="true" /> Write manually
+          </a>
+        ) : null}
+      </div>
     </section>
   );
 }
