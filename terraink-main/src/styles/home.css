@@ -5143,3 +5143,237 @@
   padding: 0 10px;
   font-size: 0.76rem;
 }
+
+/* ── Step 4: Format & cadre, one decision per block ── */
+.sf {
+  display: flex;
+  flex-direction: column;
+  gap: 20px;
+  color: var(--s-ink, #1f2a26);
+  font-family: var(--s-sans);
+}
+
+.sf-block {
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+}
+
+.app-shell .sf-block__title {
+  margin: 0;
+  color: var(--s-ink, #1f2a26);
+  font-size: 0.85rem;
+  font-weight: 700;
+  letter-spacing: 0;
+  text-transform: none;
+}
+
+.sf-orientation {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 4px;
+  padding: 4px;
+  border-radius: 12px;
+  background: rgba(31, 59, 51, 0.07);
+}
+
+.sf-orientation__opt {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: 6px;
+  min-height: 38px;
+  border: 0;
+  border-radius: 9px;
+  background: transparent;
+  color: var(--s-muted, #6b6259);
+  font-size: 0.85rem;
+  font-weight: 600;
+  cursor: pointer;
+}
+
+.sf-orientation__opt svg {
+  width: 15px;
+  height: 15px;
+}
+
+.sf-orientation__opt small {
+  color: var(--s-muted, #6b6259);
+  font-size: 0.74rem;
+  font-weight: 500;
+}
+
+.sf-orientation__opt.is-selected {
+  background: #fff;
+  color: var(--s-ink, #1f2a26);
+  box-shadow: 0 1px 3px rgba(60, 40, 20, 0.16);
+}
+
+.sf-list {
+  display: flex;
+  flex-direction: column;
+  overflow: hidden;
+  border: 1px solid var(--s-line, #e7dfd3);
+  border-radius: 12px;
+  background: #fff;
+}
+
+.sf-row {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  min-height: 48px;
+  padding: 6px 12px;
+  border: 0;
+  border-bottom: 1px solid var(--s-line, #e7dfd3);
+  background: transparent;
+  color: var(--s-ink, #1f2a26);
+  text-align: start;
+  cursor: pointer;
+}
+
+.sf-row:last-child {
+  border-bottom: 0;
+}
+
+.sf-row:hover {
+  background: #faf7f2;
+}
+
+.sf-row.is-selected {
+  background: #fff5f0;
+}
+
+.sf-row__radio {
+  flex: none;
+  display: grid;
+  place-items: center;
+  width: 18px;
+  height: 18px;
+  border: 1.5px solid var(--s-line-strong, #d8cfc2);
+  border-radius: 50%;
+  color: #fff;
+}
+
+.sf-row.is-selected .sf-row__radio {
+  border-color: var(--s-accent, #e8622c);
+  background: var(--s-accent, #e8622c);
+}
+
+.sf-row__radio svg {
+  width: 11px;
+  height: 11px;
+}
+
+.sf-row__main {
+  display: flex;
+  flex: 1;
+  flex-direction: column;
+  min-width: 0;
+}
+
+.sf-row__main strong {
+  font-size: 0.9rem;
+  font-weight: 700;
+}
+
+.sf-row__main small {
+  color: var(--s-muted, #6b6259);
+  font-size: 0.74rem;
+}
+
+.sf-row__badge {
+  flex: none;
+  padding: 2px 7px;
+  border-radius: 999px;
+  background: #fde6dc;
+  color: #b4471c;
+  font-size: 0.66rem;
+  font-weight: 700;
+}
+
+.sf-row__price {
+  flex: none;
+  min-width: 56px;
+  font-size: 0.88rem;
+  font-weight: 700;
+  text-align: end;
+}
+
+.sf-swatches {
+  display: grid;
+  grid-template-columns: repeat(6, minmax(0, 1fr));
+  gap: 6px;
+}
+
+.sf-swatch {
+  display: grid;
+  place-items: center;
+  aspect-ratio: 1;
+  padding: 0;
+  border: 1px solid var(--s-line, #e7dfd3);
+  border-radius: 10px;
+  background: #fff;
+  cursor: pointer;
+}
+
+.sf-swatch.is-selected {
+  border-color: var(--s-accent, #e8622c);
+  box-shadow: 0 0 0 1.5px var(--s-accent, #e8622c);
+}
+
+.sf-swatch__tile {
+  width: 26px !important;
+  height: 26px !important;
+}
+
+.sf-swatch__tile.frame-card__swatch--oak::after,
+.sf-swatch__tile.frame-card__swatch--walnut::after {
+  margin: 5px;
+  height: 16px;
+}
+
+.sf-frame-info {
+  padding: 10px 12px;
+  border-radius: 10px;
+  background: #fff;
+  border: 1px solid var(--s-line, #e7dfd3);
+}
+
+.sf-frame-info p {
+  display: flex;
+  justify-content: space-between;
+  gap: 8px;
+  margin: 0 0 2px;
+  font-size: 0.88rem;
+}
+
+.sf-frame-info p span {
+  font-weight: 700;
+}
+
+.sf-frame-info small {
+  display: block;
+  color: var(--s-muted, #6b6259);
+  font-size: 0.74rem;
+  line-height: 1.4;
+}
+
+.sf {
+  gap: 16px;
+}
+
+.sf-row {
+  min-height: 42px;
+  padding-block: 4px;
+}
+
+.sf-row__main {
+  flex-direction: row;
+  align-items: center;
+  gap: 8px;
+}
+
+.sf-row__main strong {
+  white-space: nowrap;
+}
