@@ -435,3 +435,52 @@
     font-size: 16px;
   }
 }
+
+/* Centre when there is room, never clip the top when there is not. */
+.startup-modal {
+  place-items: start center;
+}
+
+.startup-modal__card {
+  margin-block: auto;
+}
+
+/* Laptop screens: the whole window fits without scrolling. */
+@media (min-width: 521px) and (max-height: 780px) {
+  .startup-modal {
+    padding-block: 12px;
+  }
+
+  .startup-modal__card {
+    padding: 22px 32px 0;
+  }
+
+  .startup-modal__title {
+    font-size: 2.1rem !important;
+  }
+
+  .startup-modal__kinds {
+    margin-top: 14px !important;
+  }
+
+  .startup-modal__kind {
+    padding-block: 9px !important;
+  }
+
+  .startup-modal__skyline {
+    height: 70px;
+    object-fit: cover;
+    object-position: top;
+    margin-top: 10px;
+  }
+}
+
+@media (min-width: 521px) and (max-height: 700px) {
+  .startup-modal__skyline {
+    height: 44px;
+  }
+
+  .startup-modal__lede {
+    margin-bottom: 0 !important;
+  }
+}

@@ -54,8 +54,14 @@ export default function StudioStepFooter({
   return (
     <div className="studio-steps-nav">
       {previous ? (
-        <button type="button" className="studio-steps-nav__back" onClick={() => setTab(previous)}>
-          <LuArrowLeft className="rtl-flip" aria-hidden="true" /> {t("steps.prev")}
+        <button
+          type="button"
+          className="studio-steps-nav__back is-icon"
+          onClick={() => setTab(previous)}
+          aria-label={t("steps.prev")}
+          title={t("steps.prev")}
+        >
+          <LuArrowLeft className="rtl-flip" aria-hidden="true" />
         </button>
       ) : null}
       {next ? (

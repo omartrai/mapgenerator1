@@ -19,11 +19,34 @@ export default function SizeFrameSection() {
   const { product, setProduct } = useStore();
   const { t, money, frameLabel, shapeName, depthLabel } = useStoreText();
 
+  const selectedFrame = FRAME_OPTIONS.find((frame) => frame.id === product.frameId) ?? FRAME_OPTIONS[0];
+
   return (
-    <div className="size-frame">
+    <div className="size-frame size-frame--compact">
       <section className="size-frame__group" aria-labelledby="size-frame-size">
-        <h3 id="size-frame-size" className="size-frame__title">{t("sizes.print")}</h3>
-        <div className="size-frame__sizes" role="radiogroup" aria-labelledby="size-frame-size">
+        <div className="sf-head">
+          <h3 id="size-frame-size" className="size-frame__title">{t("sizes.print")}</h3>
+          <div className="sf-orient" role="radiogroup" aria-label={t("sizes.orientation")}>
+            {(["portrait", "landscape"] as Orientation[]).map((orientation) => (
+              <button
+                key={orientation}
+                type="button"
+                role="radio"
+                aria-checked={product.orientation === orientation}
+                className={`sf-orient__opt${product.orientation === orientation ? " is-selected" : ""}`}
+                onClick={() => setProduct({ orientation })}
+              >
+                {orientation === "portrait" ? (
+                  <LuRectangleVertical aria-hidden="true" />
+                ) : (
+                  <LuRectangleHorizontal aria-hidden="true" />
+                )}
+                {t(orientation === "portrait" ? "orientation.portrait" : "orientation.landscape")}
+              </button>
+            ))}
+          </div>
+        </div>
+        <div className="sf-sizes" role="radiogroup" aria-labelledby="size-frame-size">
           {PRINT_SIZES.map((size) => {
             const selected = product.sizeId === size.id;
             const dims = resolveDimensions({ ...product, sizeId: size.id });
@@ -33,56 +56,34 @@ export default function SizeFrameSection() {
                 type="button"
                 role="radio"
                 aria-checked={selected}
-                className={`size-card${selected ? " is-selected" : ""}`}
+                className={`sf-size${selected ? " is-selected" : ""}`}
+                title={`${formatRatio(size.id, product.orientation)} · ${shapeName(size.id, product.orientation)}`}
                 onClick={() => setProduct({ sizeId: size.id })}
               >
                 <span
-                  className="size-card__glyph"
+                  className="sf-size__glyph"
                   aria-hidden="true"
                   style={{
-                    width: `${Math.round((dims.widthCm / 70) * 30 + 10)}px`,
-                    height: `${Math.round((dims.heightCm / 70) * 30 + 10)}px`,
+                    width: `${Math.round((dims.widthCm / 70) * 18 + 6)}px`,
+                    height: `${Math.round((dims.heightCm / 70) * 18 + 6)}px`,
                   }}
                 />
-                <span className="size-card__label">{formatRatio(size.id, product.orientation)}</span>
-                <span className="size-card__name">{shapeName(size.id, product.orientation)}</span>
-                <span className="size-card__dims">
-                  {formatCm(dims.widthCm)} × {formatCm(dims.heightCm)} cm
+                <span className="sf-size__text">
+                  <span className="sf-size__dims">
+                    {formatCm(dims.widthCm)} × {formatCm(dims.heightCm)} cm
+                  </span>
+                  <span className="sf-size__price">{money(size.price)}</span>
                 </span>
-                <span className="size-card__price">{money(size.price)}</span>
-                {size.popular ? <span className="size-card__badge">{t("sizes.popular")}</span> : null}
+                {size.popular ? <span className="sf-size__badge">{t("sizes.popular")}</span> : null}
               </button>
             );
           })}
         </div>
       </section>
 
-      <section className="size-frame__group" aria-labelledby="size-frame-orientation">
-        <h3 id="size-frame-orientation" className="size-frame__title">{t("sizes.orientation")}</h3>
-        <div className="segmented" role="radiogroup" aria-labelledby="size-frame-orientation">
-          {(["portrait", "landscape"] as Orientation[]).map((orientation) => (
-            <button
-              key={orientation}
-              type="button"
-              role="radio"
-              aria-checked={product.orientation === orientation}
-              className={`segmented__option${product.orientation === orientation ? " is-selected" : ""}`}
-              onClick={() => setProduct({ orientation })}
-            >
-              {orientation === "portrait" ? (
-                <LuRectangleVertical aria-hidden="true" />
-              ) : (
-                <LuRectangleHorizontal aria-hidden="true" />
-              )}
-              {t(orientation === "portrait" ? "orientation.portrait" : "orientation.landscape")}
-            </button>
-          ))}
-        </div>
-      </section>
-
       <section className="size-frame__group" aria-labelledby="size-frame-frame">
         <h3 id="size-frame-frame" className="size-frame__title">{t("sizes.frame")}</h3>
-        <div className="size-frame__frames" role="radiogroup" aria-labelledby="size-frame-frame">
+        <div className="sf-frames" role="radiogroup" aria-labelledby="size-frame-frame">
           {FRAME_OPTIONS.map((frame) => {
             const selected = product.frameId === frame.id;
             const extra =
@@ -93,19 +94,20 @@ export default function SizeFrameSection() {
                 type="button"
                 role="radio"
                 aria-checked={selected}
-                className={`frame-card${selected ? " is-selected" : ""}`}
+                className={`sf-frame${selected ? " is-selected" : ""}`}
                 onClick={() => setProduct({ frameId: frame.id })}
+                title={t(`frame.${frame.id}.desc` as StoreTextKey)}
               >
-                <span className={`frame-card__swatch frame-card__swatch--${frame.id}`} aria-hidden="true" />
-                <span className="frame-card__text">
-                  <span className="frame-card__label">{frameLabel(frame.id)}</span>
-                  <span className="frame-card__desc">{t(`frame.${frame.id}.desc` as StoreTextKey)}</span>
-                </span>
-                <span className="frame-card__price">{extra > 0 ? `+ ${money(extra)}` : t("sizes.included")}</span>
+                <span className={`frame-card__swatch frame-card__swatch--${frame.id} sf-frame__swatch`} aria-hidden="true" />
+                <span className="sf-frame__label">{frameLabel(frame.id)}</span>
+                <span className="sf-frame__price">{extra > 0 ? `+ ${money(extra)}` : t("sizes.included")}</span>
               </button>
             );
           })}
         </div>
+        <p className="sf-frame-desc">
+          {t(`frame.${selectedFrame.id}.desc` as StoreTextKey)} {t("paper")}
+        </p>
       </section>
 
       {product.frameId !== "none" ? (
@@ -164,7 +166,7 @@ export default function SizeFrameSection() {
         </section>
       ) : null}
 
-      <p className="size-frame__paper">{t("paper")}</p>
+
     </div>
   );
 }
