@@ -2,6 +2,7 @@ import type {
   CreateOrderInput,
   Order,
   OrderSummaryRow,
+  OrderTracking,
   PublicOrder,
 } from "../domain/order";
 import type { CollectionMockup, CollectionProduct } from "../domain/collection";
@@ -67,6 +68,17 @@ export const reviewsApi = {
       `/orders/${encodeURIComponent(number)}/review?key=${encodeURIComponent(accessKey)}`,
       { method: "POST", headers: { "Content-Type": "application/json" }, body: JSON.stringify(input) },
     ),
+};
+
+/* ── Tracking ── */
+
+export const trackingApi = {
+  track: (number: string, proof: { phone?: string; key?: string }) =>
+    request<{ tracking: OrderTracking }>("/track", {
+      method: "POST",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify({ number, ...proof }),
+    }),
 };
 
 /* ── Customer ── */

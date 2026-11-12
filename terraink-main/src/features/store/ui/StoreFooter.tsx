@@ -24,6 +24,7 @@ export default function StoreFooter() {
           </div>
           <div>
             <h3>{t("footer.help")}</h3>
+            <Link to="/suivi">{t("track.title")}</Link>
             <Link to="/#faq">{t("footer.delivery")}</Link>
             <Link to="/#faq">{t("nav.faq")}</Link>
             <Link to="/cart">{t("footer.cart")}</Link>

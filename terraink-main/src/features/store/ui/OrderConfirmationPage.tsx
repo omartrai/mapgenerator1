@@ -136,6 +136,12 @@ export default function OrderConfirmationPage({ number }: { number: string }) {
             <OrderReviewCard order={order} accessKey={accessKey} />
 
             <div className="confirm-actions">
+              <Link
+                to={`/suivi?n=${encodeURIComponent(order.number)}&key=${encodeURIComponent(accessKey)}`}
+                className="store-btn store-btn--outline store-btn--lg"
+              >
+                {t("track.title")}
+              </Link>
               <Link to="/create" className="store-btn store-btn--primary store-btn--lg">
                 {t("cart.another")} <LuArrowRight className="rtl-flip" aria-hidden="true" />
               </Link>

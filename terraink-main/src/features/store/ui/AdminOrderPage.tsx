@@ -373,8 +373,13 @@ function StatusCard({
         </select>
       </div>
       <div className="field">
-        <label htmlFor="admin-ref">Print partner order reference</label>
-        <input id="admin-ref" value={reference} onChange={(event) => setReference(event.target.value)} placeholder="e.g. order ID at your print service" />
+        <label htmlFor="admin-ref">urbanArt order reference</label>
+        <input id="admin-ref" value={reference} onChange={(event) => setReference(event.target.value)} placeholder="e.g. APIAB12CD34 or the urbanArt order ID" />
+        <p className="admin-subtle">
+          Once filled in, the status follows urbanArt automatically (in production → shipped → delivered) and the
+          customer sees it on “Suivre ma commande”.
+          {order.fulfillment.partnerStatus ? ` urbanArt status: ${order.fulfillment.partnerStatus}.` : ""}
+        </p>
       </div>
       <div className="field">
         <label htmlFor="admin-tracking">Tracking link</label>

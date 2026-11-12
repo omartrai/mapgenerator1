@@ -95,6 +95,7 @@ export function createApiHandler(options: RouterOptions) {
       catalog ? async (id) => (await catalog.getProduct(id))?.product ?? null : undefined,
       catalog ? async () => framedPricesFromCollection(await catalog.listProducts()) : undefined,
       whatsapp,
+      catalog ? (reference) => catalog.getOrderStatus(reference) : undefined,
     );
     return service;
   };
@@ -134,6 +135,8 @@ export function createApiHandler(options: RouterOptions) {
 
   const catalog = createUrbanArtCatalog(options.env);
   const whatsapp = createWhatsApp(options.env);
+  /** Tracking lookups per IP (in memory, per instance) to slow down guessing. */
+  const trackAttempts = new Map<string, number[]>();
 
   /** Handles one Meta webhook delivery: customer answers and receipts. */
   async function handleWhatsAppWebhook(body: unknown) {
@@ -256,6 +259,23 @@ export function createApiHandler(options: RouterOptions) {
       return json(200, { ok: true });
     }
 
+    // POST /api/track { number, phone | key } — customer order tracking
+    if (head === "track" && rest.length === 0 && method === "POST") {
+      const ip = (request.headers.get("x-forwarded-for") ?? "").split(",")[0].trim() || "local";
+      const now = Date.now();
+      const recent = (trackAttempts.get(ip) ?? []).filter((at) => now - at < 10 * 60 * 1000);
+      if (recent.length >= 20) throw new HttpError(429, "Too many attempts. Please try again in a few minutes.");
+      trackAttempts.set(ip, [...recent, now]);
+      const body = await readJson<{ number?: string; phone?: string; key?: string }>(request);
+      const number = String(body?.number ?? "").trim().toUpperCase();
+      if (!/^ML-\d{6}-[A-Z0-9]{5}$/.test(number)) throw new HttpError(404, "No order matches this number and phone.");
+      const tracking = await getService().track(number, {
+        phone: typeof body.phone === "string" ? body.phone : undefined,
+        key: typeof body.key === "string" ? body.key : undefined,
+      });
+      return json(200, { tracking });
+    }
+
     // GET /api/reviews — approved reviews for the site
     if (head === "reviews" && rest.length === 0 && method === "GET") {
       if (!resolveStorage(options)) return json(200, { reviews: [], count: 0, average: 0 });
@@ -356,9 +376,9 @@ export function createApiHandler(options: RouterOptions) {
 
         const number = assertOrderNumber(rest[1]);
 
-        // GET /api/admin/orders/:number
+        // GET /api/admin/orders/:number — also refreshes the urbanArt status
         if (rest.length === 2 && method === "GET") {
-          return json(200, { order: await getService().load(number) });
+          return json(200, { order: await getService().syncWithPartner(number) });
         }
 
         // POST /api/admin/orders/:number/whatsapp — (re)send the confirmation

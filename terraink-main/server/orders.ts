@@ -24,7 +24,15 @@ import type {
   OrderStatus,
   StoredFile,
 } from "../src/features/store/domain/order.js";
-import { ORDER_STATUSES } from "../src/features/store/domain/order.js";
+import {
+  ORDER_STATUSES,
+  partnerStatusToOrder,
+  samePhone,
+  stampStatus,
+  statusRank,
+  toTracking,
+  type OrderTracking,
+} from "../src/features/store/domain/order.js";
 import { normalizeCustomer, validateCustomer } from "../src/features/store/domain/validation.js";
 import type { IOrderStorage } from "./storage/ports.js";
 import type { IFulfillmentProvider } from "./fulfillment/ports.js";
@@ -151,6 +159,7 @@ export function createOrderService(
   findCollectionProduct?: CollectionLookup,
   loadFramedPrices?: () => Promise<FramedPriceTable | null>,
   whatsapp?: WhatsAppClient | null,
+  partnerOrderStatus?: (reference: string) => Promise<{ status: string } | null>,
 ) {
   async function load(number: string): Promise<Order> {
     const order = await storage.getJson<Order>(orderPath(assertOrderNumber(number)));
@@ -207,8 +216,60 @@ export function createOrderService(
     return null;
   }
 
+  /**
+   * Reads the order's status at urbanArt (when its reference is filled in)
+   * and moves our status forward to match. Never moves it backwards and
+   * never cancels by itself: a cancellation at urbanArt is noted for you.
+   */
+  async function syncWithPartner(order: Order): Promise<Order> {
+    const reference = order.fulfillment.externalReference.trim();
+    if (!partnerOrderStatus || !reference || ["delivered", "cancelled"].includes(order.status)) return order;
+    let partner: { status: string } | null = null;
+    try {
+      partner = await partnerOrderStatus(reference);
+    } catch (error) {
+      console.warn("[urbanart] order status unavailable", order.number, error);
+      return order;
+    }
+    if (!partner) return order;
+    const at = new Date().toISOString();
+    const previous = order.fulfillment.partnerStatus;
+    order.fulfillment = { ...order.fulfillment, partnerStatus: partner.status, partnerCheckedAt: at };
+    const mapped = partnerStatusToOrder(partner.status);
+    let changed = previous !== partner.status;
+    if (mapped === "cancelled") {
+      if (previous !== partner.status) {
+        order.history.push({ at, type: "fulfillment", message: `urbanArt reports the order as ${partner.status}. Check it and inform the customer.` });
+      }
+    } else if (mapped && statusRank(mapped) > statusRank(order.status)) {
+      order.history.push({ at, type: "status", message: `Status changed to ${mapped}. (from urbanArt: ${partner.status})` });
+      order.status = mapped;
+      stampStatus(order, mapped, at);
+      changed = true;
+    }
+    return changed ? save(order) : order;
+  }
+
   return {
     storageKind: storage.kind,
+    syncWithPartner: async (number: string) => syncWithPartner(await load(number)),
+
+    /**
+     * Customer tracking: the order number plus the phone used to order (or
+     * the private link key). Wrong pairs look exactly like unknown orders.
+     */
+    async track(number: string, proof: { phone?: string; key?: string }): Promise<OrderTracking> {
+      let order: Order;
+      try {
+        order = await load(number.trim().toUpperCase());
+      } catch {
+        throw new HttpError(404, "No order matches this number and phone.");
+      }
+      const byKey = !!proof.key && proof.key === order.accessKey;
+      const byPhone = !!proof.phone && samePhone(proof.phone, order.customer.phone);
+      if (!byKey && !byPhone) throw new HttpError(404, "No order matches this number and phone.");
+      return toTracking(await syncWithPartner(order));
+    },
     whatsappEnabled: !!whatsapp,
     sendConfirmation: async (number: string) => sendConfirmation(await load(number)),
 
@@ -247,6 +308,7 @@ export function createOrderService(
         return { order, changed: false };
       }
       order.status = target;
+      stampStatus(order, target, at);
       setConfirmation(order, { status: target });
       order.history.push({
         at,
@@ -455,6 +517,7 @@ export function createOrderService(
         }
         order.history.push({ at, type: "status", message: `Status changed to ${patch.status}.` });
         order.status = patch.status;
+        stampStatus(order, patch.status, at);
       }
       if (patch.paymentStatus && patch.paymentStatus !== order.payment.status) {
         order.payment.status = patch.paymentStatus === "paid" ? "paid" : "pending";

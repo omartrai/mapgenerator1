@@ -105,6 +105,9 @@ export interface FulfillmentInfo {
   externalReference: string;
   trackingUrl: string;
   submittedAt: string | null;
+  /** Last status read from the print partner (urbanArt), e.g. "shipped". */
+  partnerStatus?: string;
+  partnerCheckedAt?: string;
 }
 
 export interface Order {
@@ -124,6 +127,8 @@ export interface Order {
   language?: OrderLanguage;
   /** Automatic WhatsApp confirmation, when enabled. */
   confirmation?: OrderConfirmation;
+  /** When the order reached each status (for the customer's tracking page). */
+  statusDates?: Partial<Record<OrderStatus, string>>;
 }
 
 /** The subset of an order a customer may see with their access key. */
@@ -180,4 +185,95 @@ export function toSummaryRow(order: Order): OrderSummaryRow {
 
 export function statusLabel(status: OrderStatus): string {
   return ORDER_STATUSES.find((entry) => entry.id === status)?.label ?? status;
+}
+
+/* ── Customer tracking ── */
+
+/** The road an order travels, in order. */
+export const TRACKING_STEPS: OrderStatus[] = ["new", "confirmed", "in_production", "shipped", "delivered"];
+
+export function statusRank(status: OrderStatus): number {
+  return TRACKING_STEPS.indexOf(status);
+}
+
+/**
+ * Our status for a print partner (urbanArt) status. Unknown or early
+ * states (awaiting_payment) give null: they don't move the order.
+ */
+export function partnerStatusToOrder(status: string): OrderStatus | "cancelled" | null {
+  switch (status.toLowerCase()) {
+    case "confirmed":
+    case "processing":
+    case "in_production":
+      return "in_production";
+    case "shipped":
+    case "completed-shipped":
+      return "shipped";
+    case "delivered":
+    case "completed":
+      return "delivered";
+    case "cancelled":
+    case "canceled":
+    case "refused":
+    case "failed":
+      return "cancelled";
+    default:
+      return null;
+  }
+}
+
+/** Records when an order reached a status. */
+export function stampStatus(order: Order, status: OrderStatus, at: string): void {
+  order.statusDates = { ...order.statusDates, [status]: order.statusDates?.[status] ?? at };
+}
+
+export interface OrderTracking {
+  number: string;
+  createdAt: string;
+  status: OrderStatus;
+  steps: { status: OrderStatus; at: string | null; done: boolean }[];
+  items: { title: string; detail: string; quantity: number; product: ProductOptions; collection?: CollectionLine }[];
+  total: number;
+  currency: string;
+  city: string;
+  trackingUrl: string;
+}
+
+/** What the customer may see on the tracking page (no address, phone or files). */
+export function toTracking(order: Order): OrderTracking {
+  const dates: Partial<Record<OrderStatus, string>> = { new: order.createdAt, ...order.statusDates };
+  // Older orders: recover dates from the history.
+  for (const event of order.history) {
+    const match = /Status changed to (\w+)\./.exec(event.message);
+    if (match && !dates[match[1] as OrderStatus]) dates[match[1] as OrderStatus] = event.at;
+    if (/confirmed on WhatsApp/.test(event.message) && !dates.confirmed) dates.confirmed = event.at;
+  }
+  const rank = statusRank(order.status);
+  return {
+    number: order.number,
+    createdAt: order.createdAt,
+    status: order.status,
+    steps: TRACKING_STEPS.map((status, index) => ({
+      status,
+      done: order.status !== "cancelled" && index <= rank,
+      at: order.status !== "cancelled" && index <= rank ? dates[status] ?? null : null,
+    })),
+    items: order.items.map((item) => ({
+      title: item.collection?.title || item.summary?.title || "Poster",
+      detail: item.productLabel,
+      quantity: item.quantity,
+      product: item.product,
+      ...(item.collection ? { collection: item.collection } : {}),
+    })),
+    total: order.totals.total,
+    currency: order.totals.currency,
+    city: order.customer.city,
+    trackingUrl: order.fulfillment.trackingUrl,
+  };
+}
+
+/** Same customer? Compares the last 9 digits of two phone numbers. */
+export function samePhone(a: string, b: string): boolean {
+  const tail = (value: string) => value.replace(/\D/g, "").slice(-9);
+  return tail(a).length >= 6 && tail(a) === tail(b);
 }

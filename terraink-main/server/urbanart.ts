@@ -28,7 +28,12 @@ interface Cached<T> {
 export interface UrbanArtCatalog {
   listProducts(): Promise<CollectionProduct[]>;
   getProduct(id: number): Promise<{ product: CollectionProduct; mockups: CollectionMockup[] } | null>;
+  /** Status of one of our orders at urbanArt, by its id or reference. */
+  getOrderStatus(reference: string): Promise<{ status: string; reference: string } | null>;
 }
+
+/** urbanArt orders are re-read at most this often per reference. */
+const ORDER_CACHE_MS = 2 * 60 * 1000;
 
 export function createUrbanArtCatalog(env: Record<string, string | undefined>): UrbanArtCatalog | null {
   const apiKey = String(env.URBANART_API_KEY ?? "").trim();
@@ -111,8 +116,31 @@ export function createUrbanArtCatalog(env: Record<string, string | undefined>): 
     await Promise.all(Array.from({ length: Math.min(MOCKUP_CONCURRENCY, list.length) }, worker));
   }
 
+  const orderStatuses = new Map<string, Cached<{ status: string; reference: string } | null>>();
+
   return {
     listProducts,
+    async getOrderStatus(reference) {
+      const key = reference.trim();
+      if (!/^[A-Za-z0-9_-]{2,80}$/.test(key)) return null;
+      const cached = orderStatuses.get(key);
+      if (cached && Date.now() - cached.at < ORDER_CACHE_MS) return cached.value;
+      try {
+        const data = (await call(`/orders/${encodeURIComponent(key)}`)) as Record<string, unknown> | undefined;
+        const value =
+          data && typeof data.status === "string"
+            ? { status: data.status, reference: String(data.reference ?? key) }
+            : null;
+        orderStatuses.set(key, { at: Date.now(), value });
+        return value;
+      } catch (error) {
+        if (/404/.test(String(error))) {
+          orderStatuses.set(key, { at: Date.now(), value: null });
+          return null;
+        }
+        throw error;
+      }
+    },
     async getProduct(id) {
       const product = (await listProducts()).find((entry) => entry.id === id);
       if (!product) return null;

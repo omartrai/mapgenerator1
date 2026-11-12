@@ -10,6 +10,7 @@ const CollectionPage = lazy(() => import("@/features/store/ui/CollectionPage"));
 const CollectionProductPage = lazy(() => import("@/features/store/ui/CollectionProductPage"));
 const AdminOrdersPage = lazy(() => import("@/features/store/ui/AdminOrdersPage"));
 const AdminReviewsPage = lazy(() => import("@/features/store/ui/AdminReviewsPage"));
+const TrackOrderPage = lazy(() => import("@/features/store/ui/TrackOrderPage"));
 const LegalPage = lazy(() => import("@/features/store/ui/LegalPage"));
 const AdminOrderPage = lazy(() => import("@/features/store/ui/AdminOrderPage"));
 
@@ -20,6 +21,7 @@ const TITLES: [RegExp, string][] = [
   [/^\/order\//, "Order confirmed — Noria"],
   [/^\/admin/, "Orders — Noria admin"],
   [/^\/collection$/, "The collection — Noria"],
+  [/^\/suivi/, "Suivre ma commande — Noria"],
 ];
 
 function PageFallback() {
@@ -45,6 +47,7 @@ export default function AppRouter() {
   else if ((params = matchPath("/order/:number", path))) page = <OrderConfirmationPage number={params.number} />;
   else if (path === "/collection") page = <CollectionPage />;
   else if ((params = matchPath("/collection/:id", path))) page = <CollectionProductPage id={Number(params.id)} />;
+  else if (path === "/suivi") page = <TrackOrderPage />;
   else if ((params = matchPath("/legal/:slug", path))) page = <LegalPage slug={params.slug} />;
   else if (path === "/admin") page = <AdminOrdersPage />;
   else if (path === "/admin/reviews") page = <AdminReviewsPage />;
