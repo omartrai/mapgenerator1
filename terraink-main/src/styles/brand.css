@@ -2871,6 +2871,71 @@ button.route-card__summary,
   color: var(--ink) !important;
 }
 
+/* Light studio: start/finish buttons, line style toggle, pickers. */
+.route-card__body {
+  border-top-color: var(--line) !important;
+}
+
+button.route-card__endpoint-row {
+  border-color: var(--line) !important;
+  background: #faf8f4 !important;
+  color: var(--ink) !important;
+}
+
+button.route-card__endpoint-row:not(:disabled):hover,
+button.route-card__endpoint-row:focus-visible {
+  border-color: #cfc3b4 !important;
+  background: #f3efe8 !important;
+}
+
+.route-card__endpoint-row-label {
+  color: var(--ink) !important;
+}
+
+.route-card__style-toggle {
+  display: flex !important;
+  width: 100%;
+  padding: 3px !important;
+  border-radius: 10px !important;
+  background: #f1ece6 !important;
+}
+
+.route-card__style-btn {
+  border-radius: 8px !important;
+  color: #6b6259 !important;
+  font-weight: 600;
+}
+
+.route-card__style-btn:hover {
+  color: var(--ink) !important;
+}
+
+.route-card__style-btn.is-active {
+  background: #fff !important;
+  color: var(--ink) !important;
+  box-shadow: 0 1px 3px rgba(0, 0, 0, 0.1);
+}
+
+.route-card__color-toggle,
+.route-card__endpoint-toggle {
+  border-color: var(--line) !important;
+}
+
+.route-card__endpoint-picker {
+  border-color: var(--line) !important;
+  background: #faf8f4 !important;
+}
+
+button.route-card__endpoint-option {
+  border-color: transparent !important;
+  background: #fff !important;
+  color: var(--ink) !important;
+}
+
+.route-card__actions {
+  border-top-color: var(--line) !important;
+}
+
 @media (max-width: 768px) {
   .poster-frame .map-control-btn {
     background: #fff !important;

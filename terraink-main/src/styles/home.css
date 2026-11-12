@@ -2366,3 +2366,56 @@
   background: repeating-linear-gradient(90deg, #f2f2f2 0 16%, transparent 16% 26%);
   opacity: 0.9;
 }
+
+/* Sport card: active state with its two actions */
+.sport-cta.is-active {
+  background: linear-gradient(135deg, #24201d, #33291f);
+}
+
+.sport-cta__check {
+  display: inline-grid;
+  place-items: center;
+  width: 20px;
+  height: 20px;
+  margin-inline-end: 4px;
+  border-radius: 50%;
+  background: #e8622c;
+  color: #fff;
+  font-size: 0.75rem;
+}
+
+.sport-cta__actions {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 8px;
+  margin-top: 4px;
+}
+
+.sport-cta__actions .sport-cta__button {
+  margin-top: 0;
+}
+
+.sport-cta__ghost {
+  padding: 8px 14px;
+  border: 1px solid rgba(255, 255, 255, 0.28);
+  border-radius: 999px;
+  background: transparent;
+  color: #f2f2f2;
+  font: inherit;
+  font-size: 0.85rem;
+  font-weight: 600;
+  cursor: pointer;
+}
+
+.sport-cta__ghost:hover {
+  border-color: rgba(255, 255, 255, 0.55);
+}
+
+.sport-cta__button:hover {
+  background: #d4541f;
+}
+
+/* Scroll target spacing when jumping from the Routes panel. */
+.sport-fields {
+  scroll-margin-top: 16px;
+}

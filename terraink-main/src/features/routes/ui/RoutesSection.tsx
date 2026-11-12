@@ -34,6 +34,7 @@ import {
 } from "@/features/markers/infrastructure/iconRegistry";
 import { useLanguage } from "@/shared/i18n/LanguageContext";
 import { useActivityPoster } from "@/features/routes/application/useActivityPoster";
+import { openSettingsTab } from "@/shared/ui/settingsTabs";
 
 type RouteEndpointKind = "start" | "finish";
 
@@ -336,18 +337,39 @@ export default function RoutesSection() {
       ) : null}
 
       {sportRoute ? (
-        <div className="sport-cta">
-          <p className="sport-cta__title">{t("activity.make")}</p>
-          <p className="sport-cta__hint">{t("activity.makeHint")}</p>
-          <button
-            type="button"
-            className="sport-cta__button"
-            onClick={() => makeSportPoster(sportRoute)}
-            disabled={form.posterLayout === "activity"}
-          >
-            {form.posterLayout === "activity" ? "✓ " + t("style.layout.activity") : t("activity.make")}
-          </button>
-        </div>
+        form.posterLayout === "activity" ? (
+          <div className="sport-cta is-active">
+            <p className="sport-cta__title">
+              <span className="sport-cta__check" aria-hidden="true">✓</span> {t("activity.active")}
+            </p>
+            <p className="sport-cta__hint">{t("activity.activeHint")}</p>
+            <div className="sport-cta__actions">
+              <button
+                type="button"
+                className="sport-cta__button"
+                onClick={() => openSettingsTab({ tab: "style", focus: ".sport-fields" })}
+              >
+                {t("activity.editTexts")}
+              </button>
+              <button
+                type="button"
+                className="sport-cta__ghost"
+                onClick={() => makeSportPoster(sportRoute)}
+                title={t("activity.reapplyHint")}
+              >
+                {t("activity.reapply")}
+              </button>
+            </div>
+          </div>
+        ) : (
+          <div className="sport-cta">
+            <p className="sport-cta__title">{t("activity.make")}</p>
+            <p className="sport-cta__hint">{t("activity.makeHint")}</p>
+            <button type="button" className="sport-cta__button" onClick={() => makeSportPoster(sportRoute)}>
+              {t("activity.make")}
+            </button>
+          </div>
+        )
       ) : null}
 
       <div className="routes-section__content">

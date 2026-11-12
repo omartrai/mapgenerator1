@@ -1,4 +1,5 @@
 import { lazy, Suspense, useCallback, useEffect, useState, type ReactNode } from "react";
+import { onOpenSettingsTab, revealAfterTabChange } from "@/shared/ui/settingsTabs";
 import { usePosterContext } from "@/features/poster/ui/PosterContext";
 import {
   MAX_MARKER_SIZE,
@@ -230,6 +231,20 @@ export default function AppShell({
     setDesktopTab(tab);
     setDesktopPanelOpen(true);
   };
+
+  // Other panels can ask for a tab (e.g. Routes → "Edit the texts").
+  useEffect(
+    () =>
+      onOpenSettingsTab(({ tab, focus }) => {
+        const next = tab as MobileTab;
+        setDesktopTab(next);
+        setDesktopPanelOpen(true);
+        setMobileTab(next);
+        if (isMobileViewport) setMobileDrawerOpen(true);
+        revealAfterTabChange(focus);
+      }),
+    [isMobileViewport],
+  );
 
   const handleMobileMarkerSizeChange = useCallback(
     (nextSize: number) => {
