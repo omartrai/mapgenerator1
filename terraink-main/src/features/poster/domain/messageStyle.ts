@@ -28,6 +28,21 @@ export const MESSAGE_FONTS = [
   { id: "oswald", family: "Oswald", boost: 1 },
   { id: "bebas", family: "Bebas Neue", boost: 1.15 },
   { id: "source", family: "Source Sans Pro", boost: 1 },
+  { id: "cormorant-garamond", family: "Cormorant Garamond", boost: 1.1 },
+  { id: "libre-baskerville", family: "Libre Baskerville", boost: 1 },
+  { id: "dm-serif-display", family: "DM Serif Display", boost: 1 },
+  { id: "fraunces", family: "Fraunces", boost: 1 },
+  { id: "marcellus", family: "Marcellus", boost: 1 },
+  { id: "cinzel", family: "Cinzel", boost: 1 },
+  { id: "abril-fatface", family: "Abril Fatface", boost: 0.95 },
+  { id: "josefin-sans", family: "Josefin Sans", boost: 1 },
+  { id: "poppins", family: "Poppins", boost: 1 },
+  { id: "work-sans", family: "Work Sans", boost: 1 },
+  { id: "bricolage-grotesque", family: "Bricolage Grotesque", boost: 1 },
+  { id: "space-mono", family: "Space Mono", boost: 0.9 },
+  { id: "amatic-sc", family: "Amatic SC", boost: 1.35 },
+  { id: "dancing-script", family: "Dancing Script", boost: 1.25 },
+  { id: "pacifico", family: "Pacifico", boost: 1.1 },
 ] as const;
 /** Fonts whose name is translated (style.msg.font.<id>). */
 export const NAMED_MESSAGE_FONTS = new Set(["poster", "elegant", "brush", "serif", "sans"]);

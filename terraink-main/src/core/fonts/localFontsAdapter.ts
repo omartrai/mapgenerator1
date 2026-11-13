@@ -68,6 +68,72 @@ const FONT_LOADERS: Record<string, () => Promise<unknown>> = {
   /* Script faces used by the "script" and "signature" poster layouts. */
   "great vibes": () => import("@fontsource/great-vibes/400.css"),
   "caveat brush": () => import("@fontsource/caveat-brush/400.css"),
+  /* More poster and message faces. */
+  "cormorant garamond": () =>
+    Promise.all([
+      import("@fontsource/cormorant-garamond/300.css"),
+      import("@fontsource/cormorant-garamond/400.css"),
+      import("@fontsource/cormorant-garamond/700.css"),
+    ]),
+  "libre baskerville": () =>
+    Promise.all([
+      import("@fontsource/libre-baskerville/400.css"),
+      import("@fontsource/libre-baskerville/700.css"),
+    ]),
+  "dm serif display": () => import("@fontsource/dm-serif-display/400.css"),
+  "fraunces": () =>
+    Promise.all([
+      import("@fontsource/fraunces/300.css"),
+      import("@fontsource/fraunces/400.css"),
+      import("@fontsource/fraunces/700.css"),
+    ]),
+  "marcellus": () => import("@fontsource/marcellus/400.css"),
+  "cinzel": () =>
+    Promise.all([
+      import("@fontsource/cinzel/400.css"),
+      import("@fontsource/cinzel/700.css"),
+    ]),
+  "abril fatface": () => import("@fontsource/abril-fatface/400.css"),
+  "josefin sans": () =>
+    Promise.all([
+      import("@fontsource/josefin-sans/300.css"),
+      import("@fontsource/josefin-sans/400.css"),
+      import("@fontsource/josefin-sans/700.css"),
+    ]),
+  "poppins": () =>
+    Promise.all([
+      import("@fontsource/poppins/300.css"),
+      import("@fontsource/poppins/400.css"),
+      import("@fontsource/poppins/700.css"),
+    ]),
+  "work sans": () =>
+    Promise.all([
+      import("@fontsource/work-sans/300.css"),
+      import("@fontsource/work-sans/400.css"),
+      import("@fontsource/work-sans/700.css"),
+    ]),
+  "bricolage grotesque": () =>
+    Promise.all([
+      import("@fontsource/bricolage-grotesque/300.css"),
+      import("@fontsource/bricolage-grotesque/400.css"),
+      import("@fontsource/bricolage-grotesque/700.css"),
+    ]),
+  "space mono": () =>
+    Promise.all([
+      import("@fontsource/space-mono/400.css"),
+      import("@fontsource/space-mono/700.css"),
+    ]),
+  "amatic sc": () =>
+    Promise.all([
+      import("@fontsource/amatic-sc/400.css"),
+      import("@fontsource/amatic-sc/700.css"),
+    ]),
+  "dancing script": () =>
+    Promise.all([
+      import("@fontsource/dancing-script/400.css"),
+      import("@fontsource/dancing-script/700.css"),
+    ]),
+  "pacifico": () => import("@fontsource/pacifico/400.css"),
 };
 
 export const localFontsAdapter: IFontLoader = {
