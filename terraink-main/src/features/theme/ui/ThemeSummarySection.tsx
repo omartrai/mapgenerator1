@@ -49,16 +49,13 @@ export default function ThemeSummarySection({
     () => new Set(themeOptions.slice(0, POPULAR_COUNT).map((theme) => theme.id)),
     [themeOptions],
   );
-  const [filter, setFilter] = useState<ThemeFilter>(() =>
-    themeOptions.slice(0, POPULAR_COUNT).some((theme) => theme.id === selectedThemeId)
-      ? "popular"
-      : "all",
-  );
+  // Always open on the short list; the chosen palette is shown in it.
+  const [filter, setFilter] = useState<ThemeFilter>("popular");
 
   const visible = useMemo(() => {
     switch (filter) {
       case "popular":
-        return themeOptions.filter((theme) => popularIds.has(theme.id));
+        return themeOptions.filter((theme) => popularIds.has(theme.id) || theme.id === selectedThemeId);
       case "light":
         return themeOptions.filter((theme) => !isDarkTheme(theme));
       case "dark":
@@ -66,7 +63,7 @@ export default function ThemeSummarySection({
       default:
         return themeOptions;
     }
-  }, [filter, themeOptions, popularIds]);
+  }, [filter, themeOptions, popularIds, selectedThemeId]);
 
   const filters: { id: ThemeFilter; label: string }[] = [
     { id: "popular", label: t("theme.filter.popular") },

@@ -22,6 +22,7 @@ export default function PosterStylePicker() {
             type="button"
             className={`style-preset${active === id ? " is-active" : ""}`}
             aria-pressed={active === id}
+            title={t(`style.preset.${id}.note` as TranslationKey)}
             onClick={() => apply(id)}
           >
             <span className={`style-preset__sketch style-preset__sketch--${id}`} aria-hidden="true">
@@ -31,7 +32,6 @@ export default function PosterStylePicker() {
               <i className="style-preset__text" />
             </span>
             <span className="style-preset__name">{t(`style.preset.${id}` as TranslationKey)}</span>
-            <span className="style-preset__note">{t(`style.preset.${id}.note` as TranslationKey)}</span>
           </button>
         ))}
       </div>

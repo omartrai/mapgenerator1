@@ -428,6 +428,8 @@ export default function MapSettingsSection({
           <>
           <SkyShapePicker />
           {form.posterKind !== "sky" ? <PosterStylePicker /> : null}
+          <h3 className="style-presets__title">{t("theme.colorsTitle")}</h3>
+          <p className="style-presets__hint">{t("theme.colorsHint")}</p>
           <ThemeSummarySection
             listRef={themeListRef}
             themeOptions={themeOptions}
