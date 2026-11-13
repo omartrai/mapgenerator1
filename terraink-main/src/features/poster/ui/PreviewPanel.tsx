@@ -22,7 +22,7 @@ import { activityFromForm } from "@/features/poster/domain/activityPoster";
 import { messageLookFromForm } from "@/features/poster/domain/messageStyle";
 import SkyPreview from "@/features/sky/ui/SkyPreview";
 import { isSkyPoster } from "@/features/sky/application/skyOptions";
-import { skyCoordsLabel } from "@/features/sky/application/useSkyPoster";
+import { skyDetailsLabel } from "@/features/sky/application/useSkyPoster";
 import { formatCoordinates } from "@/shared/geo/posterBounds";
 import PosterTextOverlay from "./PosterTextOverlay";
 import SettingsInfo from "./SettingsInfo";
@@ -519,7 +519,7 @@ export default function PreviewPanel({ sidePanel, belowPoster }: PreviewPanelPro
             starChart={sky}
             photo={form.photo}
             photoMono={form.photoMono !== false}
-            coordsLabel={sky ? skyCoordsLabel(form.skyTime ?? "", formatCoordinates(formLat, formLon), language) : undefined}
+            coordsLabel={sky ? skyDetailsLabel(form, formatCoordinates(formLat, formLon), language) : undefined}
             mapCredit={!sky}
             onMessageMove={handleMessageMove}
             moveHint={t("style.msg.dragHint")}

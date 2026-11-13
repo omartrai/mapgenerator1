@@ -64,6 +64,9 @@ export interface PosterForm {
   skyMilkyWay?: boolean;
   /** Night-sky chart outline: circle, heart, star or square. */
   skyShape?: string;
+  /** Baby night sky: birth length (cm) and weight (g), as typed. */
+  babyLength?: string;
+  babyWeight?: string;
   /** Personal message look: size s|m|l|xl, font id, style id (missing = original). */
   messageSize?: string;
   messageFont?: string;

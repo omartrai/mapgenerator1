@@ -25,6 +25,32 @@ export function skyCoordsLabel(skyTime: string, coordinates: string, language: s
 
 export type PosterKind = "map" | "sky" | "sport";
 
+const BORN: Record<string, string> = { en: "Born", fr: "Né(e) le", ar: "وُلد في" };
+
+/**
+ * Details line under a sky poster's title. A baby sky reads
+ * "Né(e) le 19 février 2015 | 51 cm | 3400 g"; other skies show
+ * the date, time and coordinates.
+ */
+export function skyDetailsLabel(
+  form: { skyTime?: string; skyShape?: string; babyLength?: string; babyWeight?: string },
+  coordinates: string,
+  language: string,
+): string {
+  if (form.skyShape !== "baby") return skyCoordsLabel(form.skyTime ?? "", coordinates, language);
+  const date = formatSkyDate(form.skyTime ?? "", language);
+  const length = form.babyLength?.trim();
+  const weight = form.babyWeight?.trim();
+  return [
+    date ? `${BORN[language] ?? BORN.en} ${date}` : "",
+    length ? `${length} cm` : "",
+    weight ? `${weight} g` : "",
+  ]
+    .filter(Boolean)
+    .join("  |  ")
+    .toUpperCase();
+}
+
 /** Switches between a map, night-sky or sport poster and sets the sky's moment. */
 export function useSkyPoster() {
   const { state, dispatch } = usePosterContext();

@@ -10,7 +10,7 @@ import type { ExportFormat } from "@/features/export/domain/types";
 import { captureMapAsCanvas } from "@/features/export/infrastructure/mapExporter";
 import { renderSkyCanvas } from "@/core/services";
 import { isSkyPoster, skyOptionsFromForm } from "@/features/sky/application/skyOptions";
-import { skyCoordsLabel } from "@/features/sky/application/useSkyPoster";
+import { skyDetailsLabel } from "@/features/sky/application/useSkyPoster";
 import { formatCoordinates } from "@/shared/geo/posterBounds";
 import { useLanguage } from "@/shared/i18n/LanguageContext";
 import { compositeExport } from "@/features/poster/infrastructure/renderer";
@@ -203,7 +203,7 @@ export function useExport() {
         messageLook: messageLookFromForm(form),
         photoImage,
         photoMono: form.photoMono !== false,
-        ...(sky ? { mapCredit: false, starChart: true, coordsLabel: skyCoordsLabel(form.skyTime ?? "", formatCoordinates(lat, lon), language) } : {}),
+        ...(sky ? { mapCredit: false, starChart: true, coordsLabel: skyDetailsLabel(form, formatCoordinates(lat, lon), language) } : {}),
         markers: hasVisibleMarkers && !sky ? state.markers : [],
         markerIcons: withOverlays ? getAllMarkerIcons(state.customMarkerIcons) : [],
         markerProjection: withOverlays ? markerProjection : undefined,

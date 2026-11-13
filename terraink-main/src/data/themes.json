@@ -52,6 +52,32 @@
         }
       }
     },
+    "starry_navy": {
+      "name": "Starry Navy",
+      "description": "Soft white paper, deep navy ink and gold stars, made for baby night skies",
+      "ui": {
+        "bg": "#FBFAF7",
+        "text": "#1F4A6B"
+      },
+      "map": {
+        "land": "#FBFAF7",
+        "landcover": "#F2F1EC",
+        "water": "#CFDCE6",
+        "waterway": "#CFDCE6",
+        "parks": "#ECEFE8",
+        "buildings": "#E6E4DE",
+        "aeroway": "#ECEAE4",
+        "rail": "#7D93A6",
+        "roads": {
+          "major": "#1F4A6B",
+          "minor_high": "#3F6482",
+          "minor_mid": "#6D88A0",
+          "minor_low": "#9DB0C0",
+          "path": "#B9C6D2",
+          "outline": "#FBFAF7"
+        }
+      }
+    },
     "blush": {
       "name": "Blush",
       "description": "Dusty rose on warm white",

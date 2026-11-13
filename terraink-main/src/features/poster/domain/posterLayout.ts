@@ -16,9 +16,9 @@ import {
   TEXT_MESSAGE_Y_RATIO,
 } from "./textLayout";
 
-export const POSTER_LAYOUTS = ["classic", "border", "label", "band", "fade", "header", "script", "signature", "activity", "duo"] as const;
+export const POSTER_LAYOUTS = ["classic", "border", "label", "band", "fade", "header", "script", "signature", "activity", "duo", "nursery"] as const;
 /** Layouts reached only through a ready-made style, not the layout picker. */
-export const STYLE_ONLY_LAYOUTS: ReadonlySet<string> = new Set(["duo"]);
+export const STYLE_ONLY_LAYOUTS: ReadonlySet<string> = new Set(["duo", "nursery"]);
 export type PosterLayoutId = (typeof POSTER_LAYOUTS)[number];
 export const DEFAULT_POSTER_LAYOUT: PosterLayoutId = "classic";
 
@@ -232,6 +232,20 @@ export const POSTER_LAYOUT_SPECS: Record<PosterLayoutId, PosterLayoutSpec> = {
   },
 
   /** Sport poster: race title, route map, elevation profile and stats. */
+  /** Baby night sky: the name in script, birth details underneath. */
+  nursery: {
+    ...CLASSIC,
+    fades: { top: 0, bottom: 0 },
+    cityStyle: { case: "plain", family: SCRIPT_FONTS.elegant, weight: 400 },
+    city: center(0.872),
+    divider: null,
+    country: center(0.905),
+    coords: center(0.918),
+    message: center(0.955),
+    scale: { city: 0.78, country: 0.7, coords: 0.95, message: 0.75 },
+    maxWidth: 0.8,
+  },
+
   /** A photo heart and a map heart side by side, script message below. */
   duo: {
     ...CLASSIC,

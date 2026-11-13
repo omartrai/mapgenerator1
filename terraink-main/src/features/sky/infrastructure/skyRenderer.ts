@@ -93,9 +93,83 @@ export interface SkyChartOptions {
   shape?: SkyShape;
 }
 
+/**
+ * A curled-up newborn, facing right, built from overlapping ellipses in a
+ * unit square (x right, y down). Drawn as one shape (non-zero fill).
+ * [cx, cy, rx, ry, rotation in degrees]
+ */
+const BABY_PARTS: [number, number, number, number, number][] = [
+  [0.5, 0.19, 0.15, 0.155, 0], // head
+  [0.45, 0.35, 0.14, 0.11, -12], // neck and shoulders
+  [0.355, 0.56, 0.19, 0.26, -8], // back and belly
+  [0.37, 0.785, 0.185, 0.125, 14], // bottom
+  [0.55, 0.6, 0.185, 0.115, -40], // thigh, knee up
+  [0.6, 0.8, 0.165, 0.07, 14], // lower leg
+  [0.755, 0.765, 0.062, 0.043, -40], // foot
+  [0.545, 0.43, 0.095, 0.06, 35], // hands at the chin
+];
+
+/** Fine lines inside the baby (arm, leg), in the same unit square: M x y Q cx cy x y. */
+const BABY_LINES: number[][] = [
+  [0.41, 0.385, 0.47, 0.46, 0.585, 0.44], // arm folded to the chin
+  [0.39, 0.66, 0.52, 0.6, 0.69, 0.47], // top of the thigh
+  [0.47, 0.745, 0.6, 0.76, 0.735, 0.74], // lower leg
+  [0.52, 0.205, 0.545, 0.225, 0.575, 0.205], // closed eye
+];
+
+function babyLines(ctx: CanvasRenderingContext2D, box: { x: number; y: number; w: number; h: number }, color: string, width: number) {
+  ctx.strokeStyle = color;
+  ctx.lineWidth = width;
+  ctx.lineCap = "round";
+  for (const [x0, y0, cx, cy, x1, y1] of BABY_LINES) {
+    ctx.beginPath();
+    ctx.moveTo(box.x + x0 * box.w, box.y + y0 * box.h);
+    ctx.quadraticCurveTo(box.x + cx * box.w, box.y + cy * box.h, box.x + x1 * box.w, box.y + y1 * box.h);
+    ctx.stroke();
+  }
+}
+
+function babyBox(disc: SkyDisc) {
+  // A little smaller than the disc, so the dotted paper shows around it.
+  const grow = -0.02;
+  const box = { x: disc.cx - disc.r, y: disc.cy - disc.r, w: disc.r * 2, h: disc.r * 2 };
+  return { x: box.x - box.w * grow, y: box.y - box.h * grow, w: box.w * (1 + grow * 2), h: box.h * (1 + grow * 2) };
+}
+
+function babyPath(box: { x: number; y: number; w: number; h: number }): Path2D {
+  const path = new Path2D();
+  for (const [cx, cy, rx, ry, rot] of BABY_PARTS) {
+    const x = box.x + cx * box.w;
+    const y = box.y + cy * box.h;
+    path.moveTo(x + rx * box.w * Math.cos((rot * Math.PI) / 180), y + rx * box.w * Math.sin((rot * Math.PI) / 180));
+    path.ellipse(x, y, rx * box.w, ry * box.h, (rot * Math.PI) / 180, 0, Math.PI * 2);
+  }
+  return path;
+}
+
+/** Light paper speckled with tiny dots, the same every time (seeded). */
+function stipple(ctx: CanvasRenderingContext2D, area: { x: number; y: number; w: number; h: number }, color: string, unit: number) {
+  let seed = 7;
+  const random = () => {
+    seed = (seed * 16807) % 2147483647;
+    return seed / 2147483647;
+  };
+  const step = unit * 7;
+  ctx.fillStyle = withAlpha(color, 0.55);
+  const count = Math.round((area.w * area.h) / (step * step));
+  for (let i = 0; i < count; i += 1) {
+    ctx.beginPath();
+    ctx.arc(area.x + random() * area.w, area.y + random() * area.h, unit * (0.7 + random() * 0.6), 0, Math.PI * 2);
+    ctx.fill();
+  }
+}
+
+const BABY_STAR = "#F1D27C";
+
 /** The chart outline as a canvas path, in the square around the disc. */
 function outlinePath(shape: SkyShape, disc: SkyDisc): Path2D {
   const box = { x: disc.cx - disc.r, y: disc.cy - disc.r, w: disc.r * 2, h: disc.r * 2 };
+  if (shape === "baby") return babyPath(babyBox(disc));
   if (shape === "square") {
     const path = new Path2D();
     path.rect(box.x, box.y, box.w, box.h);
@@ -120,8 +194,9 @@ export function drawSkyChart(
   catalog: SkyCatalog,
   options: SkyChartOptions,
 ): void {
-  const { colors } = options;
   const shape = options.shape ?? "circle";
+  // A baby chart wears warm gold stars, like gilded foil.
+  const colors = shape === "baby" ? { ...options.colors, star: BABY_STAR } : options.colors;
   const outline = outlinePath(shape, options.disc);
   // A square shows the whole sky down to the horizon in its corners.
   const disc = shape === "square" ? { ...options.disc, r: options.disc.r * Math.SQRT2 } : options.disc;
@@ -136,6 +211,19 @@ export function drawSkyChart(
   ctx.save();
   ctx.fillStyle = colors.paper;
   ctx.fillRect(0, 0, width, height);
+
+  if (shape === "baby") {
+    // Dotted paper around the baby, with a clear margin hugging it.
+    const short = Math.min(width, height);
+    const dotUnit = short / 900;
+    stipple(ctx, { x: width * 0.09, y: height * 0.07, w: width * 0.82, h: height * 0.73 }, colors.disc, dotUnit);
+    ctx.strokeStyle = colors.paper;
+    ctx.lineWidth = short * 0.03;
+    ctx.lineJoin = "round";
+    ctx.stroke(outline);
+    ctx.fillStyle = colors.paper;
+    ctx.fill(outline);
+  }
 
   // The chart area.
   ctx.fillStyle = colors.disc;
@@ -230,7 +318,15 @@ export function drawSkyChart(
   }
   ctx.restore();
 
-  // Rim.
+  // Rim (none around the baby: its edge is the paper margin), body lines instead.
+  if (shape === "baby") {
+    ctx.save();
+    ctx.clip(outline);
+    babyLines(ctx, babyBox(options.disc), withAlpha(colors.paper, 0.75), Math.max(1, unit * 2.4));
+    ctx.restore();
+    ctx.restore();
+    return;
+  }
   ctx.strokeStyle = colors.ring;
   ctx.lineWidth = Math.max(1, unit * 2.2);
   ctx.lineJoin = "round";

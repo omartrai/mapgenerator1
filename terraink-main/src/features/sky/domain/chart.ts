@@ -65,7 +65,7 @@ export function skyTextLayout(layout: PosterLayoutSpec, width: number, height: n
 }
 
 /** Outline of the star chart. */
-export const SKY_SHAPES = ["circle", "heart", "star", "square"] as const;
+export const SKY_SHAPES = ["circle", "heart", "star", "square", "baby"] as const;
 export type SkyShape = (typeof SKY_SHAPES)[number];
 
 export function toSkyShape(value: string | undefined): SkyShape {
