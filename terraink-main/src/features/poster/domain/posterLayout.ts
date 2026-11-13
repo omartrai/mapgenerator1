@@ -24,6 +24,8 @@ export interface TextSlot {
   x: number;
   y: number;
   align: "center" | "left" | "right";
+  /** Keep the line centred on y even when it is set larger (see messageCenterY). */
+  fixed?: boolean;
 }
 
 export interface Rect {

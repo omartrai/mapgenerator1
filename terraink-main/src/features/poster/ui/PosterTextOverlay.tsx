@@ -17,6 +17,7 @@ import {
   resolveMessageType,
   type MessageLook,
 } from "@/features/poster/domain/messageStyle";
+import { skyTextLayout } from "@/features/sky/domain/chart";
 import { profileAreaPath } from "@/features/routes/domain/activity";
 import {
   TEXT_DIMENSION_REFERENCE_PX,
@@ -59,6 +60,8 @@ interface PosterTextOverlayProps {
   moveHint?: string;
   /** Text for the coordinates line instead of the coordinates. */
   coordsLabel?: string;
+  /** Night-sky poster: the message sits large under the star chart. */
+  starChart?: boolean;
   /** The OpenStreetMap credit; off for posters without map data (night sky). */
   mapCredit?: boolean;
   includeCredits: boolean;
@@ -130,10 +133,10 @@ export default function PosterTextOverlay({
   moveHint,
   coordsLabel,
   mapCredit = true,
+  starChart = false,
   includeCredits,
   showOverlay,
 }: PosterTextOverlayProps) {
-  const layout = getPosterLayout(layoutId);
   const rootRef = useRef<HTMLDivElement>(null);
   const toCqMin = (px: number) => (px / TEXT_DIMENSION_REFERENCE_PX) * 100;
 
@@ -144,11 +147,6 @@ export default function PosterTextOverlay({
     ? `"${fontFamily}", "IBM Plex Mono", monospace`
     : '"IBM Plex Mono", monospace';
 
-  const textColor = layout.box ? layout.box.text : themeText;
-  const cityLabel = cityText(layout, city, formatCityLabel);
-  const countryLabel = countryText(layout, country);
-  const spacedCity = layout.cityStyle.case === "spaced";
-  const cityFont = layout.cityStyle.family ? `"${layout.cityStyle.family}", ${titleFont}` : titleFont;
 
   // The paper mask is an SVG path in pixels, so track the overlay's size.
   const [size, setSize] = useState({ width: 0, height: 0 });
@@ -161,7 +159,14 @@ export default function PosterTextOverlay({
     observer.observe(root);
     return () => observer.disconnect();
   }, []);
+  const baseLayout = getPosterLayout(layoutId);
+  const layout = starChart && size.width > 0 ? skyTextLayout(baseLayout, size.width, size.height) : baseLayout;
   const mask = size.width > 0 ? paperMaskPath(layout, mapShape, size.width, size.height) : null;
+  const textColor = layout.box ? layout.box.text : themeText;
+  const cityLabel = cityText(layout, city, formatCityLabel);
+  const countryLabel = countryText(layout, country);
+  const spacedCity = layout.cityStyle.case === "spaced";
+  const cityFont = layout.cityStyle.family ? `"${layout.cityStyle.family}", ${titleFont}` : titleFont;
 
   // Script layouts use their own face; load it so the preview shows it.
   useEffect(() => {

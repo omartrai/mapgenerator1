@@ -39,6 +39,8 @@ export interface ExportOptions {
   coordsLabel?: string;
   /** Print the OpenStreetMap credit (default true). */
   mapCredit?: boolean;
+  /** Night-sky poster: lays the message out under the star chart. */
+  starChart?: boolean;
   showOverlay?: boolean;
   includeCredits?: boolean;
   markers?: MarkerItem[];

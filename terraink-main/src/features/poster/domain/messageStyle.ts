@@ -120,7 +120,7 @@ export function messageCenterY(
   shortOverHeight: number,
   fontRefPx: number,
 ): number {
-  if (slot.y < 0.5 || fontPx <= basePx) return slot.y;
+  if (slot.y < 0.5 || slot.fixed || fontPx <= basePx) return slot.y;
   const toHeight = (px: number) => (px / fontRefPx) * shortOverHeight;
   const grow = toHeight((fontPx - basePx) * HALF_LINE);
   const limit = (layout.box ? layout.box.bottom - 0.006 : 0.988) - toHeight(fontPx * HALF_LINE);

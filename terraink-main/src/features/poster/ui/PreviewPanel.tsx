@@ -502,6 +502,7 @@ export default function PreviewPanel({ sidePanel, belowPoster }: PreviewPanelPro
             showPosterText={form.showPosterText}
             message={form.customMessage}
             messageLook={messageLookFromForm(form)}
+            starChart={sky}
             coordsLabel={sky ? skyCoordsLabel(form.skyTime ?? "", formatCoordinates(formLat, formLon), language) : undefined}
             mapCredit={!sky}
             onMessageMove={handleMessageMove}

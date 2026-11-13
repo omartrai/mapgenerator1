@@ -3,6 +3,11 @@
  * derived from the poster layout and theme so it matches the map posters.
  */
 import type { PosterLayoutSpec } from "@/features/poster/domain/posterLayout";
+import {
+  CITY_FONT_BASE_PX,
+  MESSAGE_FONT_BASE_PX,
+  TEXT_DIMENSION_REFERENCE_PX,
+} from "@/features/poster/domain/textLayout";
 import { parseHex } from "@/shared/utils/color";
 
 export interface SkyDisc {
@@ -28,6 +33,35 @@ export function skyDisc(layout: PosterLayoutSpec, width: number, height: number)
   const h = (bottom - top) * height;
   const r = Math.min(w, h) * 0.43;
   return { cx: (window.x + window.w / 2) * width, cy: (top + (bottom - top) / 2) * height + (layout.mapWindow ? 0 : height * 0.012), r };
+}
+
+/** Smallest gap (share of the height) worth putting the message in. */
+const MIN_MESSAGE_GAP = 0.035;
+/** Share of the gap the message's font size fills at the smallest size. */
+const MESSAGE_GAP_FILL = 0.5;
+
+/**
+ * Text layout of a night-sky poster: the personal message moves from the
+ * small line at the foot of the poster into the space between the star
+ * chart and the city name, set large enough to fill it. Layouts without
+ * such a space are returned unchanged.
+ */
+export function skyTextLayout(layout: PosterLayoutSpec, width: number, height: number): PosterLayoutSpec {
+  if (!width || !height || layout.activity || layout.city.y < 0.5) return layout;
+  const disc = skyDisc(layout, width, height);
+  const shortSide = Math.min(width, height);
+  const toRef = (heightShare: number) => (heightShare * height * TEXT_DIMENSION_REFERENCE_PX) / shortSide;
+  const discBottom = (disc.cy + disc.r) / height;
+  const cityPx = (CITY_FONT_BASE_PX * layout.scale.city * shortSide) / TEXT_DIMENSION_REFERENCE_PX;
+  const cityTop = layout.city.y - (0.6 * cityPx) / height;
+  const gap = cityTop - discBottom;
+  if (gap < MIN_MESSAGE_GAP) return layout;
+  const scale = Math.min(2.4, Math.max(1, toRef(gap * MESSAGE_GAP_FILL) / MESSAGE_FONT_BASE_PX));
+  return {
+    ...layout,
+    message: { x: 0.5, y: discBottom + gap / 2, align: "center", fixed: true },
+    scale: { ...layout.scale, message: scale },
+  };
 }
 
 /** Outline of the star chart. */

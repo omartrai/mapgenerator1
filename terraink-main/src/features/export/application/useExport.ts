@@ -195,7 +195,7 @@ export function useExport() {
         mapShape: sky ? "none" : form.mapShape,
         activity: activityFromForm(form as unknown as Record<string, unknown>, state.routes),
         messageLook: messageLookFromForm(form),
-        ...(sky ? { mapCredit: false, coordsLabel: skyCoordsLabel(form.skyTime ?? "", formatCoordinates(lat, lon), language) } : {}),
+        ...(sky ? { mapCredit: false, starChart: true, coordsLabel: skyCoordsLabel(form.skyTime ?? "", formatCoordinates(lat, lon), language) } : {}),
         markers: hasVisibleMarkers && !sky ? state.markers : [],
         markerIcons: withOverlays ? getAllMarkerIcons(state.customMarkerIcons) : [],
         markerProjection: withOverlays ? markerProjection : undefined,

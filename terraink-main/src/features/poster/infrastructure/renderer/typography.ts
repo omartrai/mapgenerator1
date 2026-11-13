@@ -17,6 +17,7 @@ import {
   resolveMessageType,
   type MessageLook,
 } from "@/features/poster/domain/messageStyle";
+import { skyTextLayout } from "@/features/sky/domain/chart";
 import { profileAreaPath } from "@/features/routes/domain/activity";
 import { withAlpha } from "@/shared/utils/color";
 import {
@@ -75,8 +76,11 @@ export function drawPosterText(
   coordsLabel?: string,
   /** The OpenStreetMap credit; off for posters without map data (night sky). */
   mapCredit: boolean = true,
+  /** Night-sky poster: the message sits large under the star chart. */
+  starChart: boolean = false,
 ): void {
-  const layout = getPosterLayout(layoutId);
+  const baseLayout = getPosterLayout(layoutId);
+  const layout = starChart ? skyTextLayout(baseLayout, width, height) : baseLayout;
   const themeText = theme.ui?.text || "#111111";
   const paper = theme.ui?.bg || "#ffffff";
   const landColor = theme.map?.land || "#808080";
