@@ -35,7 +35,7 @@ type LineId = "maps" | "sky" | "sport" | "prints";
 const LINES: { id: LineId; image: string; to: string; Icon: Icon; focus: string }[] = [
   { id: "maps", image: "/assets/hero/city-maps.webp", to: "/create", Icon: LuMap, focus: "50% 24%" },
   { id: "sky", image: "/assets/hero/night-sky-room.webp", to: "/create?type=sky", Icon: LuSparkles, focus: "50% 38%" },
-  { id: "sport", image: "/assets/hero/sport.webp", to: "/create?type=sport", Icon: LuRoute, focus: "50% 36%" },
+  { id: "sport", image: "/assets/hero/sport-room.webp", to: "/create?type=sport", Icon: LuRoute, focus: "50% 40%" },
   { id: "prints", image: "/assets/hero/collection.webp", to: "/collection", Icon: LuFrame, focus: "62% 30%" },
 ];
 const lineKey = (id: LineId, part: string) => `home.${id}.${part}` as StoreTextKey;
