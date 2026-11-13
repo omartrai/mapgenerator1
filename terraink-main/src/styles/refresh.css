@@ -444,34 +444,120 @@ body:has(.store-page) {
   min-height: 520px;
 }
 
+/* Each poster: dealt in on load, then floats; drifts towards the pointer
+   (--mx/--my, -1…1, set on the stage) by its depth, and fans out on hover.
+   Tilt uses rotate and movement translate so the two never fight. */
 .hero2__poster {
+  --depth: 10;
+  --spread-x: 0px;
+  --spread-y: 0px;
+  --spread-r: 0deg;
   position: absolute;
   filter: drop-shadow(0 26px 40px rgba(20, 35, 28, 0.28));
+  translate:
+    calc(var(--mx, 0) * var(--depth) * 1px + var(--spread-x))
+    calc(var(--my, 0) * var(--depth) * 1px + var(--spread-y));
+  rotate: calc(var(--tilt, 0deg) + var(--spread-r));
+  transition:
+    translate 0.7s cubic-bezier(0.22, 0.8, 0.24, 1),
+    rotate 0.7s cubic-bezier(0.22, 0.8, 0.24, 1),
+    filter 0.5s ease;
+  animation: hero2-deal 1s cubic-bezier(0.22, 0.8, 0.24, 1) backwards;
 }
 
 .hero2__poster .framed-poster__frame {
   box-shadow: none !important;
 }
 
+/* The gentle float lives on the inner figure so it adds to the above. */
+.hero2__poster .framed-poster {
+  animation: hero2-float 7s ease-in-out infinite alternate;
+}
+
 .hero2__poster--sky {
+  --tilt: -6deg;
+  --depth: 8;
   top: 6%;
   left: 2%;
   width: 34%;
-  transform: rotate(-6deg);
+  animation-delay: 0.35s;
+}
+
+.hero2__poster--sky .framed-poster {
+  animation-duration: 8s;
+  animation-delay: -3s;
 }
 
 .hero2__poster--sport {
+  --tilt: 5deg;
+  --depth: 8;
   top: 10%;
   right: 4%;
   width: 34%;
-  transform: rotate(5deg);
+  animation-delay: 0.5s;
+}
+
+.hero2__poster--sport .framed-poster {
+  animation-duration: 9s;
+  animation-delay: -6s;
 }
 
 .hero2__poster--map {
+  --depth: 16;
   top: 4%;
   left: 27%;
   z-index: 1;
   width: 44%;
+  animation-delay: 0.15s;
+}
+
+/* Hover: the back posters fan out, the front one lifts. */
+.hero2__stage:hover .hero2__poster--sky {
+  --spread-x: -22px;
+  --spread-y: 6px;
+  --spread-r: -3deg;
+}
+
+.hero2__stage:hover .hero2__poster--sport {
+  --spread-x: 22px;
+  --spread-y: 6px;
+  --spread-r: 3deg;
+}
+
+.hero2__stage:hover .hero2__poster--map {
+  --spread-y: -10px;
+  filter: drop-shadow(0 36px 50px rgba(20, 35, 28, 0.32));
+}
+
+@keyframes hero2-deal {
+  from {
+    opacity: 0;
+    translate: 0 60px;
+    rotate: 0deg;
+    scale: 0.92;
+  }
+}
+
+@keyframes hero2-float {
+  from {
+    translate: 0 -6px;
+  }
+
+  to {
+    translate: 0 8px;
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .hero2__poster,
+  .hero2__poster .framed-poster {
+    animation: none;
+  }
+
+  .hero2__poster {
+    translate: none;
+    transition: none;
+  }
 }
 
 .hero2__badge {

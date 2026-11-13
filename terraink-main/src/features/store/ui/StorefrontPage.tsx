@@ -1,4 +1,4 @@
-import { useRef, useState, type ComponentType, type FormEvent } from "react";
+import { useRef, useState, type ComponentType, type FormEvent, type PointerEvent } from "react";
 import {
   LuArrowLeft,
   LuArrowRight,
@@ -114,6 +114,16 @@ function Hero() {
     navigateTo(query ? `/create?place=${encodeURIComponent(query)}` : "/create");
   };
 
+  /** The posters drift a little towards the pointer (mouse only). */
+  const tiltStage = (event: PointerEvent<HTMLDivElement>) => {
+    if (event.pointerType !== "mouse") return;
+    const rect = event.currentTarget.getBoundingClientRect();
+    const mx = ((event.clientX - rect.left) / rect.width - 0.5) * 2;
+    const my = ((event.clientY - rect.top) / rect.height - 0.5) * 2;
+    event.currentTarget.style.setProperty("--mx", mx.toFixed(3));
+    event.currentTarget.style.setProperty("--my", my.toFixed(3));
+  };
+
   const benefits: { Icon: Icon; title: StoreTextKey; note: StoreTextKey }[] = [
     { Icon: LuTruck, title: "trust.1", note: "trust.1Note" },
     { Icon: LuBanknote, title: "trust.2", note: "trust.2Note" },
@@ -177,7 +187,15 @@ function Hero() {
         </Link>
       </div>
 
-      <div className="hero2__stage" aria-hidden="true">
+      <div
+        className="hero2__stage"
+        aria-hidden="true"
+        onPointerMove={tiltStage}
+        onPointerLeave={(event) => {
+          event.currentTarget.style.setProperty("--mx", "0");
+          event.currentTarget.style.setProperty("--my", "0");
+        }}
+      >
         <div className="hero2__poster hero2__poster--sky">
           <FramedPoster src="/assets/hero-posters/sky.webp" alt="" frameId="white" ratio={0.75} size="lg" loading="eager" />
         </div>
