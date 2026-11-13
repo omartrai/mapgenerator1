@@ -3,6 +3,7 @@ import { useCallback, useEffect, useRef, useState } from "react";
 import PanelGroup from "@/shared/ui/PanelGroup";
 import { onOpenSettingsTab } from "@/shared/ui/settingsTabs";
 import { ensureFont } from "@/core/services";
+import FontDropdown from "@/shared/ui/FontDropdown";
 import type { PosterForm } from "@/features/poster/application/posterReducer";
 import type { FontOption } from "@/core/config";
 import {
@@ -338,32 +339,17 @@ export default function TypographySection({
               </span>
             </label>
 
-            <label>
-              {t("style.font")}
-              <select
-                className="form-control-tall"
-                name="fontFamily"
-                value={form.fontFamily}
-                onChange={onChange}
-                onFocus={preloadFontPreviews}
-                onMouseDown={preloadFontPreviews}
-                onTouchStart={preloadFontPreviews}
-              >
-                {fontOptions.map((fontOption) => (
-                  <option
-                    key={fontOption.value || "default"}
-                    value={fontOption.value}
-                    style={{
-                      fontFamily: fontOption.value
-                        ? `"${fontOption.value}", "Space Grotesk", sans-serif`
-                        : `"Space Grotesk", sans-serif`,
-                    }}
-                  >
-                    {fontOption.label}
-                  </option>
-                ))}
-              </select>
-            </label>
+            <FontDropdown
+              label={t("style.font")}
+              value={form.fontFamily ?? ""}
+              onOpen={preloadFontPreviews}
+              onChange={(value) => dispatch({ type: "SET_FIELD", name: "fontFamily", value })}
+              options={fontOptions.map((option) => ({
+                value: option.value,
+                label: option.label,
+                family: option.value || "Space Grotesk",
+              }))}
+            />
         </PanelGroup>
       </section>
     </>

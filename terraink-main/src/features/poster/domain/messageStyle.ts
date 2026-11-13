@@ -12,14 +12,25 @@ export const MESSAGE_SIZES = [
 ] as const;
 export type MessageSize = (typeof MESSAGE_SIZES)[number]["id"];
 
-/** family null = the poster's own font. `boost` evens out faces that run small. */
+/**
+ * family null = the poster's own font. `boost` evens out faces that run small.
+ * The first five have translated names; the others are shown by family name.
+ */
 export const MESSAGE_FONTS = [
   { id: "poster", family: null, boost: 1 },
   { id: "elegant", family: "Great Vibes", boost: 1.45 },
   { id: "brush", family: "Caveat Brush", boost: 1.2 },
   { id: "serif", family: "Playfair Display", boost: 1 },
   { id: "sans", family: "Montserrat", boost: 1 },
+  { id: "merriweather", family: "Merriweather", boost: 0.95 },
+  { id: "raleway", family: "Raleway", boost: 1 },
+  { id: "lato", family: "Lato", boost: 1 },
+  { id: "oswald", family: "Oswald", boost: 1 },
+  { id: "bebas", family: "Bebas Neue", boost: 1.15 },
+  { id: "source", family: "Source Sans Pro", boost: 1 },
 ] as const;
+/** Fonts whose name is translated (style.msg.font.<id>). */
+export const NAMED_MESSAGE_FONTS = new Set(["poster", "elegant", "brush", "serif", "sans"]);
 export type MessageFont = (typeof MESSAGE_FONTS)[number]["id"];
 
 export const MESSAGE_STYLES = ["italic", "regular", "bold", "caps"] as const;

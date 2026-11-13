@@ -5,7 +5,9 @@ import {
   MESSAGE_FONTS,
   MESSAGE_SIZES,
   MESSAGE_STYLES,
+  NAMED_MESSAGE_FONTS,
 } from "@/features/poster/domain/messageStyle";
+import FontDropdown from "@/shared/ui/FontDropdown";
 import { usePosterContext } from "@/features/poster/ui/PosterContext";
 import { useLanguage, type TranslationKey } from "@/shared/i18n/LanguageContext";
 
@@ -50,7 +52,7 @@ export default function MessageLookControls({ x, y, size, font, style, isSport }
       : "italic";
   const scriptFont = activeFont === "elegant" || activeFont === "brush";
 
-  // Load the faces so each chip shows its own lettering.
+  // Load the faces so each option shows its own lettering.
   useEffect(() => {
     MESSAGE_FONTS.forEach((item) => {
       if (item.family) void ensureFont(item.family).catch(() => undefined);
@@ -126,27 +128,19 @@ export default function MessageLookControls({ x, y, size, font, style, isSport }
       </div>
 
       <div className="message-look__row">
-        <span className="message-look__label">{t("style.msg.font")}</span>
-        <div className="message-look__fonts" role="radiogroup" aria-label={t("style.msg.font")}>
-          {MESSAGE_FONTS.map((item) => (
-            <button
-              key={item.id}
-              type="button"
-              role="radio"
-              aria-checked={activeFont === item.id}
-              className={`message-look__font${activeFont === item.id ? " is-active" : ""}`}
-              style={item.family ? { fontFamily: `"${item.family}", serif` } : undefined}
-              onClick={() => set("messageFont", item.id)}
-            >
-              <span
-                className="message-look__font-sample"
-                style={item.boost > 1 ? { fontSize: `${item.boost}em` } : undefined}
-              >
-                {t(`style.msg.font.${item.id}` as TranslationKey)}
-              </span>
-            </button>
-          ))}
-        </div>
+        <FontDropdown
+          label={t("style.msg.font")}
+          value={activeFont}
+          onChange={(value) => set("messageFont", value)}
+          options={MESSAGE_FONTS.map((item) => ({
+            value: item.id,
+            label: NAMED_MESSAGE_FONTS.has(item.id)
+              ? t(`style.msg.font.${item.id}` as TranslationKey)
+              : (item.family ?? item.id),
+            family: item.family,
+            boost: item.boost > 1 ? item.boost : undefined,
+          }))}
+        />
       </div>
 
       <div className="message-look__row">
