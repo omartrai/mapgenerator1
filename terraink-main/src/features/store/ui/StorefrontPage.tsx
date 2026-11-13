@@ -95,7 +95,6 @@ function Hero() {
   const { lines, products } = useShopLines();
   const [place, setPlace] = useState("");
   const [line1, line2, line3] = split("home2.title");
-  const marrakech = DESIGN_PRESETS.find((design) => design.id === "marrakech") ?? DESIGN_PRESETS[0];
   // Real counts only: the art prints when the collection is live, else the starting designs.
   const proof = products.length
     ? {
@@ -180,13 +179,13 @@ function Hero() {
 
       <div className="hero2__stage" aria-hidden="true">
         <div className="hero2__poster hero2__poster--sky">
-          <FramedPoster src="/assets/sky-poster.webp" alt="" frameId="white" ratio={0.75} size="lg" loading="eager" />
+          <FramedPoster src="/assets/hero-posters/sky.webp" alt="" frameId="white" ratio={0.75} size="lg" loading="eager" />
         </div>
         <div className="hero2__poster hero2__poster--sport">
-          <FramedPoster src="/assets/sport-poster.webp" alt="" frameId="black" ratio={0.75} size="lg" loading="eager" />
+          <FramedPoster src="/assets/hero-posters/sport.webp" alt="" frameId="black" ratio={0.75} size="lg" loading="eager" />
         </div>
         <div className="hero2__poster hero2__poster--map">
-          <FramedPoster src={marrakech.image} alt="" frameId="oak" ratio={0.75} size="lg" loading="eager" />
+          <FramedPoster src="/assets/hero-posters/map.webp" alt="" frameId="oak" ratio={0.75} size="lg" loading="eager" />
         </div>
 
         <span className="hero2__badge">
