@@ -1,5 +1,6 @@
 import { lazy, Suspense, useEffect } from "react";
 import { matchPath, useRouter } from "@/core/router/router";
+import { useScrollReveal } from "@/shared/hooks/useScrollReveal";
 import StorefrontPage from "@/features/store/ui/StorefrontPage";
 
 const StudioPage = lazy(() => import("@/features/store/ui/StudioPage"));
@@ -30,6 +31,7 @@ function PageFallback() {
 
 export default function AppRouter() {
   const { path } = useRouter();
+  useScrollReveal(path);
 
   useEffect(() => {
     document.title =

@@ -1949,3 +1949,185 @@ body:has(.store-page) {
   width: 16px;
   height: 16px;
 }
+
+/* ══ Motion ══
+   Scroll reveal (shared/hooks/useScrollReveal), the home hero's staged
+   entrance, and hover/press feedback. All of it is off with reduced motion. */
+
+:root [data-reveal=""] {
+  opacity: 0;
+  translate: 0 28px;
+}
+
+/* While rising in; the hook then marks it "done" so hover effects take over. */
+:root [data-reveal="in"] {
+  opacity: 1;
+  translate: 0 0;
+  transition:
+    opacity 0.7s cubic-bezier(0.22, 0.8, 0.24, 1) var(--reveal-delay, 0ms),
+    translate 0.7s cubic-bezier(0.22, 0.8, 0.24, 1) var(--reveal-delay, 0ms);
+}
+
+/* Home hero: copy rises line by line, then the search, chips and cards. */
+.hero2__copy > * {
+  animation: motion-rise 0.8s cubic-bezier(0.22, 0.8, 0.24, 1) backwards;
+}
+
+.hero2__copy > :nth-child(1) { animation-delay: 0.05s; }
+.hero2__copy > :nth-child(2) { animation-delay: 0.18s; }
+.hero2__copy > :nth-child(3) { animation-delay: 0.3s; }
+.hero2__copy > :nth-child(4) { animation-delay: 0.4s; }
+.hero2__copy > :nth-child(5) { animation-delay: 0.48s; }
+.hero2__copy > :nth-child(6) { animation-delay: 0.56s; }
+
+.hero2__chip {
+  animation: motion-pop 0.5s cubic-bezier(0.22, 0.8, 0.24, 1) backwards;
+}
+
+.hero2__chip:nth-child(1) { animation-delay: 0.5s; }
+.hero2__chip:nth-child(2) { animation-delay: 0.56s; }
+.hero2__chip:nth-child(3) { animation-delay: 0.62s; }
+.hero2__chip:nth-child(4) { animation-delay: 0.68s; }
+
+.hero2__benefits {
+  animation: motion-rise 0.9s cubic-bezier(0.22, 0.8, 0.24, 1) 0.7s backwards;
+}
+
+.hero2__badge {
+  animation: motion-pop 0.7s cubic-bezier(0.34, 1.56, 0.64, 1) 0.9s backwards;
+}
+
+@keyframes motion-rise {
+  from {
+    opacity: 0;
+    translate: 0 22px;
+  }
+}
+
+@keyframes motion-pop {
+  from {
+    opacity: 0;
+    scale: 0.85;
+  }
+}
+
+/* Hover and press */
+.hero2__chip,
+.hero2__proof,
+.line-card,
+.shop-card,
+.collection-card,
+.track-band__form button,
+.row-head__arrows button,
+.store-header .store-cart-btn,
+.store-header .store-nav__link--design {
+  transition:
+    translate 0.35s cubic-bezier(0.22, 0.8, 0.24, 1),
+    box-shadow 0.35s ease,
+    background-color 0.2s ease,
+    border-color 0.2s ease,
+    color 0.2s ease,
+    scale 0.15s ease;
+}
+
+.hero2__chip:hover,
+.hero2__proof:hover {
+  translate: 0 -2px;
+}
+
+.line-card:hover,
+.shop-card:hover,
+.card-row--prints .collection-card:hover {
+  translate: 0 -6px;
+  box-shadow: 0 22px 44px rgba(20, 35, 28, 0.12);
+}
+
+.line-card:hover .line-card__icon {
+  rotate: -8deg;
+  scale: 1.08;
+}
+
+.line-card__icon {
+  transition: rotate 0.4s cubic-bezier(0.34, 1.56, 0.64, 1), scale 0.4s cubic-bezier(0.34, 1.56, 0.64, 1);
+}
+
+.line-card__link {
+  background: linear-gradient(currentColor, currentColor) 0 100% / 0 1px no-repeat;
+  text-decoration: none !important;
+  transition: background-size 0.35s ease;
+}
+
+.line-card:hover .line-card__link {
+  background-size: 100% 1px;
+}
+
+:is(.store-btn, .hero2__search-go, .track-band__form button, .studio-buy__cta, .studio-buy-bar__cta, .startup-modal__start, .row-head__arrows button, .kind-tile, .sport-import__cta):active {
+  scale: 0.97;
+}
+
+.store-btn svg:last-child,
+.hero2__search-go svg,
+.hero2__proof-text svg,
+.row-more svg {
+  transition: translate 0.25s ease;
+}
+
+:is(.store-btn, .hero2__search-go, .hero2__proof, .row-more):hover svg:last-child {
+  translate: 3px 0;
+}
+
+/* Header: the "Design poster" pill breathes once on load. */
+.store-page--home .store-header .store-nav__link--design {
+  animation: motion-pop 0.6s cubic-bezier(0.34, 1.56, 0.64, 1) 0.3s backwards;
+}
+
+/* The cart count bumps when it changes (React re-mounts it with a key). */
+.store-cart-btn__count {
+  display: inline-block;
+  animation: motion-bump 0.45s cubic-bezier(0.34, 1.56, 0.64, 1);
+}
+
+@keyframes motion-bump {
+  40% {
+    scale: 1.35;
+  }
+}
+
+/* Page change: the new page fades up a touch. */
+.store-page > main,
+.store-page > .store-container {
+  animation: motion-page 0.5s ease-out;
+}
+
+@keyframes motion-page {
+  from {
+    opacity: 0;
+    translate: 0 8px;
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  :root [data-reveal] {
+    opacity: 1 !important;
+    translate: none !important;
+    transition: none !important;
+  }
+
+  .hero2__copy > *,
+  .hero2__chip,
+  .hero2__benefits,
+  .hero2__badge,
+  .store-cart-btn__count,
+  .store-page > main,
+  .store-page > .store-container,
+  .store-page--home .store-header .store-nav__link--design {
+    animation: none !important;
+  }
+
+  .line-card:hover,
+  .shop-card:hover,
+  .hero2__chip:hover,
+  .hero2__proof:hover {
+    translate: none;
+  }
+}

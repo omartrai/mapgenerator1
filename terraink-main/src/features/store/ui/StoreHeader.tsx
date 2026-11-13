@@ -71,7 +71,7 @@ export default function StoreHeader({ variant = "site" }: StoreHeaderProps) {
               <span className="store-cart-btn__label" aria-hidden="true">
                 {t("header.cartLabel")}
               </span>
-              <span className="store-cart-btn__count">{cartCount}</span>
+              <span key={cartCount} className="store-cart-btn__count">{cartCount}</span>
             </Link>
           ) : null}
         </div>
