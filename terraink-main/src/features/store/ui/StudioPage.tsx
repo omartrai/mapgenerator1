@@ -203,7 +203,7 @@ export default function StudioPage() {
         </>
       }
       showStartupModal={showStartup}
-      initialTab={showStartup ? "theme" : "location"}
+      initialTab="location"
       locationAsTab
       dataAttributes={{
         "data-store-studio": "true",
