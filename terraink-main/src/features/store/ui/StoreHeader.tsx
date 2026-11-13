@@ -68,6 +68,9 @@ export default function StoreHeader({ variant = "site" }: StoreHeaderProps) {
               aria-label={t("header.cart", { count: cartCount })}
             >
               <LuShoppingCart aria-hidden="true" />
+              <span className="store-cart-btn__label" aria-hidden="true">
+                {t("header.cartLabel")}
+              </span>
               <span className="store-cart-btn__count">{cartCount}</span>
             </Link>
           ) : null}
