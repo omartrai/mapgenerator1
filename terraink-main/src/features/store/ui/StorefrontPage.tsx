@@ -18,6 +18,9 @@ import BrandMark from "@/shared/ui/BrandMark";
 import { FREE_SHIPPING_THRESHOLD, PRINT_SIZES, resolveDimensions, unitPrice } from "../domain/catalog";
 import { DESIGN_PRESETS, MOROCCAN_PRESET_IDS } from "../domain/presets";
 import { useCollection } from "../application/useCollection";
+import { useLocationAutocomplete } from "@/features/location/application/useLocationAutocomplete";
+import { useRecentLocations } from "@/features/location/application/useRecentLocations";
+import LocationSuggestionsDropdown from "@/features/location/ui/LocationSuggestionsDropdown";
 import CollectionCard from "./CollectionCard";
 import FramedPoster from "./FramedPoster";
 import ReviewsSection from "./ReviewsSection";
@@ -117,6 +120,18 @@ function Hero() {
         images: DESIGN_PRESETS.slice(0, 5).map((design) => design.image),
       };
 
+  // Live place suggestions and recent places, as in the editor's search.
+  const [focused, setFocused] = useState(false);
+  const { locationSuggestions, isLocationSearching, clearLocationSuggestions } = useLocationAutocomplete(
+    place,
+    focused,
+  );
+  const { recent, removeRecent, clearRecent } = useRecentLocations();
+  const openPlace = (found: { label: string }) => {
+    clearLocationSuggestions();
+    navigateTo(`/create?place=${encodeURIComponent(found.label)}`);
+  };
+
   const submit = (event: FormEvent) => {
     event.preventDefault();
     const query = place.trim();
@@ -164,21 +179,42 @@ function Hero() {
         </h1>
         <p className="hero2__lede">{t("home2.lede")}</p>
 
-        <form className="hero2__search" role="search" onSubmit={submit}>
+        <form className="hero2__search-wrap" role="search" onSubmit={submit}>
           <label className="visually-hidden" htmlFor="hero2-place">
             {t("home2.searchLabel")}
           </label>
-          <input
-            id="hero2-place"
-            type="search"
-            value={place}
-            placeholder={t("home2.search")}
-            autoComplete="off"
-            onChange={(event) => setPlace(event.target.value)}
+          <div className="hero2__search">
+            <LuSearch className="hero2__search-icon" aria-hidden="true" />
+            <input
+              id="hero2-place"
+              type="text"
+              value={place}
+              placeholder={t("home2.search")}
+              autoComplete="off"
+              onChange={(event) => {
+                setPlace(event.target.value);
+                if (!focused) setFocused(true);
+              }}
+              onFocus={() => setFocused(true)}
+              onBlur={() => window.setTimeout(() => setFocused(false), 120)}
+            />
+            <button type="submit" className="hero2__search-go">
+              {t("home2.searchCta")}
+              <LuArrowRight className="rtl-flip" aria-hidden="true" />
+            </button>
+          </div>
+          <LocationSuggestionsDropdown
+            query={place}
+            isFocused={focused}
+            suggestions={locationSuggestions}
+            isSearching={isLocationSearching}
+            onSelect={openPlace}
+            recent={recent}
+            onRecentSelect={openPlace}
+            onRecentRemove={removeRecent}
+            onClearRecent={clearRecent}
+            variant="startup"
           />
-          <button type="submit" aria-label={t("home2.searchCta")}>
-            <LuSearch aria-hidden="true" />
-          </button>
         </form>
 
         <p className="hero2__label">{t("home2.popular")}</p>

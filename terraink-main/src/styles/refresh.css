@@ -306,56 +306,170 @@ body:has(.store-page) {
   line-height: 1.55;
 }
 
+/* Place search: the same field and suggestion list as the editor's
+   start screen, with a "Design this place" button. */
+.hero2__search-wrap {
+  position: relative;
+  z-index: 5;
+  width: min(100%, 500px);
+}
+
 .hero2__search {
   display: flex;
   align-items: center;
-  width: min(100%, 460px);
+  gap: 12px;
+  height: 60px;
   padding: 6px;
-  padding-inline-start: 20px;
+  padding-inline-start: 18px;
+  border: 1px solid #e3e2dc;
   border-radius: 999px;
   background: #fff;
   box-shadow: 0 8px 24px rgba(31, 59, 51, 0.08);
+  transition: box-shadow 0.2s ease, border-color 0.2s ease;
+}
+
+.hero2__search:focus-within {
+  outline: none;
+  border-color: var(--s-green);
+  box-shadow: 0 0 0 3px rgba(31, 59, 51, 0.16), 0 8px 24px rgba(31, 59, 51, 0.08);
+}
+
+.hero2__search-icon {
+  flex: none;
+  width: 21px;
+  height: 21px;
+  color: var(--s-green);
 }
 
 .store-page .hero2__search input {
   flex: 1;
   min-width: 0;
-  height: 42px;
+  height: 100%;
+  margin: 0;
   padding: 0;
   border: 0 !important;
   border-radius: 0;
-  background: none !important;
+  outline: 0 !important;
+  background: transparent !important;
   box-shadow: none !important;
   color: var(--s-ink);
   font: inherit;
-  font-size: 0.95rem;
-  outline: none;
+  font-size: 1rem;
 }
 
 .hero2__search input::placeholder {
+  color: #8a8f8b;
+  opacity: 1;
+}
+
+.hero2__search-go {
+  display: inline-flex;
+  flex: none;
+  align-items: center;
+  gap: 8px;
+  height: 100%;
+  padding: 0 20px;
+  border: 0;
+  border-radius: 999px;
+  background: var(--s-green) !important;
+  color: #fff !important;
+  font: inherit;
+  font-size: 0.88rem;
+  font-weight: 700;
+  white-space: nowrap;
+  cursor: pointer;
+  box-shadow: none !important;
+  transition: background-color 0.2s;
+}
+
+.hero2__search-go:hover {
+  background: var(--s-accent-hover) !important;
+}
+
+.hero2__search-go svg {
+  width: 16px;
+  height: 16px;
+}
+
+.hero2__search-wrap .startup-location-suggestions {
+  position: absolute;
+  top: calc(100% + 8px);
+  inset-inline: 0;
+  z-index: 10;
+  max-height: 280px;
+  margin: 0;
+  padding: 6px;
+  overflow-y: auto;
+  border: 1px solid #ecebe6 !important;
+  border-radius: 18px !important;
+  background: #fff !important;
+  list-style: none;
+  box-shadow: 0 18px 40px rgba(20, 35, 28, 0.16);
+}
+
+.hero2__search-wrap :is(.startup-location-suggestion, .startup-location-suggestion-status) {
+  width: 100%;
+  padding: 11px 14px;
+  border: 0;
+  border-radius: 12px;
+  background: transparent;
+  color: var(--s-ink) !important;
+  font-family: var(--s-sans);
+  font-size: 0.9rem;
+  letter-spacing: 0;
+  text-align: start;
+  text-transform: none;
+}
+
+.hero2__search-wrap .startup-location-suggestion:hover,
+.hero2__search-wrap .startup-location-suggestion:focus-visible {
+  background: var(--s-hero-card);
+}
+
+.hero2__search-wrap .location-recent-row {
+  display: flex;
+  align-items: center;
+  gap: 4px;
+}
+
+.hero2__search-wrap .location-recent-select {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+}
+
+.hero2__search-wrap .location-recent-icon {
+  width: 16px;
+  height: 16px;
   color: var(--s-muted);
 }
 
-.hero2__search:focus-within {
-  box-shadow: 0 0 0 3px rgba(31, 59, 51, 0.25), 0 8px 24px rgba(31, 59, 51, 0.08);
-}
-
-.hero2__search button {
-  display: grid;
-  flex: none;
-  place-items: center;
-  width: 44px;
-  height: 44px;
+.hero2__search-wrap .location-suggestions-action {
+  padding: 8px 14px;
   border: 0;
-  border-radius: 50%;
-  background: var(--s-ink);
-  color: #fff;
+  background: none;
+  color: var(--s-green);
+  font: inherit;
+  font-size: 0.8rem;
+  font-weight: 600;
   cursor: pointer;
 }
 
-.hero2__search button svg {
-  width: 18px;
-  height: 18px;
+@media (max-width: 760px) {
+  .hero2__search {
+    height: 56px;
+    padding-inline-start: 16px;
+  }
+
+  .hero2__search-go {
+    padding: 0 14px;
+    font-size: 0;
+  }
+
+  .hero2__search-go svg {
+    width: 18px;
+    height: 18px;
+  }
 }
 
 .hero2__label {
