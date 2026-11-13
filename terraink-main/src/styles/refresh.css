@@ -1113,3 +1113,310 @@ body:has(.store-page) {
 .store-page--home .home-rule {
   display: none;
 }
+
+/* ══ Editor (create poster) in the refreshed look ══
+   White page, light tool rail with a sage pill on the current tool, the
+   poster on a rounded sage stage like the home hero card, white cards. */
+
+.app-shell[data-store-studio] {
+  --s-rail: #ffffff;
+  background: #fff !important;
+}
+
+.app-shell[data-store-studio] .desktop-left-panel,
+.app-shell[data-store-studio] .desktop-settings-slide,
+.app-shell[data-store-studio] .settings-panel,
+.studio-buy,
+.app-shell[data-store-studio] > .studio-buy {
+  background: #fff !important;
+}
+
+/* Step heading */
+.app-shell[data-store-studio] .studio-step__eyebrow,
+.studio-buy .store-eyebrow {
+  color: var(--s-green) !important;
+  font-size: 0.68rem !important;
+  font-weight: 700 !important;
+  letter-spacing: 0.12em !important;
+}
+
+.app-shell[data-store-studio] .studio-step__title {
+  text-transform: uppercase;
+}
+
+:root[lang="ar"] .app-shell[data-store-studio] .studio-step__title {
+  text-transform: none;
+}
+
+/* Cards and option boxes: white, hairline, round corners */
+.app-shell.app-shell[data-store-studio] :is(
+  .sf-list, .sf-frame-info, .theme-picker__current, .panel-group, .advanced-card, .advanced-link,
+  .marker-picker__uploaded-section, .buy-summary, .gpx-drop
+) {
+  border: 1px solid #ecebe6 !important;
+  border-radius: 18px !important;
+  background: #fff !important;
+}
+
+.app-shell.app-shell[data-store-studio] :is(.theme-card, .sf-swatch, .marker-picker__option, .layout-card) {
+  border-color: #ecebe6 !important;
+  border-radius: 14px !important;
+}
+
+.app-shell.app-shell[data-store-studio] :is(.theme-card, .sf-swatch, .marker-picker__option).is-selected {
+  border-color: var(--s-green) !important;
+  box-shadow: 0 0 0 1px var(--s-green) !important;
+}
+
+.app-shell[data-store-studio] .marker-picker__intro {
+  border-radius: 14px !important;
+  background: var(--s-hero-card) !important;
+}
+
+/* Two- and three-way switches: sage track, white pill on the choice */
+.app-shell.app-shell[data-store-studio] :is(.sf-orientation, .poster-kind, .theme-picker__filters),
+.app-shell.app-shell[data-store-studio] .studio-view-toggle {
+  padding: 4px !important;
+  border: 0 !important;
+  border-radius: 999px !important;
+  background: var(--s-hero-card) !important;
+  box-shadow: none !important;
+}
+
+.app-shell.app-shell[data-store-studio] :is(.sf-orientation__opt, .poster-kind__opt, .theme-picker__filter),
+.app-shell.app-shell[data-store-studio] .studio-view-toggle .segmented__option {
+  border-radius: 999px !important;
+  color: #4f5a53 !important;
+}
+
+.app-shell.app-shell[data-store-studio] :is(.sf-orientation__opt.is-selected, .poster-kind__opt.is-active, .theme-picker__filter.is-active),
+.app-shell.app-shell[data-store-studio] .studio-view-toggle .segmented__option.is-selected {
+  background: #fff !important;
+  color: var(--s-ink) !important;
+  box-shadow: 0 2px 8px rgba(20, 35, 28, 0.1) !important;
+}
+
+.app-shell.app-shell[data-store-studio] :is(.sf-orientation__opt.is-selected, .poster-kind__opt.is-active) svg {
+  color: var(--s-green) !important;
+}
+
+/* Small actions and inputs: pills */
+.app-shell.app-shell.app-shell[data-store-studio] :is(
+  .theme-picker__edit, .theme-picker__more, .theme-customize-btn, .location-current-btn,
+  .location-row-icon-btn, .message-suggestion, .advanced-rotate__reset, .advanced-rotate__step,
+  .advanced-card__value, .sf-row__badge
+) {
+  border-radius: 999px !important;
+}
+
+.app-shell.app-shell.app-shell[data-store-studio] :is(.form-control-tall, .location-input-wrap input, .marker-picker__search-field, input[type="text"], input[type="search"], input[type="number"], input[type="date"], input[type="time"], select, textarea) {
+  border-color: #e3e2dc !important;
+  border-radius: 12px !important;
+  background: #fff !important;
+}
+
+/* The step buttons' sticky strip sits on white, like the panel. */
+.app-shell[data-store-studio] .studio-steps-nav {
+  background: #fff !important;
+  box-shadow: none !important;
+}
+
+/* Back button: round, outlined */
+.app-shell.app-shell.app-shell[data-store-studio] .studio-steps-nav__back {
+  border: 1px solid var(--s-ink) !important;
+}
+
+/* Map controls under the poster: white pills, the active one dark */
+.app-shell.app-shell[data-store-studio] :is(.map-control-group, .map-control-btn) {
+  border-radius: 999px !important;
+}
+
+.app-shell[data-store-studio] .map-control-group {
+  border: 0 !important;
+  box-shadow: 0 8px 22px rgba(20, 35, 28, 0.1) !important;
+}
+
+.app-shell[data-store-studio] .map-control-btn--primary {
+  border-color: var(--s-ink) !important;
+  background: var(--s-ink) !important;
+}
+
+.app-shell[data-store-studio] .room-decor__scale,
+.app-shell[data-store-studio] .desktop-layout-label {
+  border-radius: 999px !important;
+}
+
+/* Buy box */
+.studio-buy .studio-buy__title {
+  text-transform: uppercase;
+}
+
+:root[lang="ar"] .studio-buy .studio-buy__title {
+  text-transform: none;
+}
+
+.studio-buy__checkout {
+  background: #fff !important;
+}
+
+.studio-buy__trust svg {
+  color: var(--s-green);
+}
+
+.studio-buy__cta,
+.studio-buy-bar__cta {
+  background: var(--s-green) !important;
+}
+
+@media (min-width: 769px) and (hover: hover) and (pointer: fine) {
+  /* Light tool rail */
+  .app-shell[data-store-studio] .desktop-nav-bar {
+    border-inline-end: 1px solid #ecebe6;
+    background: #fff !important;
+  }
+
+  .app-shell[data-store-studio] .desktop-nav-tab {
+    border-radius: 16px !important;
+    color: #4f5a53 !important;
+    box-shadow: none !important;
+  }
+
+  .app-shell[data-store-studio] .desktop-nav-tab:hover {
+    background: #f3f5f2 !important;
+    color: var(--s-ink) !important;
+  }
+
+  .app-shell[data-store-studio] .desktop-nav-tab.is-active,
+  [dir="rtl"] .app-shell[data-store-studio] .desktop-nav-tab.is-active {
+    background: var(--s-hero-card) !important;
+    color: var(--s-green) !important;
+    box-shadow: none !important;
+  }
+
+  .app-shell[data-store-studio] .desktop-nav-tab.is-active .desktop-nav-icon {
+    color: var(--s-green) !important;
+  }
+
+  .app-shell[data-store-studio] .desktop-nav-tab.is-active .desktop-nav-label {
+    font-weight: 700 !important;
+  }
+
+  /* The poster sits on a rounded sage stage, like the home hero card;
+     the wall photo gets the same rounded frame. */
+  .app-shell[data-store-studio] .room-decor {
+    inset: 12px 4px 12px 12px !important;
+    overflow: hidden;
+    border-radius: 28px;
+  }
+
+  /* The blurred copy of the map behind the poster would spill past the
+     rounded stage; the sage card replaces it. */
+  .app-shell[data-store-studio] > .preview-panel .poster-ghost-layer {
+    display: none !important;
+  }
+
+  .app-shell[data-store-studio] > .studio-buy {
+    border-inline-start: 0 !important;
+  }
+}
+
+/* The studio scene's backdrop is the sage of the home hero card. */
+.app-shell[data-store-studio] .room-decor:not(.room-decor--wall) {
+  background: var(--s-hero-card) !important;
+}
+
+@media (max-width: 768px), (hover: none) and (pointer: coarse) {
+  /* Phones: sage stage, light bottom bar with a sage pill on the current tab */
+  .app-shell.app-shell[data-store-studio] > .preview-panel,
+  .app-shell.app-shell[data-store-studio] > .preview-panel .poster-viewport {
+    background: var(--s-hero-card) !important;
+  }
+
+  .app-shell[data-store-studio] .mobile-nav {
+    border-top: 1px solid #ecebe6;
+    background: #fff !important;
+  }
+
+  .app-shell[data-store-studio] .mobile-nav-tab {
+    border-radius: 14px !important;
+    color: #4f5a53 !important;
+  }
+
+  .app-shell[data-store-studio] .mobile-nav-tab.is-active {
+    background: var(--s-hero-card) !important;
+    color: var(--s-green) !important;
+  }
+
+  .app-shell[data-store-studio] .mobile-nav-tab.is-active::before {
+    display: none !important;
+  }
+
+  .app-shell[data-store-studio] .mobile-nav-fade {
+    background: linear-gradient(to right, rgba(255, 255, 255, 0), #fff 82%) !important;
+  }
+
+  .app-shell[data-store-studio] .studio-buy-bar {
+    border: 0 !important;
+    border-radius: 20px !important;
+    box-shadow: 0 10px 28px rgba(20, 35, 28, 0.14) !important;
+  }
+}
+
+/* ── Start screen ("Create your map") ── */
+
+.startup-modal__card {
+  border: 0;
+  background: #fff;
+  box-shadow: 0 30px 70px rgba(20, 35, 28, 0.16);
+}
+
+.startup-modal__title {
+  color: var(--s-green) !important;
+  text-transform: uppercase;
+}
+
+:root[lang="ar"] .startup-modal__title {
+  text-transform: none;
+}
+
+.startup-modal__kind {
+  border-color: #ecebe6;
+  border-radius: 16px;
+}
+
+.startup-modal__kind.is-selected {
+  border-color: var(--s-green);
+  background: var(--s-hero-card);
+  box-shadow: 0 0 0 1px var(--s-green);
+}
+
+.startup-modal__field {
+  border: 1px solid #e3e2dc;
+  border-radius: 999px;
+  background: #fff;
+}
+
+.startup-modal__field input {
+  border: 0 !important;
+  background: transparent !important;
+  box-shadow: none !important;
+}
+
+.startup-modal__field:focus-within {
+  box-shadow: 0 0 0 2px var(--s-green);
+}
+
+.startup-modal__city {
+  border: 0;
+  border-radius: 999px;
+  background: var(--s-hero-card);
+  font-weight: 600;
+}
+
+.startup-modal__city:hover {
+  background: #cfd9d1;
+}
+
+.startup-modal__start {
+  background: var(--s-green) !important;
+}
