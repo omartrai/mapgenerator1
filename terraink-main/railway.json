@@ -6,7 +6,7 @@
   },
   "deploy": {
     "startCommand": "bun run start",
-    "healthcheckPath": "/robots.txt",
+    "healthcheckPath": "/",
     "restartPolicyType": "ON_FAILURE"
   }
 }
