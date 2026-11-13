@@ -19,6 +19,7 @@ import ColorPicker from "@/features/theme/ui/ColorPicker";
 import ThemeColorEditor from "@/features/theme/ui/ThemeColorEditor";
 import ThemeSummarySection from "@/features/theme/ui/ThemeSummarySection";
 import SkyShapePicker from "@/features/sky/ui/SkyShapePicker";
+import PosterStylePicker from "@/features/poster/ui/PosterStylePicker";
 import { CheckIcon, EditIcon } from "@/shared/ui/Icons";
 import type { ResolvedTheme } from "@/features/theme/domain/types";
 import type { LayoutGroup } from "@/features/layout/domain/types";
@@ -27,6 +28,7 @@ import { useLanguage, type TranslationKey } from "@/shared/i18n/LanguageContext"
 const FALLBACK_COLOR = "#000000";
 
 interface MapSettingsForm {
+  posterKind?: string;
   theme: string;
   layout: string;
   width: string;
@@ -425,6 +427,7 @@ export default function MapSettingsSection({
         ) : (
           <>
           <SkyShapePicker />
+          {form.posterKind !== "sky" ? <PosterStylePicker /> : null}
           <ThemeSummarySection
             listRef={themeListRef}
             themeOptions={themeOptions}

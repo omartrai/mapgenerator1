@@ -26,6 +26,32 @@
         }
       }
     },
+    "navy_ink": {
+      "name": "Navy Ink",
+      "description": "Ice-grey city blocks, white streets and deep navy water — a romantic, editorial look",
+      "ui": {
+        "bg": "#FFFFFF",
+        "text": "#2E3A59"
+      },
+      "map": {
+        "land": "#EEF0F4",
+        "landcover": "#E6E9EF",
+        "water": "#2E3A59",
+        "waterway": "#2E3A59",
+        "parks": "#E2E6EC",
+        "buildings": "#C9CFDA",
+        "aeroway": "#DDE1E8",
+        "rail": "#8A93A8",
+        "roads": {
+          "major": "#FFFFFF",
+          "minor_high": "#FFFFFF",
+          "minor_mid": "#FFFFFF",
+          "minor_low": "#FFFFFF",
+          "path": "#C4CAD5",
+          "outline": "#9AA3B5"
+        }
+      }
+    },
     "blush": {
       "name": "Blush",
       "description": "Dusty rose on warm white",

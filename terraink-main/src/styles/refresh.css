@@ -2131,3 +2131,175 @@ body:has(.store-page) {
     translate: none;
   }
 }
+
+/* ── Ready-made styles (Theme step) ── */
+
+.style-presets {
+  margin-bottom: 20px;
+}
+
+.style-presets__title {
+  margin: 0 0 4px !important;
+  color: var(--s-ink);
+  font-size: 0.86rem !important;
+  font-weight: 700 !important;
+}
+
+.style-presets__hint {
+  margin: 0 0 12px !important;
+  color: var(--s-muted);
+  font-size: 0.78rem;
+  line-height: 1.4;
+}
+
+.style-presets__grid {
+  display: grid;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  gap: 10px;
+}
+
+.style-preset {
+  display: flex;
+  flex-direction: column;
+  align-items: flex-start;
+  gap: 2px;
+  padding: 8px 8px 10px;
+  border: 1px solid #e3e2dc;
+  border-radius: 16px;
+  background: #fff;
+  color: var(--s-ink);
+  font: inherit;
+  text-align: start;
+  cursor: pointer;
+  transition: border-color 0.15s, box-shadow 0.15s, translate 0.2s;
+}
+
+.style-preset:hover {
+  border-color: var(--s-green);
+  translate: 0 -2px;
+}
+
+.style-preset.is-active {
+  border-color: var(--s-green);
+  box-shadow: 0 0 0 1px var(--s-green);
+}
+
+.style-preset__name {
+  margin-top: 6px;
+  font-size: 0.84rem;
+  font-weight: 700;
+}
+
+.style-preset__note {
+  color: var(--s-muted);
+  font-size: 0.72rem;
+  line-height: 1.3;
+}
+
+/* Sketch: a mini poster drawn with CSS. */
+.style-preset__sketch {
+  position: relative;
+  display: block;
+  width: 100%;
+  aspect-ratio: 4 / 3.4;
+  overflow: hidden;
+  border-radius: 10px;
+  background: #f4f3ef;
+}
+
+.style-preset__sketch i {
+  position: absolute;
+  display: block;
+}
+
+.style-preset__map {
+  inset: 10% 26% 30%;
+  background:
+    repeating-linear-gradient(28deg, transparent 0 7px, rgba(30, 30, 30, 0.45) 7px 8px),
+    repeating-linear-gradient(-62deg, transparent 0 9px, rgba(30, 30, 30, 0.3) 9px 10px),
+    #fff;
+  box-shadow: 0 1px 3px rgba(0, 0, 0, 0.12);
+}
+
+.style-preset__text {
+  bottom: 12%;
+  left: 36%;
+  right: 36%;
+  height: 4px;
+  border-radius: 2px;
+  background: #2b2b2b;
+}
+
+.style-preset__pin {
+  display: none !important;
+}
+
+/* You & me: navy water, white band with left-aligned text, heart */
+.style-preset__sketch--love .style-preset__map {
+  inset: 10% 26% 26%;
+  background:
+    linear-gradient(115deg, transparent 38%, #2e3a59 38% 48%, transparent 48%),
+    repeating-linear-gradient(28deg, transparent 0 6px, #c9cfda 6px 9px),
+    #eef0f4;
+}
+
+.style-preset__sketch--love .style-preset__text {
+  left: 28%;
+  right: 50%;
+  bottom: 13%;
+  background: #2e3a59;
+}
+
+.style-preset__sketch--love .style-preset__pin,
+.style-preset__sketch--heart .style-preset__pin {
+  display: block !important;
+  top: 34%;
+  left: calc(50% - 5px);
+  width: 10px;
+  height: 10px;
+  background: #c8352b;
+  clip-path: path("M5 9.5 0.8 5.3A2.6 2.6 0 0 1 5 1.9 2.6 2.6 0 0 1 9.2 5.3Z");
+}
+
+/* Heart: map cut into a heart, script line */
+.style-preset__sketch--heart .style-preset__map {
+  inset: 8% 28% 30%;
+  clip-path: path("M50% 95% 6% 50% A 22% 24% 0 0 1 50% 18% A 22% 24% 0 0 1 94% 50% Z");
+  -webkit-mask: radial-gradient(circle at 30% 32%, #000 30%, transparent 31%) 0 0 / 100% 100%,
+    radial-gradient(circle at 70% 32%, #000 30%, transparent 31%) 0 0 / 100% 100%,
+    linear-gradient(#000, #000) 0 0 / 100% 100%;
+  mask: none;
+  clip-path: polygon(50% 100%, 2% 42%, 8% 14%, 28% 4%, 50% 18%, 72% 4%, 92% 14%, 98% 42%);
+  box-shadow: none;
+}
+
+.style-preset__sketch--heart .style-preset__pin {
+  top: 30%;
+}
+
+.style-preset__sketch--heart .style-preset__text {
+  height: 3px;
+  left: 32%;
+  right: 32%;
+  background: #444;
+  border-radius: 3px 8px;
+  transform: skewX(-20deg);
+}
+
+/* Trail: a single route line on plain paper */
+.style-preset__sketch--trail .style-preset__map {
+  inset: 10% 30% 30%;
+  background: #fff;
+  -webkit-mask: none;
+}
+
+.style-preset__sketch--trail .style-preset__map::after {
+  content: "";
+  position: absolute;
+  inset: 14% 18%;
+  border: 2px solid #1a1a1a;
+  border-radius: 46% 54% 38% 62% / 55% 40% 60% 45%;
+  rotate: -14deg;
+}
+
+/* Classic: map with a fade and a centred title (the base sketch). */

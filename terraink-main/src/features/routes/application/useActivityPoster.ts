@@ -72,10 +72,57 @@ export function useActivityPoster() {
     [dispatch, fillFromRoute, state.form.customMessage, state.form.width, state.form.height, t],
   );
 
-  return { fillFromRoute, makeSportPoster };
+  /**
+   * Trail poster: only the route on plain paper (no streets, water or
+   * buildings), fitted above the title, with the distance and time under it.
+   */
+  const makeTrailPoster = useCallback(
+    (route: Route) => {
+      const comma = language !== "en";
+      const subtitle = route.stats ? activitySubtitle(route.stats, comma) : "";
+      dispatch({
+        type: "SET_FORM_FIELDS",
+        fields: {
+          posterLayout: "classic",
+          mapShape: "none",
+          showPosterText: true,
+          includeLandcover: false,
+          includeBuildings: false,
+          includeWater: false,
+          includeParks: false,
+          includeAeroway: false,
+          includeRail: false,
+          includeRoads: false,
+          includeRoadPath: false,
+          includeRoadMinorLow: false,
+          includeRoadOutline: false,
+          showRoutes: true,
+          ...(subtitle ? { displayCountry: subtitle } : {}),
+          ...fitRouteToWindow(route, Number(state.form.width) || 30, Number(state.form.height) || 40, TRAIL_WINDOW),
+        },
+      });
+      dispatch({ type: "SET_FIELD", name: "displayCity", value: route.label });
+      dispatch({
+        type: "UPDATE_ROUTE",
+        routeId: route.id,
+        changes: {
+          color: TRAIL_COLOR,
+          strokeWidth: 3,
+          startMarker: { ...route.startMarker, color: TRAIL_COLOR },
+          finishMarker: { ...route.finishMarker, color: TRAIL_COLOR },
+        },
+      });
+    },
+    [dispatch, language, state.form.width, state.form.height],
+  );
+
+  return { fillFromRoute, makeSportPoster, makeTrailPoster };
 }
 
 const METERS_PER_DEGREE = 111_320;
+/** Where the route sits on a trail poster: above the title block. */
+const TRAIL_WINDOW = { x: 0.1, y: 0.07, w: 0.8, h: 0.66 };
+const TRAIL_COLOR = "#1A1A1A";
 /** Room around the route inside the map window. */
 const FIT_PADDING = 1.15;
 
@@ -83,9 +130,13 @@ const FIT_PADDING = 1.15;
  * Map centre and distance (half the poster width, in metres) that show the
  * whole route centred in the sport layout's map window.
  */
-function fitRouteToWindow(route: Route, widthCm: number, heightCm: number): Record<string, string> {
+function fitRouteToWindow(
+  route: Route,
+  widthCm: number,
+  heightCm: number,
+  window: { x: number; y: number; w: number; h: number } | null = getPosterLayout("activity").mapWindow,
+): Record<string, string> {
   const bounds = routeBounds(route);
-  const window = getPosterLayout("activity").mapWindow;
   if (!bounds || !window) return {};
   const center = boundsCenter(bounds);
   const spanX =
