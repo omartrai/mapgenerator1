@@ -33,7 +33,7 @@ type Icon = ComponentType<{ "aria-hidden"?: boolean }>;
 /** The four things the shop sells. */
 type LineId = "maps" | "sky" | "sport" | "prints";
 const LINES: { id: LineId; image: string; to: string; Icon: Icon; focus: string }[] = [
-  { id: "maps", image: "/assets/hero/marrakech.webp", to: "/create", Icon: LuMap, focus: "84% 50%" },
+  { id: "maps", image: "/assets/hero/city-maps.webp", to: "/create", Icon: LuMap, focus: "50% 24%" },
   { id: "sky", image: "/assets/hero/night-sky.webp", to: "/create?type=sky", Icon: LuSparkles, focus: "50% 30%" },
   { id: "sport", image: "/assets/hero/sport.webp", to: "/create?type=sport", Icon: LuRoute, focus: "50% 36%" },
   { id: "prints", image: "/assets/hero/collection.webp", to: "/collection", Icon: LuFrame, focus: "62% 30%" },
