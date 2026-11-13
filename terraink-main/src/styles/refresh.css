@@ -5,7 +5,7 @@
 :root {
   --s-radius: 16px;
   --s-radius-sm: 10px;
-  --s-display: "Plus Jakarta Sans", "Cairo", system-ui, -apple-system, "Segoe UI", sans-serif;
+  --s-display: "Fraunces", "Cairo", Georgia, "Times New Roman", serif;
   --s-hero-card: #dfe6df;
   --s-card: #ffffff;
   --s-tile: #f1f0ec;
@@ -37,8 +37,8 @@ body:has(.store-page) {
 .studio-buy__amount,
 .studio-buy-bar__price {
   font-family: var(--s-display) !important;
-  font-weight: 800 !important;
-  letter-spacing: -0.025em !important;
+  font-weight: 600 !important;
+  letter-spacing: -0.015em !important;
 }
 
 .studio-step__title {
@@ -49,7 +49,6 @@ body:has(.store-page) {
 .home-styles .home-heading {
   font-size: clamp(1.5rem, 2.4vw, 2rem) !important;
   line-height: 1.1 !important;
-  text-transform: uppercase;
 }
 
 :root[lang="ar"] .home-heading {
@@ -283,16 +282,15 @@ body:has(.store-page) {
   color: var(--s-green);
   font-family: var(--s-display);
   font-size: clamp(2.6rem, 5.6vw, 5rem);
-  font-weight: 800;
-  letter-spacing: -0.03em;
-  line-height: 1;
-  text-transform: uppercase;
+  font-weight: 600;
+  letter-spacing: -0.02em;
+  line-height: 1.02;
 }
 
 /* Accented capitals (É, À…) need room above them, or they touch the
    line before. */
 :root[lang="fr"] .store-page .hero2__title {
-  line-height: 1.2;
+  line-height: 1.08;
 }
 
 :root[lang="ar"] .store-page .hero2__title {
@@ -1237,7 +1235,6 @@ body:has(.store-page) {
 }
 
 .app-shell[data-store-studio] .studio-step__title {
-  text-transform: uppercase;
 }
 
 :root[lang="ar"] .app-shell[data-store-studio] .studio-step__title {
@@ -1344,7 +1341,6 @@ body:has(.store-page) {
 
 /* Buy box */
 .studio-buy .studio-buy__title {
-  text-transform: uppercase;
 }
 
 :root[lang="ar"] .studio-buy .studio-buy__title {
@@ -1468,7 +1464,6 @@ body:has(.store-page) {
 
 .startup-modal__title {
   color: var(--s-green) !important;
-  text-transform: uppercase;
 }
 
 :root[lang="ar"] .startup-modal__title {

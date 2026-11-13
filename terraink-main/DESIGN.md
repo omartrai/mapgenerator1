@@ -44,7 +44,7 @@ Noria is a working map-poster studio, not a generic landing page. The interface 
 - Tokens live in `src/styles/store.css` (`--s-*`); later layers override them: `premium.css`, then `refresh.css` (loaded last; the current look).
 - White page, light header with uppercase nav links, a dark "Cart (n)" pill and a green "Design poster" pill.
 - The home page opens with a rounded sage card (`--s-hero-card`) that holds the header and the hero: a heavy uppercase headline, a place search, category chips and three framed posters.
-- Headings use Plus Jakarta Sans 800, uppercase for home section titles (not in Arabic).
+- Headings, poster names and prices use Fraunces 600 (`--s-display`) in sentence case; body text and buttons stay in Plus Jakarta Sans.
 - Cards are white with a hairline and 16–20px corners; buttons and chips are pills in sentence case.
 - `--s-accent` is the brand green `#1f3b33` for actions and selection. No orange in the interface.
 - Only real numbers in the interface (catalogue counts, prices); never invented reviews or customer counts.
