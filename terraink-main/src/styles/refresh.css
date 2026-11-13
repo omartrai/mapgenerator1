@@ -444,24 +444,32 @@ body:has(.store-page) {
   min-height: 520px;
 }
 
-/* Each poster: dealt in on load, then floats; drifts towards the pointer
-   (--mx/--my, -1…1, set on the stage) by its depth, and fans out on hover.
-   Tilt uses rotate and movement translate so the two never fight. */
+/* One poster at a time stands in front; every few seconds the next one
+   slides forward and the others step back to the sides. Movement uses
+   translate/scale/rotate so the slot change, the pointer drift
+   (--mx/--my, -1…1, on the stage) and the float add up. */
 .hero2__poster {
-  --depth: 10;
-  --spread-x: 0px;
-  --spread-y: 0px;
-  --spread-r: 0deg;
+  --slot-x: 0%;
+  --slot-y: 0%;
+  --slot-s: 1;
+  --tilt: 0deg;
+  --depth: 16;
   position: absolute;
+  top: 4%;
+  left: 28%;
+  z-index: 1;
+  width: 44%;
   filter: drop-shadow(0 26px 40px rgba(20, 35, 28, 0.28));
   translate:
-    calc(var(--mx, 0) * var(--depth) * 1px + var(--spread-x))
-    calc(var(--my, 0) * var(--depth) * 1px + var(--spread-y));
-  rotate: calc(var(--tilt, 0deg) + var(--spread-r));
+    calc(var(--slot-x) + var(--mx, 0) * var(--depth) * 1px)
+    calc(var(--slot-y) + var(--my, 0) * var(--depth) * 1px);
+  scale: var(--slot-s);
+  rotate: var(--tilt);
   transition:
-    translate 0.7s cubic-bezier(0.22, 0.8, 0.24, 1),
-    rotate 0.7s cubic-bezier(0.22, 0.8, 0.24, 1),
-    filter 0.5s ease;
+    translate 1.1s cubic-bezier(0.65, 0, 0.25, 1),
+    scale 1.1s cubic-bezier(0.65, 0, 0.25, 1),
+    rotate 1.1s cubic-bezier(0.65, 0, 0.25, 1),
+    filter 0.6s ease;
   animation: hero2-deal 1s cubic-bezier(0.22, 0.8, 0.24, 1) backwards;
 }
 
@@ -469,64 +477,61 @@ body:has(.store-page) {
   box-shadow: none !important;
 }
 
-/* The gentle float lives on the inner figure so it adds to the above. */
 .hero2__poster .framed-poster {
   animation: hero2-float 7s ease-in-out infinite alternate;
 }
 
-.hero2__poster--sky {
-  --tilt: -6deg;
-  --depth: 8;
-  top: 6%;
-  left: 2%;
-  width: 34%;
-  animation-delay: 0.35s;
-}
-
-.hero2__poster--sky .framed-poster {
+.hero2__poster:nth-child(2) .framed-poster {
   animation-duration: 8s;
   animation-delay: -3s;
 }
 
-.hero2__poster--sport {
-  --tilt: 5deg;
-  --depth: 8;
-  top: 10%;
-  right: 4%;
-  width: 34%;
-  animation-delay: 0.5s;
-}
-
-.hero2__poster--sport .framed-poster {
+.hero2__poster:nth-child(3) .framed-poster {
   animation-duration: 9s;
   animation-delay: -6s;
 }
 
-.hero2__poster--map {
-  --depth: 16;
-  top: 4%;
-  left: 27%;
+.hero2__poster.is-front {
+  z-index: 3;
+}
+
+.hero2__poster.is-left {
+  --slot-x: -58%;
+  --slot-y: 8%;
+  --slot-s: 0.78;
+  --tilt: -6deg;
+  --depth: 8;
+  filter: drop-shadow(0 18px 30px rgba(20, 35, 28, 0.22)) brightness(0.96);
+}
+
+.hero2__poster.is-right {
+  --slot-x: 58%;
+  --slot-y: 10%;
+  --slot-s: 0.78;
+  --tilt: 5deg;
+  --depth: 8;
+  filter: drop-shadow(0 18px 30px rgba(20, 35, 28, 0.22)) brightness(0.96);
+}
+
+/* The poster leaving the front passes behind the one arriving. */
+.hero2__poster.is-left {
   z-index: 1;
-  width: 44%;
+}
+
+.hero2__poster.is-right {
+  z-index: 2;
+}
+
+.hero2__poster:nth-child(1) {
   animation-delay: 0.15s;
 }
 
-/* Hover: the back posters fan out, the front one lifts. */
-.hero2__stage:hover .hero2__poster--sky {
-  --spread-x: -22px;
-  --spread-y: 6px;
-  --spread-r: -3deg;
+.hero2__poster:nth-child(2) {
+  animation-delay: 0.35s;
 }
 
-.hero2__stage:hover .hero2__poster--sport {
-  --spread-x: 22px;
-  --spread-y: 6px;
-  --spread-r: 3deg;
-}
-
-.hero2__stage:hover .hero2__poster--map {
-  --spread-y: -10px;
-  filter: drop-shadow(0 36px 50px rgba(20, 35, 28, 0.32));
+.hero2__poster:nth-child(3) {
+  animation-delay: 0.5s;
 }
 
 @keyframes hero2-deal {
@@ -555,7 +560,6 @@ body:has(.store-page) {
   }
 
   .hero2__poster {
-    translate: none;
     transition: none;
   }
 }

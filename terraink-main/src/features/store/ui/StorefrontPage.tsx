@@ -1,4 +1,4 @@
-import { useRef, useState, type ComponentType, type FormEvent, type PointerEvent } from "react";
+import { useEffect, useRef, useState, type ComponentType, type FormEvent, type PointerEvent } from "react";
 import {
   LuArrowLeft,
   LuArrowRight,
@@ -90,6 +90,15 @@ export default function StorefrontPage() {
   );
 }
 
+/** Posters in the hero, in the order they come to the front. */
+const HERO_POSTERS = [
+  { id: "map", src: "/assets/hero-posters/map.webp", frame: "oak" },
+  { id: "sky", src: "/assets/hero-posters/sky.webp", frame: "white" },
+  { id: "sport", src: "/assets/hero-posters/sport.webp", frame: "black" },
+] as const;
+/** Slot of each poster relative to the one in front. */
+const SLOTS = ["front", "right", "left"] as const;
+
 function Hero() {
   const { t, lines: split, money } = useStoreText();
   const { lines, products } = useShopLines();
@@ -113,6 +122,15 @@ function Hero() {
     const query = place.trim();
     navigateTo(query ? `/create?place=${encodeURIComponent(query)}` : "/create");
   };
+
+  // One poster at a time comes to the front; the others wait behind it.
+  const [front, setFront] = useState(0);
+  const [paused, setPaused] = useState(false);
+  useEffect(() => {
+    if (paused || window.matchMedia("(prefers-reduced-motion: reduce)").matches) return undefined;
+    const timer = window.setTimeout(() => setFront((value) => (value + 1) % HERO_POSTERS.length), 3800);
+    return () => window.clearTimeout(timer);
+  }, [front, paused]);
 
   /** The posters drift a little towards the pointer (mouse only). */
   const tiltStage = (event: PointerEvent<HTMLDivElement>) => {
@@ -191,20 +209,21 @@ function Hero() {
         className="hero2__stage"
         aria-hidden="true"
         onPointerMove={tiltStage}
+        onPointerEnter={() => setPaused(true)}
         onPointerLeave={(event) => {
+          setPaused(false);
           event.currentTarget.style.setProperty("--mx", "0");
           event.currentTarget.style.setProperty("--my", "0");
         }}
       >
-        <div className="hero2__poster hero2__poster--sky">
-          <FramedPoster src="/assets/hero-posters/sky.webp" alt="" frameId="white" ratio={0.75} size="lg" loading="eager" />
-        </div>
-        <div className="hero2__poster hero2__poster--sport">
-          <FramedPoster src="/assets/hero-posters/sport.webp" alt="" frameId="black" ratio={0.75} size="lg" loading="eager" />
-        </div>
-        <div className="hero2__poster hero2__poster--map">
-          <FramedPoster src="/assets/hero-posters/map.webp" alt="" frameId="oak" ratio={0.75} size="lg" loading="eager" />
-        </div>
+        {HERO_POSTERS.map((poster, index) => {
+          const slot = SLOTS[(index - front + HERO_POSTERS.length) % HERO_POSTERS.length];
+          return (
+            <div key={poster.id} className={`hero2__poster is-${slot}`}>
+              <FramedPoster src={poster.src} alt="" frameId={poster.frame} ratio={0.75} size="lg" loading="eager" />
+            </div>
+          );
+        })}
 
         <span className="hero2__badge">
           <svg className="hero2__badge-ring" viewBox="0 0 120 120">
