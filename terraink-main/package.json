@@ -8,6 +8,7 @@
     "dev": "vite --host",
     "build": "vite build",
     "preview": "vite preview --host",
+    "start": "bun server/standalone.ts",
     "typecheck": "tsc --noEmit",
     "showcase:grid": "node scripts/combine-showcase-grid.mjs"
   },

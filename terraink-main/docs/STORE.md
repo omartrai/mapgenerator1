@@ -115,3 +115,19 @@ npm run dev
 `vite dev` serves the same `/api` routes. Without `BLOB_READ_WRITE_TOKEN`,
 orders are written to `./.data/` (git-ignored) and the admin password is
 `admin`.
+
+## Hosting on Railway (or any Node/Bun host)
+
+The site can run as one server instead of Vercel Functions:
+
+- `bun run build` builds the pages into `dist/`.
+- `bun run start` runs `server/standalone.ts`: it serves `dist/` and the order API under `/api`.
+- Orders and reviews are saved as files in `DATA_DIR`. Point it at a **persistent volume**
+  (on Railway: add a volume mounted at `/data` and set `DATA_DIR=/data`), or every redeploy
+  loses them.
+- `railway.json` holds the build and start commands. In the service settings, set the root
+  directory to `terraink-main`.
+- Set the same server variables as on Vercel (`ADMIN_PASSWORD`, `URBANART_API_KEY`,
+  `URBANART_MARGIN_PERCENT`, `WHATSAPP_*`, `ORDER_WEBHOOK_URL`). `BLOB_READ_WRITE_TOKEN` is
+  not needed: when it is set, it wins over `DATA_DIR`.
+- `VITE_*` variables are read at build time, so set them before deploying.

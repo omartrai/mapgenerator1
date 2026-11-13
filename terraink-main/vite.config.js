@@ -250,13 +250,16 @@ ${body}
 
 /**
  * Public address of the site, with no trailing slash. VITE_SITE_URL wins (set
- * it once a custom domain is attached); otherwise Vercel's production domain
- * is used. Empty for local builds.
+ * it once a custom domain is attached); otherwise the host's own domain
+ * (Vercel or Railway) is used. Empty for local builds.
  */
 function resolveSiteUrl(env) {
   const explicit = String(env.VITE_SITE_URL ?? "").trim();
-  const vercelHost = String(env.VERCEL_PROJECT_PRODUCTION_URL ?? "").trim();
-  const raw = explicit || (vercelHost ? `https://${vercelHost}` : "");
+  // Set by the host at build time: Vercel's production domain, or Railway's.
+  const hostDomain = String(
+    env.VERCEL_PROJECT_PRODUCTION_URL ?? env.RAILWAY_PUBLIC_DOMAIN ?? "",
+  ).trim();
+  const raw = explicit || (hostDomain ? `https://${hostDomain}` : "");
   if (!raw) return "";
   return (/^https?:\/\//.test(raw) ? raw : `https://${raw}`).replace(/\/+$/, "");
 }

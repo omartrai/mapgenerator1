@@ -29,6 +29,11 @@ export interface RouterOptions {
   env: Env;
   /** Set by the Vite dev server: allows local disk storage and a dev password. */
   devDataDir?: string;
+  /**
+   * Persistent folder for orders and reviews when the site runs as its own
+   * server (server/standalone.ts) instead of on Vercel with a Blob store.
+   */
+  dataDir?: string;
 }
 
 const MAX_JSON_BYTES = 12_000_000;
@@ -56,7 +61,8 @@ function safeEqual(a: string, b: string): boolean {
 function resolveStorage(options: RouterOptions) {
   const token = String(options.env.BLOB_READ_WRITE_TOKEN ?? "").trim();
   if (token) return createBlobStorage(token);
-  if (options.devDataDir) return createFsStorage(options.devDataDir);
+  const dir = options.dataDir ?? options.devDataDir;
+  if (dir) return createFsStorage(dir);
   return null;
 }
 
@@ -86,7 +92,7 @@ export function createApiHandler(options: RouterOptions) {
     if (!storage) {
       throw new HttpError(
         503,
-        "Order storage is not configured. Connect a Vercel Blob store to this project.",
+        "Order storage is not configured. Connect a Vercel Blob store or set DATA_DIR.",
       );
     }
     service = createOrderService(
@@ -109,7 +115,7 @@ export function createApiHandler(options: RouterOptions) {
   function requireAdmin(request: Request) {
     const expected = adminPassword();
     if (!expected) {
-      throw new HttpError(503, "Admin access is not configured. Set ADMIN_PASSWORD in your Vercel project.");
+      throw new HttpError(503, "Admin access is not configured. Set the ADMIN_PASSWORD variable.");
     }
     const header = request.headers.get("authorization") ?? "";
     const provided = header.startsWith("Bearer ") ? header.slice(7) : "";

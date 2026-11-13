@@ -11,7 +11,7 @@ const CONTENT_TYPES: Record<string, string> = {
   ".svg": "image/svg+xml",
 };
 
-/** Local-disk adapter used by `vite dev` when no Blob token is configured. */
+/** Disk adapter: `vite dev`, and the standalone server with DATA_DIR on a volume. */
 export function createFsStorage(rootDir: string): IOrderStorage {
   const resolve = (relative: string) => {
     const target = path.resolve(rootDir, relative);
