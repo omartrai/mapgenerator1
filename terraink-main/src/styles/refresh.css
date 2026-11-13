@@ -284,9 +284,15 @@ body:has(.store-page) {
   font-family: var(--s-display);
   font-size: clamp(2.6rem, 5.6vw, 5rem);
   font-weight: 800;
-  letter-spacing: -0.035em;
-  line-height: 0.95;
+  letter-spacing: -0.03em;
+  line-height: 1;
   text-transform: uppercase;
+}
+
+/* Accented capitals (É, À…) need room above them, or they touch the
+   line before. */
+:root[lang="fr"] .store-page .hero2__title {
+  line-height: 1.2;
 }
 
 :root[lang="ar"] .store-page .hero2__title {
