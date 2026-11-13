@@ -2242,23 +2242,6 @@ body:has(.store-page) {
   display: none !important;
 }
 
-/* You & me: navy water, white band with left-aligned text, heart */
-.style-preset__sketch--love .style-preset__map {
-  inset: 10% 26% 26%;
-  background:
-    linear-gradient(115deg, transparent 38%, #2e3a59 38% 48%, transparent 48%),
-    repeating-linear-gradient(28deg, transparent 0 6px, #c9cfda 6px 9px),
-    #eef0f4;
-}
-
-.style-preset__sketch--love .style-preset__text {
-  left: 28%;
-  right: 50%;
-  bottom: 13%;
-  background: #2e3a59;
-}
-
-.style-preset__sketch--love .style-preset__pin,
 .style-preset__sketch--heart .style-preset__pin {
   display: block !important;
   top: 34%;

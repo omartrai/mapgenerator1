@@ -9,7 +9,7 @@ import { openSettingsTab } from "@/shared/ui/settingsTabs";
  * Ready-made looks that set the layout, colours, map shape, layers and a
  * heart pin in one tap. The customer can still change any of it afterwards.
  */
-export const POSTER_STYLES = ["classic", "love", "heart", "photo", "trail"] as const;
+export const POSTER_STYLES = ["classic", "heart", "photo", "trail"] as const;
 export type PosterStyleId = (typeof POSTER_STYLES)[number];
 
 const ALL_LAYERS = {
@@ -61,26 +61,6 @@ export function usePosterStyles() {
           type: "SET_FORM_FIELDS",
           fields: { ...base, ...ALL_LAYERS, posterLayout: "classic", mapShape: "none", posterStyle: "classic" },
         });
-        return;
-      }
-
-      if (id === "love") {
-        dispatch({ type: "SET_THEME", themeId: "navy_ink" });
-        dispatch({
-          type: "SET_FORM_FIELDS",
-          fields: {
-            ...base,
-            ...ALL_LAYERS,
-            posterLayout: "band",
-            mapShape: "none",
-            posterStyle: "love",
-            messageFont: "poster",
-            messageStyle: "regular",
-            ...message(t("style.preset.love.message")),
-          },
-        });
-        dispatch({ type: "SET_FIELD", name: "displayCity", value: t("style.preset.love.title") });
-        pinHeart();
         return;
       }
 
