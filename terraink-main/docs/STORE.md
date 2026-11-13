@@ -125,7 +125,7 @@ The site can run as one server instead of Vercel Functions:
 - Orders and reviews are saved as files in `DATA_DIR`. Point it at a **persistent volume**
   (on Railway: add a volume mounted at `/data` and set `DATA_DIR=/data`), or every redeploy
   loses them.
-- `railway.json` holds the build and start commands. In the service settings, set the root
+- `railway.json` builds with `Dockerfile.server` (the plain `Dockerfile` serves pages only, without the order API). In the service settings, set the root
   directory to `terraink-main`.
 - Set the same server variables as on Vercel (`ADMIN_PASSWORD`, `URBANART_API_KEY`,
   `URBANART_MARGIN_PERCENT`, `WHATSAPP_*`, `ORDER_WEBHOOK_URL`). `BLOB_READ_WRITE_TOKEN` is
