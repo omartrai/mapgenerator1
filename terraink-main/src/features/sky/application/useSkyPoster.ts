@@ -23,7 +23,9 @@ export function skyCoordsLabel(skyTime: string, coordinates: string, language: s
   return [date, clock, coordinates].filter(Boolean).join("  ·  ");
 }
 
-/** Switches between a map poster and a night-sky poster and sets its moment. */
+export type PosterKind = "map" | "sky" | "sport";
+
+/** Switches between a map, night-sky or sport poster and sets the sky's moment. */
 export function useSkyPoster() {
   const { state, dispatch } = usePosterContext();
   const { form } = state;
@@ -32,15 +34,27 @@ export function useSkyPoster() {
     [dispatch],
   );
 
+  const isSky = isSkyPoster(form);
+  const kind: PosterKind = isSky ? "sky" : form.posterLayout === "activity" ? "sport" : "map";
+
   const setKind = useCallback(
-    (kind: "map" | "sky") => {
-      if (kind === "sky" && !form.skyTime) set("skyTime", defaultSkyTime());
-      set("posterKind", kind);
+    (next: PosterKind) => {
+      if (next === "sky" && !form.skyTime) set("skyTime", defaultSkyTime());
+      set("posterKind", next === "sky" ? "sky" : "map");
+      if (next === "sport") {
+        // The sport layout: title, date line, route map, elevation, stats.
+        set("posterLayout", "activity");
+        set("mapShape", "none");
+        set("showPosterText", true);
+        if (form.posterLayout !== "activity") dispatch({ type: "SET_THEME", themeId: "carbon" });
+      } else if (form.posterLayout === "activity") {
+        set("posterLayout", "classic");
+      }
     },
-    [form.skyTime, set],
+    [dispatch, form.posterLayout, form.skyTime, set],
   );
 
   const setTime = useCallback((time: string) => set("skyTime", time), [set]);
 
-  return { isSky: isSkyPoster(form), form, setKind, setTime, set };
+  return { isSky, kind, form, setKind, setTime, set };
 }

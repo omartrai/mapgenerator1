@@ -43,12 +43,13 @@ export default function StudioPage() {
   );
   useProductSync(store.product);
   const skyPoster = useSkyPoster();
-  // /create?type=sky starts a night-sky poster; ?type=sport opens the Routes
-  // tab, where a GPX file becomes a sport poster.
+  // /create?type=sky starts a night-sky poster; ?type=sport a sport poster,
+  // with the Routes tab open for the GPX file.
   useEffect(() => {
     const type = search.get("type");
     if (type === "sky") skyPoster.setKind("sky");
     if (type !== "sport") return undefined;
+    skyPoster.setKind("sport");
     // The shell starts listening once it has mounted.
     const timer = window.setTimeout(() => openSettingsTab({ tab: "routes" }), 400);
     return () => window.clearTimeout(timer);

@@ -195,8 +195,12 @@ export default function RoutesSection() {
       setIsUploading(true);
       try {
         const result = await uploadGpxFile(file);
-        // Pre-fill the sport poster's stats from the new track.
-        if (result.status === "added") fillFromRoute(result.route);
+        // On a sport poster the new track becomes the poster's route (orange,
+        // fitted, stats filled); otherwise only pre-fill the stats.
+        if (result.status === "added") {
+          if (form.posterLayout === "activity") makeSportPoster(result.route);
+          else fillFromRoute(result.route);
+        }
         if (result.status === "needs-confirmation") {
           setPendingConfirmation({
             pendingRoute: result.pendingRoute,
@@ -218,7 +222,7 @@ export default function RoutesSection() {
         setIsUploading(false);
       }
     },
-    [uploadGpxFile, fillFromRoute],
+    [uploadGpxFile, fillFromRoute, makeSportPoster, form.posterLayout],
   );
 
   const updateRoute = useCallback(
