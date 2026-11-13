@@ -493,6 +493,7 @@ export default function PreviewPanel({ sidePanel, belowPoster }: PreviewPanelPro
               customIcons={state.customMarkerIcons}
               mapRef={mapRef}
               isMarkerEditMode={isMarkerEditorActive}
+              dragAnywhere={!sky}
               activeMarkerId={activeMarkerId}
               onActiveMarkerChange={handleMarkerActiveChange}
               onMarkerPositionChange={handleMarkerPositionChange}

@@ -197,6 +197,26 @@ function resetRouteEndpointIcons(state: PosterState, removed: Set<string>): Rout
   });
 }
 
+/**
+ * Pins that were on the poster follow when a new place is chosen, keeping
+ * their position relative to the centre (e.g. a template's heart, even after
+ * it was dragged). Pins far outside the old view stay where they are.
+ */
+function movePinnedMarkers(state: PosterState, lat: number, lon: number): MarkerItem[] {
+  const oldLat = Number(state.form.latitude);
+  const oldLon = Number(state.form.longitude);
+  if (!Number.isFinite(oldLat) || !Number.isFinite(oldLon)) return state.markers;
+  // Half the poster width in metres, as degrees, with a margin.
+  const reachDeg = ((Number(state.form.distance) || 4000) * 1.5) / 111_320;
+  const lonScale = Math.cos((oldLat * Math.PI) / 180) || 1;
+  return state.markers.map((marker) => {
+    const dLat = marker.lat - oldLat;
+    const dLon = marker.lon - oldLon;
+    if (Math.abs(dLat) > reachDeg || Math.abs(dLon * lonScale) > reachDeg) return marker;
+    return { ...marker, lat: lat + dLat, lon: lon + dLon };
+  });
+}
+
 export function posterReducer(
   state: PosterState,
   action: PosterAction,
@@ -301,6 +321,8 @@ export function posterReducer(
     case "SELECT_LOCATION":
       return {
         ...state,
+        // A pin left on the old place (e.g. a template's heart) follows to the new one.
+        markers: movePinnedMarkers(state, action.location.lat, action.location.lon),
         selectedLocation: action.location,
         isLocationFocused: false,
         displayNameOverrides: { city: false, country: false },

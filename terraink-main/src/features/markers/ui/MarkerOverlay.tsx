@@ -57,6 +57,8 @@ interface MarkerOverlayProps {
   customIcons: MarkerIconDefinition[];
   mapRef: MapInstanceRef;
   isMarkerEditMode?: boolean;
+  /** Let markers be dragged on the poster outside the Icons tab too. */
+  dragAnywhere?: boolean;
   activeMarkerId?: string | null;
   onActiveMarkerChange?: (markerId: string | null) => void;
   onMarkerPositionChange?: (markerId: string, lat: number, lon: number) => void;
@@ -86,6 +88,7 @@ export default function MarkerOverlay({
   customIcons,
   mapRef,
   isMarkerEditMode = false,
+  dragAnywhere = false,
   activeMarkerId = null,
   onActiveMarkerChange,
   onMarkerPositionChange,
@@ -95,6 +98,7 @@ export default function MarkerOverlay({
   const [renderTick, setRenderTick] = useState(0);
   const overlayRef = useRef<HTMLDivElement | null>(null);
   const [draggingMarkerId, setDraggingMarkerId] = useState<string | null>(null);
+  const canDrag = isMarkerEditMode || dragAnywhere;
   const [isTouchSelectionActive, setIsTouchSelectionActive] = useState(false);
   const [touchResizeState, setTouchResizeState] = useState<{
     markerId: string;
@@ -133,7 +137,7 @@ export default function MarkerOverlay({
 
   const updateMarkerByClientPoint = useCallback(
     (markerId: string, clientX: number, clientY: number) => {
-      if (!isMarkerEditMode || !onMarkerPositionChange) {
+      if (!canDrag || !onMarkerPositionChange) {
         return;
       }
 
@@ -160,7 +164,7 @@ export default function MarkerOverlay({
         // Ignore projection failures during drag.
       }
     },
-    [isMarkerEditMode, mapRef, onMarkerPositionChange],
+    [canDrag, mapRef, onMarkerPositionChange],
   );
 
   const nudgeMarkerByScreenDelta = useCallback(
@@ -207,12 +211,18 @@ export default function MarkerOverlay({
   const handleMarkerPointerDown = useCallback(
     (event: React.PointerEvent<HTMLDivElement>) => {
       const markerId = event.currentTarget.dataset.id;
-      if (!markerId || !isMarkerEditMode || !onMarkerPositionChange) {
+      if (!markerId || !canDrag || !onMarkerPositionChange) {
         return;
       }
 
       event.preventDefault();
       event.stopPropagation();
+
+      // Outside the Icons tab: a plain drag, no selection or resize handles.
+      if (!isMarkerEditMode) {
+        setDraggingMarkerId(markerId);
+        return;
+      }
 
       if (event.pointerType === "touch") {
         if (isMobileTouchInput()) {
@@ -233,6 +243,7 @@ export default function MarkerOverlay({
       updateMarkerByClientPoint(markerId, event.clientX, event.clientY);
     },
     [
+      canDrag,
       isMarkerEditMode,
       onActiveMarkerChange,
       onMarkerPositionChange,
@@ -347,7 +358,7 @@ export default function MarkerOverlay({
   );
 
   useEffect(() => {
-    if (!draggingMarkerId || !isMarkerEditMode) {
+    if (!draggingMarkerId || !canDrag) {
       return;
     }
 
@@ -369,10 +380,10 @@ export default function MarkerOverlay({
       window.removeEventListener("pointerup", stopDrag);
       window.removeEventListener("pointercancel", stopDrag);
     };
-  }, [draggingMarkerId, isMarkerEditMode, updateMarkerByClientPoint]);
+  }, [draggingMarkerId, canDrag, updateMarkerByClientPoint]);
 
   useEffect(() => {
-    if (!draggingMarkerId || !isMarkerEditMode || !isMobileTouchInput()) {
+    if (!draggingMarkerId || !canDrag || !isMobileTouchInput()) {
       return;
     }
 
@@ -398,7 +409,7 @@ export default function MarkerOverlay({
       window.removeEventListener("touchend", stopDrag);
       window.removeEventListener("touchcancel", stopDrag);
     };
-  }, [draggingMarkerId, isMarkerEditMode, updateMarkerByClientPoint]);
+  }, [draggingMarkerId, canDrag, updateMarkerByClientPoint]);
 
   useEffect(() => {
     if (isMarkerEditMode) {
@@ -532,7 +543,7 @@ export default function MarkerOverlay({
         <div
           key={marker.id}
           data-id={marker.id}
-          className={`poster-marker${isMarkerEditMode ? " is-draggable" : ""}${
+          className={`poster-marker${canDrag ? " is-draggable" : ""}${
             draggingMarkerId === marker.id ? " is-dragging" : ""
           }${activeMarkerId === marker.id ? " is-selected" : ""}${
             touchResizeState?.markerId === marker.id ? " is-resizing" : ""
