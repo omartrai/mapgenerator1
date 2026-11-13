@@ -17,8 +17,16 @@ export default function StudioStepHeader({ tab }: StudioStepHeaderProps) {
   const known = SECTIONS.includes(tab);
   const step = MAIN_STEPS.indexOf(tab);
   const { state } = usePosterContext();
-  // A night-sky poster asks for a place and a moment in the first step.
-  const key = tab === "location" && isSkyPoster(state.form) ? "locationSky" : tab;
+  // A night-sky poster asks for a place and a moment in the first step;
+  // a sport poster asks for its route.
+  const key =
+    tab !== "location"
+      ? tab
+      : isSkyPoster(state.form)
+        ? "locationSky"
+        : state.form.posterLayout === "activity"
+          ? "locationSport"
+          : tab;
 
   // One heading per panel: the page name as a small eyebrow, then the
   // open section's name and what to do there.

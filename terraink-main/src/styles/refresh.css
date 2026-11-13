@@ -1759,28 +1759,152 @@ body:has(.store-page) {
   z-index: 30;
 }
 
-/* ── Poster type: three options, and the GPX prompt for sport posters ── */
+/* ── Poster type tiles, and the GPX prompt / route card for sport posters ── */
 
-.poster-kind.poster-kind--three {
+.kind-tiles {
+  display: grid;
   grid-template-columns: repeat(3, minmax(0, 1fr));
+  gap: 8px;
+  margin-bottom: 16px;
 }
 
-.poster-kind--three .poster-kind__opt {
+.kind-tile {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
   gap: 6px;
-  padding: 0 6px;
+  min-height: 74px;
+  padding: 10px 6px;
+  border: 1px solid #e3e2dc;
+  border-radius: 16px;
+  background: #fff;
+  color: #4f5a53;
+  font: inherit;
+  font-size: 0.8rem;
+  font-weight: 600;
+  line-height: 1.2;
+  text-align: center;
+  cursor: pointer;
+  transition: border-color 0.15s, background-color 0.15s, color 0.15s;
+}
+
+.kind-tile svg {
+  width: 22px;
+  height: 22px;
+}
+
+.kind-tile:hover {
+  border-color: var(--s-green);
+  color: var(--s-ink);
+}
+
+.kind-tile.is-active {
+  border-color: var(--s-green);
+  background: var(--s-hero-card);
+  color: var(--s-green);
+  box-shadow: 0 0 0 1px var(--s-green);
+}
+
+.sport-route {
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+  padding: 16px;
+  border: 1px solid #ecebe6;
+  border-radius: 16px;
+  background: #fff;
+}
+
+.sport-route__head {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  min-width: 0;
+}
+
+.sport-route__icon {
+  display: grid;
+  flex: none;
+  place-items: center;
+  width: 42px;
+  height: 42px;
+  border-radius: 12px;
+  background: #1c1c1b;
+  color: #e8622c;
+}
+
+.sport-route__icon svg {
+  width: 20px;
+  height: 20px;
+}
+
+.sport-route__text {
+  display: flex;
+  flex-direction: column;
+  min-width: 0;
+}
+
+.sport-route__text strong {
+  overflow: hidden;
+  color: var(--s-ink);
+  font-size: 0.95rem;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+.sport-route__text span {
+  color: var(--s-muted);
   font-size: 0.8rem;
 }
 
-.poster-kind--three .poster-kind__opt svg {
+.sport-route__hint {
+  margin: 0 !important;
+  color: var(--s-muted);
+  font-size: 0.78rem;
+  line-height: 1.45;
+}
+
+.sport-route__actions {
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+}
+
+.sport-route__actions button {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  min-height: 42px;
+  padding: 0 14px;
+  border: 1px solid #e3e2dc;
+  border-radius: 12px;
+  background: #fff;
+  color: var(--s-ink);
+  font: inherit;
+  font-size: 0.85rem;
+  font-weight: 600;
+  text-align: start;
+  cursor: pointer;
+}
+
+.sport-route__actions button:hover {
+  border-color: var(--s-green);
+  background: #f6f8f6;
+}
+
+.sport-route__actions svg {
+  flex: none;
   width: 16px;
   height: 16px;
+  color: var(--s-green);
 }
 
 .sport-import {
   display: flex;
   flex-direction: column;
   gap: 6px;
-  margin: -6px 0 18px;
+  margin: 0 0 18px;
   padding: 16px;
   border-radius: 16px;
   background: #1c1c1b;

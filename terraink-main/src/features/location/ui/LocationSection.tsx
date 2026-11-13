@@ -10,6 +10,7 @@ import {
 import { MyLocationIcon } from "@/shared/ui/Icons";
 import { useLanguage } from "@/shared/i18n/LanguageContext";
 import PosterKindPicker from "@/features/sky/ui/PosterKindPicker";
+import { usePosterContext } from "@/features/poster/ui/PosterContext";
 import SkyMomentCard from "@/features/sky/ui/SkyMomentCard";
 
 interface LocationSectionProps {
@@ -45,6 +46,17 @@ export default function LocationSection({
   const { t } = useLanguage();
   const { recent, removeRecent, clearRecent } = useRecentLocations();
   const hasLocationValue = form.location.trim().length > 0;
+  const { state } = usePosterContext();
+  // A sport poster with its route needs no place: the map follows the route.
+  const routeSetsMap = form.posterLayout === "activity" && state.routes.some((route) => route.visible);
+
+  if (routeSetsMap) {
+    return (
+      <section className="panel-block">
+        <PosterKindPicker />
+      </section>
+    );
+  }
 
   return (
     <section className="panel-block">
