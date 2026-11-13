@@ -87,6 +87,10 @@ export interface PosterForm {
   showMarkers: boolean;
   /** Last ready-made style picked (see usePosterStyles); informational only. */
   posterStyle?: string;
+  /** Customer photo for the photo layout, as a downscaled JPEG data URL. */
+  photo?: string;
+  /** Print the photo in black and white. */
+  photoMono?: boolean;
   showRoutes: boolean;
 }
 

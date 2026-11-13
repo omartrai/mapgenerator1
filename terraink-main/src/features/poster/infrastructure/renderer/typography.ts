@@ -6,6 +6,8 @@ import {
   countryText,
   getPosterLayout,
   paperMaskPath,
+  photoHearts,
+  PHOTO_PLACEHOLDER,
   ACTIVITY_TYPE,
   type PosterLayoutSpec,
   type TextSlot,
@@ -78,6 +80,9 @@ export function drawPosterText(
   mapCredit: boolean = true,
   /** Night-sky poster: the message sits large under the star chart. */
   starChart: boolean = false,
+  /** Photo layout: the customer's photo (already loaded) and black and white. */
+  photo: CanvasImageSource | null = null,
+  photoMono: boolean = true,
 ): void {
   const baseLayout = getPosterLayout(layoutId);
   const layout = starChart ? skyTextLayout(baseLayout, width, height) : baseLayout;
@@ -103,6 +108,34 @@ export function drawPosterText(
   if (mask) {
     ctx.fillStyle = paper;
     ctx.fill(new Path2D(mask), "evenodd");
+  }
+  const hearts = photoHearts(layout, width, height);
+  if (hearts) {
+    ctx.save();
+    // Inside the photo heart, minus the map heart that overlaps it.
+    ctx.clip(new Path2D(hearts.photoPath));
+    ctx.clip(new Path2D(`M0 0H${width}V${height}H0Z${hearts.mapPath}`), "evenodd");
+    if (photo) {
+      const source = photo as HTMLImageElement;
+      const sw = source.naturalWidth || source.width;
+      const sh = source.naturalHeight || source.height;
+      const scale = Math.max(hearts.imageBox.size / sw, hearts.imageBox.size / sh);
+      const dw = sw * scale;
+      const dh = sh * scale;
+      if (photoMono) ctx.filter = "grayscale(1)";
+      ctx.drawImage(
+        photo,
+        hearts.imageBox.x + (hearts.imageBox.size - dw) / 2,
+        hearts.imageBox.y + (hearts.imageBox.size - dh) / 2,
+        dw,
+        dh,
+      );
+      ctx.filter = "none";
+    } else {
+      ctx.fillStyle = PHOTO_PLACEHOLDER;
+      ctx.fill(new Path2D(hearts.photoPath));
+    }
+    ctx.restore();
   }
   if (layout.rule && showPosterText) {
     ctx.fillStyle = themeText;

@@ -11,7 +11,7 @@ import {
   PLACEHOLDER_EXAMPLE_COUNTRY,
 } from "@/features/location/ui/constants";
 import { useLanguage, type TranslationKey } from "@/shared/i18n/LanguageContext";
-import { MAP_SHAPES, POSTER_LAYOUTS, DEFAULT_POSTER_LAYOUT } from "@/features/poster/domain/posterLayout";
+import { MAP_SHAPES, POSTER_LAYOUTS, DEFAULT_POSTER_LAYOUT, STYLE_ONLY_LAYOUTS } from "@/features/poster/domain/posterLayout";
 import { LuBan, LuCircle, LuHeart, LuStar } from "react-icons/lu";
 import { usePosterContext } from "@/features/poster/ui/PosterContext";
 import { useActivityPoster } from "@/features/routes/application/useActivityPoster";
@@ -246,7 +246,7 @@ export default function TypographySection({
             <fieldset className="layout-picker">
               <legend>{t("style.layout")}</legend>
               <div className="layout-picker__grid">
-                {POSTER_LAYOUTS.map((id) => (
+                {POSTER_LAYOUTS.filter((id) => !STYLE_ONLY_LAYOUTS.has(id)).map((id) => (
                   <label key={id} className="layout-picker__option">
                     <input
                       type="radio"

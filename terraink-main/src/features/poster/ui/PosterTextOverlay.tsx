@@ -1,4 +1,4 @@
-import { useEffect, useLayoutEffect, useRef, useState, type CSSProperties, type RefObject } from "react";
+import { useEffect, useId, useLayoutEffect, useRef, useState, type CSSProperties, type RefObject } from "react";
 import { ensureFont } from "@/core/services";
 import { formatCoordinates } from "@/shared/geo/posterBounds";
 import {
@@ -6,6 +6,8 @@ import {
   countryText,
   getPosterLayout,
   paperMaskPath,
+  photoHearts,
+  PHOTO_PLACEHOLDER,
   ACTIVITY_TYPE,
   type TextSlot,
 } from "@/features/poster/domain/posterLayout";
@@ -62,6 +64,9 @@ interface PosterTextOverlayProps {
   coordsLabel?: string;
   /** Night-sky poster: the message sits large under the star chart. */
   starChart?: boolean;
+  /** Customer photo for the photo layout (data URL), and black and white. */
+  photo?: string;
+  photoMono?: boolean;
   /** The OpenStreetMap credit; off for posters without map data (night sky). */
   mapCredit?: boolean;
   includeCredits: boolean;
@@ -134,6 +139,8 @@ export default function PosterTextOverlay({
   coordsLabel,
   mapCredit = true,
   starChart = false,
+  photo,
+  photoMono = false,
   includeCredits,
   showOverlay,
 }: PosterTextOverlayProps) {
@@ -162,6 +169,8 @@ export default function PosterTextOverlay({
   const baseLayout = getPosterLayout(layoutId);
   const layout = starChart && size.width > 0 ? skyTextLayout(baseLayout, size.width, size.height) : baseLayout;
   const mask = size.width > 0 ? paperMaskPath(layout, mapShape, size.width, size.height) : null;
+  const hearts = size.width > 0 ? photoHearts(layout, size.width, size.height) : null;
+  const photoId = useId().replace(/:/g, "");
   const textColor = layout.box ? layout.box.text : themeText;
   const cityLabel = cityText(layout, city, formatCityLabel);
   const countryLabel = countryText(layout, country);
@@ -280,6 +289,37 @@ export default function PosterTextOverlay({
       {mask ? (
         <svg className="poster-layout-mask" viewBox={`0 0 ${size.width} ${size.height}`} preserveAspectRatio="none" aria-hidden="true">
           <path d={mask} fill={paperColor} fillRule="evenodd" />
+          {hearts ? (
+            <>
+              <defs>
+                <clipPath id={`${photoId}-clip`}>
+                  <path d={hearts.photoPath} />
+                </clipPath>
+                {/* The map heart overlaps the photo heart and stays in front. */}
+                <mask id={`${photoId}-mask`}>
+                  <rect width={size.width} height={size.height} fill="#fff" />
+                  <path d={hearts.mapPath} fill="#000" />
+                </mask>
+              </defs>
+              <g mask={`url(#${photoId}-mask)`}>
+                <g clipPath={`url(#${photoId}-clip)`}>
+                  {photo ? (
+                    <image
+                      href={photo}
+                      x={hearts.imageBox.x}
+                      y={hearts.imageBox.y}
+                      width={hearts.imageBox.size}
+                      height={hearts.imageBox.size}
+                      preserveAspectRatio="xMidYMid slice"
+                      style={photoMono ? { filter: "grayscale(1)" } : undefined}
+                    />
+                  ) : (
+                    <path d={hearts.photoPath} fill={PHOTO_PLACEHOLDER} />
+                  )}
+                </g>
+              </g>
+            </>
+          ) : null}
         </svg>
       ) : null}
       {layout.rule && showPosterText ? (

@@ -1,3 +1,4 @@
+import { loadImage } from "@/shared/utils/image";
 import { useCallback, useMemo } from "react";
 import { usePosterContext } from "@/features/poster/ui/PosterContext";
 import { textPartsFromForm } from "@/features/poster/domain/textLayout";
@@ -177,6 +178,11 @@ export function useExport() {
           }
         : await captureMapAsCanvas(map, width, height);
       const withOverlays = hasVisibleOverlays && !sky;
+      // Photo layout: decode the customer's photo before drawing.
+      const photoImage =
+        !sky && form.photo && getPosterLayout(form.posterLayout).photo
+          ? await loadImage(form.photo).catch(() => null)
+          : null;
 
       const { canvas } = await compositeExport(mapCanvas, {
         theme: effectiveTheme,
@@ -195,6 +201,8 @@ export function useExport() {
         mapShape: sky ? "none" : form.mapShape,
         activity: activityFromForm(form as unknown as Record<string, unknown>, state.routes),
         messageLook: messageLookFromForm(form),
+        photoImage,
+        photoMono: form.photoMono !== false,
         ...(sky ? { mapCredit: false, starChart: true, coordsLabel: skyCoordsLabel(form.skyTime ?? "", formatCoordinates(lat, lon), language) } : {}),
         markers: hasVisibleMarkers && !sky ? state.markers : [],
         markerIcons: withOverlays ? getAllMarkerIcons(state.customMarkerIcons) : [],

@@ -1,3 +1,4 @@
+import { mapOffsetOf } from "@/features/poster/domain/posterLayout";
 import { applyFades } from "./layers";
 import { effectiveFades, getPosterLayout } from "@/features/poster/domain/posterLayout";
 import { drawPosterText } from "./typography";
@@ -37,6 +38,8 @@ export async function compositeExport(
     coordsLabel,
     mapCredit = true,
     starChart = false,
+    photoImage = null,
+    photoMono = true,
     showOverlay = true,
     includeCredits = true,
     markers = [],
@@ -58,13 +61,21 @@ export async function compositeExport(
   const ctx = canvas.getContext("2d");
   if (!ctx) throw new Error("Canvas rendering is not available.");
 
+  // Photo layout: the map (and what sits on it) moves into the map heart.
+  const offset = mapOffsetOf(getPosterLayout(posterLayout));
+  const dx = offset ? offset.x * width : 0;
+  const dy = offset ? offset.y * height : 0;
+
   // 1. Draw map snapshot
-  ctx.drawImage(mapCanvas, 0, 0);
+  ctx.drawImage(mapCanvas, dx, dy);
 
   // 2. Gradient fades
   if (showOverlay) {
     applyFades(ctx, width, height, theme.ui.bg, effectiveFades(getPosterLayout(posterLayout), mapShape));
   }
+
+  ctx.save();
+  ctx.translate(dx, dy);
 
   // 3. Routes (below markers)
   if (routes.length > 0 && markerProjection) {
@@ -107,6 +118,8 @@ export async function compositeExport(
     );
   }
 
+  ctx.restore();
+
   // 6. Poster text
   drawPosterText(
     ctx,
@@ -129,6 +142,8 @@ export async function compositeExport(
     coordsLabel,
     mapCredit,
     starChart,
+    photoImage,
+    photoMono,
   );
 
   const size: CanvasSize = {

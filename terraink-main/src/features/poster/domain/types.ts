@@ -41,6 +41,9 @@ export interface ExportOptions {
   mapCredit?: boolean;
   /** Night-sky poster: lays the message out under the star chart. */
   starChart?: boolean;
+  /** Photo layout: the customer's photo, loaded, and black and white. */
+  photoImage?: CanvasImageSource | null;
+  photoMono?: boolean;
   showOverlay?: boolean;
   includeCredits?: boolean;
   markers?: MarkerItem[];

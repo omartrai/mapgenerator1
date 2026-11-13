@@ -1,3 +1,4 @@
+import { mapOffsetOf } from "@/features/poster/domain/posterLayout";
 import { textPartsFromForm } from "@/features/poster/domain/textLayout";
 import {
   useCallback,
@@ -71,6 +72,7 @@ export default function PreviewPanel({ sidePanel, belowPoster }: PreviewPanelPro
   const { state, dispatch, effectiveTheme, mapStyle, mapRef } =
     usePosterContext();
   const sky = isSkyPoster(state.form);
+  const mapOffset = mapOffsetOf(getPosterLayout(state.form.posterLayout));
   const handleMessageMove = useCallback(
     (x: number, y: number) => {
       dispatch({ type: "SET_FIELD", name: "messageX", value: x.toFixed(4) });
@@ -437,10 +439,21 @@ export default function PreviewPanel({ sidePanel, belowPoster }: PreviewPanelPro
         <div
           ref={frameRef}
           className="poster-frame"
+          data-map-offset={mapOffset && !sky ? "" : undefined}
           style={
             {
               "--poster-aspect": `${aspect}`,
               "--poster-bg": effectiveTheme.ui.bg,
+              ...(mapOffset && !sky
+                ? {
+                    "--map-dx": `${(mapOffset.x * 100).toFixed(3)}%`,
+                    "--map-dy": `${(mapOffset.y * 100).toFixed(3)}%`,
+                    // Keep the moved layers inside the poster's edges.
+                    "--map-clip": `inset(${[-mapOffset.y, mapOffset.x, mapOffset.y, -mapOffset.x]
+                      .map((v) => `${(Math.max(0, v) * 100).toFixed(3)}%`)
+                      .join(" ")})`,
+                  }
+                : {}),
             } as CSSProperties
           }
         >
@@ -503,6 +516,8 @@ export default function PreviewPanel({ sidePanel, belowPoster }: PreviewPanelPro
             message={form.customMessage}
             messageLook={messageLookFromForm(form)}
             starChart={sky}
+            photo={form.photo}
+            photoMono={form.photoMono !== false}
             coordsLabel={sky ? skyCoordsLabel(form.skyTime ?? "", formatCoordinates(formLat, formLon), language) : undefined}
             mapCredit={!sky}
             onMessageMove={handleMessageMove}

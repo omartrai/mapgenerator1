@@ -2303,3 +2303,161 @@ body:has(.store-page) {
 }
 
 /* Classic: map with a fade and a centred title (the base sketch). */
+
+/* Photo layout: the map and its overlays move so the chosen place sits in
+   the middle of the map heart (see mapOffsetOf). */
+.poster-frame[data-map-offset] > :is(.map-container, .poster-route-overlay, .poster-route-endpoints, .poster-marker-overlay) {
+  translate: var(--map-dx, 0) var(--map-dy, 0);
+  clip-path: var(--map-clip, none);
+}
+
+/* ── Photo upload card (photo + heart style) ── */
+.photo-card {
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+  margin-top: 12px;
+  padding: 14px;
+  border: 1px solid #ecebe6;
+  border-radius: 16px;
+  background: #fff;
+}
+
+.photo-card__row {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+}
+
+.photo-card__thumb {
+  flex: none;
+  width: 54px;
+  height: 54px;
+  border-radius: 12px;
+  background: #e4e4e0 center / cover no-repeat;
+}
+
+.photo-card__thumb.is-mono {
+  filter: grayscale(1);
+}
+
+.photo-card__title {
+  margin: 0 !important;
+  font-size: 0.86rem;
+  font-weight: 700;
+}
+
+.photo-card__note {
+  margin: 0 !important;
+  color: var(--s-muted);
+  font-size: 0.76rem;
+  line-height: 1.4;
+}
+
+.photo-card__actions {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 8px;
+}
+
+.photo-card__btn {
+  display: inline-flex;
+  align-items: center;
+  gap: 8px;
+  min-height: 40px;
+  padding: 0 14px;
+  border: 1px solid #e3e2dc;
+  border-radius: 999px;
+  background: #fff;
+  color: var(--s-ink);
+  font: inherit;
+  font-size: 0.82rem;
+  font-weight: 600;
+  cursor: pointer;
+}
+
+.photo-card__btn--primary {
+  border-color: var(--s-green);
+  background: var(--s-green);
+  color: #fff;
+}
+
+.photo-card__btn svg {
+  width: 16px;
+  height: 16px;
+}
+
+.photo-card__mono {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  font-size: 0.8rem;
+  font-weight: 600;
+}
+
+.photo-card__error {
+  margin: 0 !important;
+  color: var(--s-danger);
+  font-size: 0.78rem;
+}
+
+.style-preset__photo {
+  display: none !important;
+}
+
+/* Photo & map: a grey photo heart behind a map heart */
+.style-preset__sketch--photo .style-preset__photo {
+  display: block !important;
+  top: 12%;
+  left: 18%;
+  width: 34%;
+  aspect-ratio: 1;
+  background: linear-gradient(160deg, #9a9a96, #4c4c4a);
+  clip-path: polygon(50% 100%, 2% 42%, 8% 14%, 28% 4%, 50% 18%, 72% 4%, 92% 14%, 98% 42%);
+}
+
+.style-preset__sketch--photo .style-preset__map {
+  inset: auto;
+  top: 18%;
+  left: 42%;
+  width: 38%;
+  aspect-ratio: 1;
+  clip-path: polygon(50% 100%, 2% 42%, 8% 14%, 28% 4%, 50% 18%, 72% 4%, 92% 14%, 98% 42%);
+  box-shadow: none;
+}
+
+.style-preset__sketch--photo .style-preset__pin {
+  display: block !important;
+  top: 34%;
+  left: calc(61% - 4px);
+  width: 8px;
+  height: 8px;
+  background: #c8352b;
+  clip-path: path("M4 7.6 0.6 4.2A2 2 0 0 1 4 1.5 2 2 0 0 1 7.4 4.2Z");
+}
+
+.style-preset__sketch--photo .style-preset__text {
+  height: 3px;
+  left: 38%;
+  right: 38%;
+  bottom: 15%;
+  background: #444;
+  transform: skewX(-20deg);
+}
+
+/* Five styles: the last one spans the row. */
+.style-presets__grid > .style-preset:last-child:nth-child(odd) {
+  grid-column: span 2;
+  flex-direction: row;
+  align-items: center;
+  gap: 12px;
+}
+
+.style-presets__grid > .style-preset:last-child:nth-child(odd) .style-preset__sketch {
+  width: 46%;
+  flex: none;
+}
+
+.style-presets__grid > .style-preset:last-child:nth-child(odd) .style-preset__name {
+  margin-top: 0;
+}

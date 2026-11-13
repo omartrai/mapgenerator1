@@ -16,7 +16,9 @@ import {
   TEXT_MESSAGE_Y_RATIO,
 } from "./textLayout";
 
-export const POSTER_LAYOUTS = ["classic", "border", "label", "band", "fade", "header", "script", "signature", "activity"] as const;
+export const POSTER_LAYOUTS = ["classic", "border", "label", "band", "fade", "header", "script", "signature", "activity", "duo"] as const;
+/** Layouts reached only through a ready-made style, not the layout picker. */
+export const STYLE_ONLY_LAYOUTS: ReadonlySet<string> = new Set(["duo"]);
 export type PosterLayoutId = (typeof POSTER_LAYOUTS)[number];
 export const DEFAULT_POSTER_LAYOUT: PosterLayoutId = "classic";
 
@@ -87,6 +89,13 @@ export interface PosterLayoutSpec {
   divider: null | { y: number };
   /** Rules on both sides of the country instead of the divider. */
   countryRules: null | { length: number; gap: number /* ratios of the shorter side */ };
+  /**
+   * Move the map so its centre (the chosen place) sits in the middle of the
+   * map window instead of the middle of the poster.
+   */
+  centreMapInWindow?: boolean;
+  /** Heart holding the customer's photo, next to the map heart (ratios). */
+  photo?: Rect;
   /** Font size multipliers against the classic layout. */
   scale: { city: number; country: number; coords: number; message: number };
   /** Max text line width, ratio of the poster width. */
@@ -223,6 +232,23 @@ export const POSTER_LAYOUT_SPECS: Record<PosterLayoutId, PosterLayoutSpec> = {
   },
 
   /** Sport poster: race title, route map, elevation profile and stats. */
+  /** A photo heart and a map heart side by side, script message below. */
+  duo: {
+    ...CLASSIC,
+    fades: { top: 0, bottom: 0 },
+    mapWindow: { x: 0.41, y: 0.05, w: 0.56, h: 0.6 },
+    centreMapInWindow: true,
+    photo: { x: 0.03, y: 0.03, w: 0.52, h: 0.58 },
+    cityStyle: { case: "upper", family: null, weight: 600 },
+    message: center(0.715),
+    divider: { y: 0.77 },
+    city: center(0.818),
+    country: center(0.852),
+    coords: center(0.882),
+    scale: { city: 0.3, country: 0.75, coords: 0.85, message: 1.3 },
+    maxWidth: 0.8,
+  },
+
   activity: {
     ...CLASSIC,
     fades: { top: 0, bottom: 0 },
@@ -313,6 +339,30 @@ export function paperMaskPath(
     return `${outer}M${n(box.x)} ${n(box.y)}H${n(box.x + box.w)}V${n(box.y + box.h)}H${n(box.x)}Z`;
   }
   return `${outer}${shapePath(shapeId, box)}`;
+}
+
+/** Shift (ratio of the poster) that puts the map centre in its window's middle. */
+export function mapOffsetOf(layout: PosterLayoutSpec): { x: number; y: number } | null {
+  if (!layout.centreMapInWindow || !layout.mapWindow) return null;
+  const w = layout.mapWindow;
+  return { x: w.x + w.w / 2 - 0.5, y: w.y + w.h / 2 - 0.5 };
+}
+
+/** Light grey shown in the photo heart until a photo is added. */
+export const PHOTO_PLACEHOLDER = "#E4E4E0";
+
+/** The map heart and the photo heart of a photo layout, in pixels. */
+export function photoHearts(layout: PosterLayoutSpec, width: number, height: number) {
+  if (!layout.photo || !layout.mapWindow) return null;
+  const px = (r: Rect) => ({ x: r.x * width, y: r.y * height, w: r.w * width, h: r.h * height });
+  const photoBox = px(layout.photo);
+  const size = Math.min(photoBox.w, photoBox.h);
+  return {
+    photoPath: shapePath("heart", photoBox),
+    mapPath: shapePath("heart", px(layout.mapWindow)),
+    /** Square the photo is fitted into (cover). */
+    imageBox: { x: photoBox.x + (photoBox.w - size) / 2, y: photoBox.y + (photoBox.h - size) / 2, size },
+  };
 }
 
 /** Fades only make sense on a full-bleed map. */
