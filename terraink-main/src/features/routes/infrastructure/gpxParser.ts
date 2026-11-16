@@ -8,7 +8,7 @@ function deriveLabelFromGpx(doc: Document, fallback: string): string {
     ?? doc.querySelector("metadata > name")
     ?? doc.querySelector("name");
   // Apps like VisuGPX number their tracks ("Toubkal_1"): drop that suffix.
-  const raw = nameNode?.textContent?.trim().replace(/[_\s]+\d{1,2}$/, "").trim();
+  const raw = nameNode?.textContent?.trim().replace(/_\d{1,2}$/, "").trim();
   return raw && raw.length > 0 ? raw : fallback;
 }
 
