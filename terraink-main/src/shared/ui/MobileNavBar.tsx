@@ -4,7 +4,6 @@ import {
   LayoutIcon,
   LayersIcon,
   MarkersIcon,
-  RouteIcon,
   AdvancedIcon,
   StyleIcon,
 } from "./Icons";
@@ -32,7 +31,6 @@ const tabs: {
   { id: "size", labelKey: "nav.size", Icon: LayoutIcon },
   { id: "layers", labelKey: "nav.layers", Icon: LayersIcon },
   { id: "markers", labelKey: "nav.icons", Icon: MarkersIcon },
-  { id: "routes", labelKey: "nav.routes", Icon: RouteIcon },
   { id: "advanced", labelKey: "nav.advanced", Icon: AdvancedIcon },
 ];
 

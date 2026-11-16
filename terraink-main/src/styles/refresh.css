@@ -3432,3 +3432,65 @@ body:has(.store-page) {
     padding-bottom: 130px !important;
   }
 }
+
+/* Theme step: layout and shape folded under the colours. */
+.theme-more {
+  margin-top: 18px;
+  border: 1px solid #e3e2dc;
+  border-radius: 14px;
+  background: #fff;
+}
+
+.theme-more > summary {
+  display: grid;
+  grid-template-columns: minmax(0, 1fr) auto;
+  align-items: center;
+  column-gap: 12px;
+  row-gap: 2px;
+  padding: 14px 16px;
+  cursor: pointer;
+  list-style: none;
+}
+
+.theme-more > summary::-webkit-details-marker {
+  display: none;
+}
+
+.theme-more > summary::after {
+  content: "";
+  flex: 0 0 auto;
+  width: 8px;
+  height: 8px;
+  grid-column: 2;
+  grid-row: 1 / 3;
+  border-right: 2px solid #5d6660;
+  border-bottom: 2px solid #5d6660;
+  transform: rotate(45deg) translateY(-2px);
+  transition: transform 0.2s ease;
+}
+
+.theme-more[open] > summary::after {
+  transform: rotate(-135deg) translateY(-2px);
+}
+
+.theme-more__title {
+  font-weight: 700;
+  font-size: 0.92rem;
+}
+
+.theme-more__value {
+  grid-column: 1;
+  overflow: hidden;
+  color: #66706a;
+  font-size: 0.8rem;
+  white-space: nowrap;
+  text-overflow: ellipsis;
+}
+
+.theme-more .layout-shape {
+  padding: 0 14px 14px;
+}
+
+.theme-more .layout-shape > h3 {
+  display: none;
+}

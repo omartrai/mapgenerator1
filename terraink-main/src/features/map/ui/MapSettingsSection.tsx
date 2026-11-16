@@ -32,6 +32,7 @@ const FALLBACK_COLOR = "#000000";
 interface MapSettingsForm {
   posterKind?: string;
   posterLayout?: string;
+  mapShape?: string;
   theme: string;
   layout: string;
   width: string;
@@ -430,11 +431,7 @@ export default function MapSettingsSection({
         ) : (
           <>
           <SkyShapePicker />
-          {form.posterKind === "sky" || isTrailLayout(form.posterLayout) ? null : isSportLayout(form.posterLayout) ? (
-            <SportDesignPicker />
-          ) : (
-            <LayoutShapePicker />
-          )}
+          {isSportLayout(form.posterLayout) ? <SportDesignPicker /> : null}
           <h3 className="style-presets__title">{t("theme.colorsTitle")}</h3>
           <p className="style-presets__hint">{t("theme.colorsHint")}</p>
           <ThemeSummarySection
@@ -445,6 +442,21 @@ export default function MapSettingsSection({
             onThemeSelect={handleThemeSelect}
             onCustomize={handleOpenThemeEditor}
           />
+          {/* Most customers only change colours: layout and shape fold below. */}
+          {form.posterKind === "sky" || isSportLayout(form.posterLayout) || isTrailLayout(form.posterLayout) ? null : (
+            <details className="theme-more" open={form.posterLayout === "duo" || undefined}>
+              <summary>
+                <span className="theme-more__title">{t("style.group.layout")}</span>
+                <span className="theme-more__value">
+                  {[
+                    t(`style.layout.${form.posterLayout === "duo" ? "classic" : form.posterLayout || "classic"}` as TranslationKey),
+                    t(`style.shape.${form.posterLayout === "duo" ? "photo" : form.mapShape || "none"}` as TranslationKey),
+                  ].join(" · ")}
+                </span>
+              </summary>
+              <LayoutShapePicker />
+            </details>
+          )}
           </>
         )}
       </div>
