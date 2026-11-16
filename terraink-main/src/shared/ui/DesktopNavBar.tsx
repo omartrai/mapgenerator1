@@ -2,7 +2,6 @@ import { Fragment } from "react";
 import {
   LocationIcon,
   ThemeIcon,
-  LayoutIcon,
   LayersIcon,
   MarkersIcon,
   AdvancedIcon,
@@ -18,7 +17,6 @@ const tabs: {
 }[] = [
   { id: "theme", labelKey: "nav.theme", Icon: ThemeIcon },
   { id: "style", labelKey: "nav.style", Icon: StyleIcon },
-  { id: "size", labelKey: "nav.size", Icon: LayoutIcon },
   { id: "layers", labelKey: "nav.layers", Icon: LayersIcon },
   { id: "markers", labelKey: "nav.icons", Icon: MarkersIcon },
   { id: "advanced", labelKey: "nav.advanced", Icon: AdvancedIcon },
@@ -33,8 +31,8 @@ export interface RailKind {
   onSelect: () => void;
 }
 
-/** Steps 2–4 (step 1 is the place); everything after is optional. */
-const MAIN_STEPS: MobileTab[] = ["theme", "style", "size"];
+/** Steps 2–3 (step 1 is the place); size & frame are in the buy panel. */
+const MAIN_STEPS: MobileTab[] = ["theme", "style"];
 const FIRST_EXTRA: MobileTab = "layers";
 
 interface DesktopNavBarProps {

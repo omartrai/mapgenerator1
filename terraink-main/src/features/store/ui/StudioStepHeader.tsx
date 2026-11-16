@@ -1,6 +1,6 @@
 import type { MobileTab } from "@/shared/ui/MobileNavBar";
 import { useStoreText, type StoreTextKey } from "./storeText";
-import { MAIN_STEPS } from "./StudioStepFooter";
+import { useMainSteps } from "./StudioStepFooter";
 import { usePosterContext } from "@/features/poster/ui/PosterContext";
 import { isSkyPoster } from "@/features/sky/application/skyOptions";
 import PosterTypeBar from "@/features/sky/ui/PosterTypeBar";
@@ -17,7 +17,8 @@ interface StudioStepHeaderProps {
 export default function StudioStepHeader({ tab, setTab }: StudioStepHeaderProps) {
   const { t } = useStoreText();
   const known = SECTIONS.includes(tab);
-  const step = MAIN_STEPS.indexOf(tab);
+  const steps = useMainSteps();
+  const step = steps.indexOf(tab);
   const { state } = usePosterContext();
   // A night-sky poster asks for a place and a moment in the first step.
   const layout = state.form.posterLayout;
@@ -38,7 +39,7 @@ export default function StudioStepHeader({ tab, setTab }: StudioStepHeaderProps)
     <div className="studio-step">
       <PosterTypeBar onPick={(kind) => (kind === "sport" || kind === "trail" ? setTab("location") : undefined)} />
       <p className="studio-step__eyebrow">
-        {step >= 0 ? t("steps.count", { n: step + 1, total: MAIN_STEPS.length }) : known ? t("steps.extras") : t("studio.title")}
+        {step >= 0 ? t("steps.count", { n: step + 1, total: steps.length }) : known ? t("steps.extras") : t("studio.title")}
       </p>
       <h2 className="studio-step__title">
         {known ? t(`steps.${key}.title` as StoreTextKey) : t("studio.title")}

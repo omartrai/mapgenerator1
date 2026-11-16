@@ -14,6 +14,7 @@ import { useAddToCart } from "../application/useAddToCart";
 import { FREE_SHIPPING_THRESHOLD, formatRatio, frameDepthOf, unitPrice } from "../domain/catalog";
 import { useStore } from "./StoreContext";
 import { useStoreText } from "./storeText";
+import SizeFrameSection from "./SizeFrameSection";
 
 /** The "buy box": a summary of the configured poster with its price. */
 export default function PurchasePanel({ isMobile }: { isMobile: boolean }) {
@@ -87,20 +88,10 @@ export default function PurchasePanel({ isMobile }: { isMobile: boolean }) {
         </p>
       ) : null}
 
-      {/* Size and frame are chosen in the left panel; this is just the summary. */}
-      <dl className="buy-summary">
-        <div>
-          <dt>{t("buy.size")}</dt>
-          <dd>{`${formatRatio(product.sizeId, product.orientation)} ${shapeName(product.sizeId, product.orientation)} · ${sizeLabel(product.sizeId)}`}</dd>
-        </div>
-        <div>
-          <dt>{t("buy.frame")}</dt>
-          <dd>{finishSummary}</dd>
-        </div>
-      </dl>
-      <button type="button" className="buy-summary__edit" onClick={() => openSettingsTab({ tab: "size" })}>
-        {t("buyStep.change")}
-      </button>
+      {/* Size and frame are chosen here, next to the price they change. */}
+      <div className="studio-buy__options">
+        <SizeFrameSection />
+      </div>
 
       <div className="studio-buy__checkout">
       <div className="studio-buy__price">

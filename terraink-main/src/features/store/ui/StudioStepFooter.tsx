@@ -3,9 +3,16 @@ import type { MobileTab } from "@/shared/ui/MobileNavBar";
 import { closeSettingsPanel } from "@/shared/ui/settingsTabs";
 import { useLanguage, type TranslationKey } from "@/shared/i18n/LanguageContext";
 import { useStoreText } from "./storeText";
+import { useDesktopStudio } from "./useDesktopStudio";
 
-/** The four steps every poster goes through; the other tabs are options. */
+/** The steps every poster goes through on a phone; the other tabs are options. */
 export const MAIN_STEPS: MobileTab[] = ["location", "theme", "style", "size"];
+/** On desktop, size & frame are chosen in the buy panel next to the price. */
+export const DESKTOP_STEPS: MobileTab[] = ["location", "theme", "style"];
+
+export function useMainSteps(): MobileTab[] {
+  return useDesktopStudio() ? DESKTOP_STEPS : MAIN_STEPS;
+}
 
 /** Points the customer at the add-to-cart button (desktop box or mobile bar). */
 function nudgeCheckout() {
@@ -33,7 +40,8 @@ export default function StudioStepFooter({
 }) {
   const { t } = useStoreText();
   const { t: tNav } = useLanguage();
-  const index = MAIN_STEPS.indexOf(tab);
+  const steps = useMainSteps();
+  const index = steps.indexOf(tab);
   // Short tab names (Lieu, Thème, Texte…) keep the button on one line.
   const title = (step: MobileTab) => tNav(`nav.${step}` as TranslationKey);
 
@@ -41,15 +49,15 @@ export default function StudioStepFooter({
     // Optional tabs (map details, icons, routes): one way back to the flow.
     return (
       <div className="studio-steps-nav">
-        <button type="button" className="studio-steps-nav__next" onClick={() => setTab("size")}>
+        <button type="button" className="studio-steps-nav__next" onClick={() => setTab(steps[steps.length - 1])}>
           {t("steps.optionalDone")} <LuArrowRight className="rtl-flip" aria-hidden="true" />
         </button>
       </div>
     );
   }
 
-  const previous = index > 0 ? MAIN_STEPS[index - 1] : null;
-  const next = index < MAIN_STEPS.length - 1 ? MAIN_STEPS[index + 1] : null;
+  const previous = index > 0 ? steps[index - 1] : null;
+  const next = index < steps.length - 1 ? steps[index + 1] : null;
 
   return (
     <div className="studio-steps-nav">
