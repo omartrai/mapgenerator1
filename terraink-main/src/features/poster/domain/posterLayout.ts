@@ -362,6 +362,50 @@ export function mapOffsetOf(layout: PosterLayoutSpec): { x: number; y: number } 
   return { x: w.x + w.w / 2 - 0.5, y: w.y + w.h / 2 - 0.5 };
 }
 
+/** How the customer framed their photo: zoom (1 = just fills the heart) and the point kept in the centre (0–1). */
+export interface PhotoFrame {
+  zoom: number;
+  x: number;
+  y: number;
+}
+
+export const DEFAULT_PHOTO_FRAME: PhotoFrame = { zoom: 1, x: 0.5, y: 0.5 };
+export const PHOTO_ZOOM_MAX = 3;
+
+export function photoFrameFromForm(form: { photoZoom?: string; photoX?: string; photoY?: string }): PhotoFrame {
+  const num = (value: string | undefined, fallback: number) => {
+    const n = Number(value);
+    return value !== undefined && value !== "" && Number.isFinite(n) ? n : fallback;
+  };
+  return {
+    zoom: Math.min(PHOTO_ZOOM_MAX, Math.max(1, num(form.photoZoom, 1))),
+    x: Math.min(1, Math.max(0, num(form.photoX, 0.5))),
+    y: Math.min(1, Math.max(0, num(form.photoY, 0.5))),
+  };
+}
+
+/**
+ * Where to draw a photo of the given size so it covers the square box at the
+ * chosen zoom, with the chosen point in the middle (never leaving a gap).
+ */
+export function placePhoto(
+  imageWidth: number,
+  imageHeight: number,
+  box: { x: number; y: number; size: number },
+  frame: PhotoFrame,
+): { x: number; y: number; w: number; h: number } {
+  const scale = Math.max(box.size / imageWidth, box.size / imageHeight) * frame.zoom;
+  const w = imageWidth * scale;
+  const h = imageHeight * scale;
+  const clamp = (value: number, min: number, max: number) => Math.min(max, Math.max(min, value));
+  return {
+    x: clamp(box.x + box.size / 2 - frame.x * w, box.x + box.size - w, box.x),
+    y: clamp(box.y + box.size / 2 - frame.y * h, box.y + box.size - h, box.y),
+    w,
+    h,
+  };
+}
+
 /** Light grey shown in the photo heart until a photo is added. */
 export const PHOTO_PLACEHOLDER = "#E4E4E0";
 

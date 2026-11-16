@@ -94,6 +94,10 @@ export interface PosterForm {
   photo?: string;
   /** Print the photo in black and white. */
   photoMono?: boolean;
+  /** Framing of the photo in its heart (see PhotoFrame), as typed numbers. */
+  photoZoom?: string;
+  photoX?: string;
+  photoY?: string;
   showRoutes: boolean;
 }
 

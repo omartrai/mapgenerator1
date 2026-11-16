@@ -2523,3 +2523,56 @@ body:has(.store-page) {
 .sky-shapes__grid {
   grid-template-columns: repeat(5, minmax(0, 1fr)) !important;
 }
+
+/* Photo framing pad: drag to move, slider to zoom */
+.photo-framer {
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+  padding-top: 10px;
+  border-top: 1px solid #ecebe6;
+}
+
+.photo-framer__pad {
+  width: min(100%, 240px);
+  aspect-ratio: 1;
+  align-self: center;
+  overflow: hidden;
+  border-radius: 14px;
+  background: #f1f0ec;
+  cursor: grab;
+  touch-action: none;
+  user-select: none;
+}
+
+.photo-framer__pad:active {
+  cursor: grabbing;
+}
+
+.photo-framer__pad:focus-visible {
+  outline: 2px solid var(--s-green);
+  outline-offset: 2px;
+}
+
+.photo-framer__pad svg {
+  display: block;
+  width: 100%;
+  height: 100%;
+}
+
+.photo-framer__zoom {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  font-size: 0.8rem;
+  font-weight: 600;
+}
+
+.photo-framer__zoom input {
+  flex: 1;
+  accent-color: var(--s-green);
+}
+
+.photo-framer .photo-card__btn {
+  align-self: flex-start;
+}

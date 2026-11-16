@@ -1,4 +1,4 @@
-import { mapOffsetOf } from "@/features/poster/domain/posterLayout";
+import { mapOffsetOf, photoFrameFromForm } from "@/features/poster/domain/posterLayout";
 import { textPartsFromForm } from "@/features/poster/domain/textLayout";
 import {
   useCallback,
@@ -519,6 +519,7 @@ export default function PreviewPanel({ sidePanel, belowPoster }: PreviewPanelPro
             starChart={sky}
             photo={form.photo}
             photoMono={form.photoMono !== false}
+            photoFrame={photoFrameFromForm(form)}
             coordsLabel={sky ? skyDetailsLabel(form, formatCoordinates(formLat, formLon), language) : undefined}
             mapCredit={!sky}
             onMessageMove={handleMessageMove}

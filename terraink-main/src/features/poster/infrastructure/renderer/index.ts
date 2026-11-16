@@ -40,6 +40,7 @@ export async function compositeExport(
     starChart = false,
     photoImage = null,
     photoMono = true,
+    photoFrame,
     showOverlay = true,
     includeCredits = true,
     markers = [],
@@ -144,6 +145,7 @@ export async function compositeExport(
     starChart,
     photoImage,
     photoMono,
+    photoFrame,
   );
 
   const size: CanvasSize = {

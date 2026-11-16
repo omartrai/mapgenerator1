@@ -7,7 +7,10 @@ import {
   getPosterLayout,
   paperMaskPath,
   photoHearts,
+  placePhoto,
   PHOTO_PLACEHOLDER,
+  DEFAULT_PHOTO_FRAME,
+  type PhotoFrame,
   ACTIVITY_TYPE,
   type TextSlot,
 } from "@/features/poster/domain/posterLayout";
@@ -67,6 +70,7 @@ interface PosterTextOverlayProps {
   /** Customer photo for the photo layout (data URL), and black and white. */
   photo?: string;
   photoMono?: boolean;
+  photoFrame?: PhotoFrame;
   /** The OpenStreetMap credit; off for posters without map data (night sky). */
   mapCredit?: boolean;
   includeCredits: boolean;
@@ -141,6 +145,7 @@ export default function PosterTextOverlay({
   starChart = false,
   photo,
   photoMono = false,
+  photoFrame = DEFAULT_PHOTO_FRAME,
   includeCredits,
   showOverlay,
 }: PosterTextOverlayProps) {
@@ -171,6 +176,19 @@ export default function PosterTextOverlay({
   const mask = size.width > 0 ? paperMaskPath(layout, mapShape, size.width, size.height) : null;
   const hearts = size.width > 0 ? photoHearts(layout, size.width, size.height) : null;
   const photoId = useId().replace(/:/g, "");
+  // The photo's own size, to frame it like the print does.
+  const [photoSize, setPhotoSize] = useState<{ w: number; h: number } | null>(null);
+  useEffect(() => {
+    if (!photo) return setPhotoSize(null);
+    let live = true;
+    const image = new Image();
+    image.onload = () => live && setPhotoSize({ w: image.naturalWidth, h: image.naturalHeight });
+    image.src = photo;
+    return () => {
+      live = false;
+    };
+  }, [photo]);
+  const photoSpot = hearts && photoSize ? placePhoto(photoSize.w, photoSize.h, hearts.imageBox, photoFrame) : null;
   const textColor = layout.box ? layout.box.text : themeText;
   const cityLabel = cityText(layout, city, formatCityLabel);
   const countryLabel = countryText(layout, country);
@@ -306,11 +324,11 @@ export default function PosterTextOverlay({
                   {photo ? (
                     <image
                       href={photo}
-                      x={hearts.imageBox.x}
-                      y={hearts.imageBox.y}
-                      width={hearts.imageBox.size}
-                      height={hearts.imageBox.size}
-                      preserveAspectRatio="xMidYMid slice"
+                      x={photoSpot ? photoSpot.x : hearts.imageBox.x}
+                      y={photoSpot ? photoSpot.y : hearts.imageBox.y}
+                      width={photoSpot ? photoSpot.w : hearts.imageBox.size}
+                      height={photoSpot ? photoSpot.h : hearts.imageBox.size}
+                      preserveAspectRatio={photoSpot ? "none" : "xMidYMid slice"}
                       style={photoMono ? { filter: "grayscale(1)" } : undefined}
                     />
                   ) : (

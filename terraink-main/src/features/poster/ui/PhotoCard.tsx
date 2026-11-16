@@ -3,6 +3,7 @@ import { LuImagePlus, LuTrash2 } from "react-icons/lu";
 import { usePosterContext } from "@/features/poster/ui/PosterContext";
 import { useLanguage } from "@/shared/i18n/LanguageContext";
 import { photoFileToDataUrl } from "@/shared/utils/image";
+import PhotoFramer from "./PhotoFramer";
 
 /** Upload, replace or remove the photo of the photo + map layout. */
 export default function PhotoCard() {
@@ -19,7 +20,9 @@ export default function PhotoCard() {
     setBusy(true);
     setError(false);
     try {
-      dispatch({ type: "SET_FIELD", name: "photo", value: await photoFileToDataUrl(file) });
+      const value = await photoFileToDataUrl(file);
+      // A new photo starts centred and unzoomed.
+      dispatch({ type: "SET_FORM_FIELDS", fields: { photo: value, photoZoom: "", photoX: "", photoY: "" } });
     } catch {
       setError(true);
     } finally {
@@ -66,6 +69,7 @@ export default function PhotoCard() {
         />
         {t("photo.mono")}
       </label>
+      {photo ? <PhotoFramer photo={photo} mono={mono} /> : null}
       {error ? (
         <p className="photo-card__error" role="alert">
           {t("photo.error")}

@@ -1,4 +1,5 @@
 import { loadImage } from "@/shared/utils/image";
+import { photoFrameFromForm } from "@/features/poster/domain/posterLayout";
 import { useCallback, useMemo } from "react";
 import { usePosterContext } from "@/features/poster/ui/PosterContext";
 import { textPartsFromForm } from "@/features/poster/domain/textLayout";
@@ -203,6 +204,7 @@ export function useExport() {
         messageLook: messageLookFromForm(form),
         photoImage,
         photoMono: form.photoMono !== false,
+        photoFrame: photoFrameFromForm(form),
         ...(sky ? { mapCredit: false, starChart: true, coordsLabel: skyDetailsLabel(form, formatCoordinates(lat, lon), language) } : {}),
         markers: hasVisibleMarkers && !sky ? state.markers : [],
         markerIcons: withOverlays ? getAllMarkerIcons(state.customMarkerIcons) : [],

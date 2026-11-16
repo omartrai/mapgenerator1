@@ -7,7 +7,10 @@ import {
   getPosterLayout,
   paperMaskPath,
   photoHearts,
+  placePhoto,
   PHOTO_PLACEHOLDER,
+  DEFAULT_PHOTO_FRAME,
+  type PhotoFrame,
   ACTIVITY_TYPE,
   type PosterLayoutSpec,
   type TextSlot,
@@ -83,6 +86,7 @@ export function drawPosterText(
   /** Photo layout: the customer's photo (already loaded) and black and white. */
   photo: CanvasImageSource | null = null,
   photoMono: boolean = true,
+  photoFrame: PhotoFrame = DEFAULT_PHOTO_FRAME,
 ): void {
   const baseLayout = getPosterLayout(layoutId);
   const layout = starChart ? skyTextLayout(baseLayout, width, height) : baseLayout;
@@ -119,17 +123,9 @@ export function drawPosterText(
       const source = photo as HTMLImageElement;
       const sw = source.naturalWidth || source.width;
       const sh = source.naturalHeight || source.height;
-      const scale = Math.max(hearts.imageBox.size / sw, hearts.imageBox.size / sh);
-      const dw = sw * scale;
-      const dh = sh * scale;
+      const spot = placePhoto(sw, sh, hearts.imageBox, photoFrame);
       if (photoMono) ctx.filter = "grayscale(1)";
-      ctx.drawImage(
-        photo,
-        hearts.imageBox.x + (hearts.imageBox.size - dw) / 2,
-        hearts.imageBox.y + (hearts.imageBox.size - dh) / 2,
-        dw,
-        dh,
-      );
+      ctx.drawImage(photo, spot.x, spot.y, spot.w, spot.h);
       ctx.filter = "none";
     } else {
       ctx.fillStyle = PHOTO_PLACEHOLDER;

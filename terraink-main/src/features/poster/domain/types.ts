@@ -44,6 +44,7 @@ export interface ExportOptions {
   /** Photo layout: the customer's photo, loaded, and black and white. */
   photoImage?: CanvasImageSource | null;
   photoMono?: boolean;
+  photoFrame?: import("./posterLayout").PhotoFrame;
   showOverlay?: boolean;
   includeCredits?: boolean;
   markers?: MarkerItem[];
