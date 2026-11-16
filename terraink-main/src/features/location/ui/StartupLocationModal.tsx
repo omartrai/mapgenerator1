@@ -12,9 +12,7 @@ import {
   getGeolocationFailureMessage,
   requestCurrentPositionWithRetry,
 } from "@/features/location/infrastructure";
-import { LuArrowRight, LuLandmark, LuMap, LuMapPin, LuMapPinned, LuMountainSnow, LuScan, LuSparkles } from "react-icons/lu";
-import { FaPersonRunning } from "react-icons/fa6";
-import { useSkyPoster, type PosterKind } from "@/features/sky/application/useSkyPoster";
+import { LuArrowRight, LuLandmark, LuMapPin, LuMapPinned, LuScan } from "react-icons/lu";
 import { MyLocationIcon, SearchIcon } from "@/shared/ui/Icons";
 import BrandMark, { BrandWordmark } from "@/shared/ui/BrandMark";
 import { usePosterDispatch } from "@/features/poster/ui/PosterContext";
@@ -86,13 +84,6 @@ export default function StartupLocationModal({
   const { locationSuggestions, isLocationSearching, clearLocationSuggestions, searchNow } =
     useLocationAutocomplete(locationInput, isInputFocused);
   const { recent, removeRecent, clearRecent } = useRecentLocations();
-  // What kind of poster: a sport or trail poster starts from a route, so the
-  // pop-up closes at once; a map or a night sky still needs a place.
-  const { kind: posterKind, setKind: setPosterKind } = useSkyPoster();
-  const pickPosterKind = (next: PosterKind) => {
-    setPosterKind(next);
-    if (next === "sport" || next === "trail") closeModal();
-  };
 
   const closeModal = () => {
     setIsClosing(true);
@@ -286,30 +277,6 @@ export default function StartupLocationModal({
         </h1>
         <p className="startup-modal__lede">{t("startup.description")}</p>
 
-        <div className="startup-modal__types" role="radiogroup" aria-label={t("sky.kind")}>
-          {(
-            [
-              ["map", "kind.short.map", LuMap],
-              ["sky", "kind.short.sky", LuSparkles],
-              ["sport", "kind.short.sport", FaPersonRunning],
-              ["trail", "kind.short.trail", LuMountainSnow],
-            ] as const
-          ).map(([id, label, Icon]) => (
-            <button
-              key={id}
-              type="button"
-              role="radio"
-              aria-checked={posterKind === id}
-              className={`startup-modal__type${posterKind === id ? " is-selected" : ""}`}
-              onClick={() => pickPosterKind(id)}
-            >
-              <Icon aria-hidden="true" />
-              <span>{t(label)}</span>
-            </button>
-          ))}
-        </div>
-
-        {posterKind === "sky" ? null : (
         <div className="startup-modal__kinds" role="radiogroup" aria-label={t("startup.kinds")}>
           {PLACE_KINDS.map(({ id, Icon }) => (
             <button
@@ -325,7 +292,6 @@ export default function StartupLocationModal({
             </button>
           ))}
         </div>
-        )}
 
         <label className="startup-modal__sr" htmlFor="startup-location-search">
           {t("startup.searchLabel")}
