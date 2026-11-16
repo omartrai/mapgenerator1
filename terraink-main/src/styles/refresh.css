@@ -3547,3 +3547,56 @@ body:has(.store-page) {
   gap: 10px;
   margin-top: 12px;
 }
+
+/* Studio: poster type as a horizontal bar above the step (desktop). */
+.poster-type-bar {
+  display: grid;
+  grid-template-columns: repeat(4, minmax(0, 1fr));
+  gap: 4px;
+  margin: 0 0 18px;
+  padding: 4px;
+  border-radius: 14px;
+  background: #f1f2ee;
+}
+
+.poster-type-bar__opt {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: 6px;
+  min-height: 38px;
+  padding: 6px 4px;
+  border: 0;
+  border-radius: 10px;
+  background: transparent;
+  color: #5d6660;
+  font: inherit;
+  font-size: 0.8rem;
+  font-weight: 600;
+  white-space: nowrap;
+  cursor: pointer;
+  transition: background-color 0.15s, color 0.15s, box-shadow 0.15s;
+}
+
+.poster-type-bar__opt svg {
+  flex: 0 0 auto;
+  width: 15px;
+  height: 15px;
+}
+
+.poster-type-bar__opt:hover {
+  color: var(--s-ink);
+}
+
+.poster-type-bar__opt.is-active {
+  background: #fff;
+  color: var(--s-green);
+  box-shadow: 0 0 0 1.5px var(--s-green), 0 1px 3px rgb(0 0 0 / 0.08);
+}
+
+/* Phones have the type tiles under the search bar already. */
+@media (max-width: 768px), (hover: none) and (pointer: coarse) {
+  .poster-type-bar {
+    display: none;
+  }
+}

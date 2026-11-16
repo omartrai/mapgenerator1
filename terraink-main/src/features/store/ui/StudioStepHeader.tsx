@@ -3,6 +3,7 @@ import { useStoreText, type StoreTextKey } from "./storeText";
 import { MAIN_STEPS } from "./StudioStepFooter";
 import { usePosterContext } from "@/features/poster/ui/PosterContext";
 import { isSkyPoster } from "@/features/sky/application/skyOptions";
+import PosterTypeBar from "@/features/sky/ui/PosterTypeBar";
 import { isSportLayout, isTrailLayout } from "@/features/poster/domain/posterLayout";
 
 const SECTIONS: MobileTab[] = ["location", "theme", "style", "size", "layers", "markers", "routes", "advanced"];
@@ -13,7 +14,7 @@ interface StudioStepHeaderProps {
 }
 
 /** Panel heading: the page title, then the name and hint of the open section. */
-export default function StudioStepHeader({ tab }: StudioStepHeaderProps) {
+export default function StudioStepHeader({ tab, setTab }: StudioStepHeaderProps) {
   const { t } = useStoreText();
   const known = SECTIONS.includes(tab);
   const step = MAIN_STEPS.indexOf(tab);
@@ -35,6 +36,7 @@ export default function StudioStepHeader({ tab }: StudioStepHeaderProps) {
   // open section's name and what to do there.
   return (
     <div className="studio-step">
+      <PosterTypeBar onPick={(kind) => (kind === "sport" || kind === "trail" ? setTab("location") : undefined)} />
       <p className="studio-step__eyebrow">
         {step >= 0 ? t("steps.count", { n: step + 1, total: MAIN_STEPS.length }) : known ? t("steps.extras") : t("studio.title")}
       </p>

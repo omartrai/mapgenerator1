@@ -6,10 +6,8 @@ import {
   MIN_MARKER_SIZE,
 } from "@/features/markers/domain/constants";
 import GeneralHeader from "@/shared/ui/GeneralHeader";
-import DesktopNavBar, { type RailKind } from "@/shared/ui/DesktopNavBar";
+import DesktopNavBar from "@/shared/ui/DesktopNavBar";
 import { useSkyPoster } from "@/features/sky/application/useSkyPoster";
-import { FaPersonRunning } from "react-icons/fa6";
-import { LuMap, LuMountainSnow, LuSparkles } from "react-icons/lu";
 import { RouteIcon } from "@/shared/ui/Icons";
 import FooterNote from "@/shared/ui/FooterNote";
 import PreviewPanel from "@/features/poster/ui/PreviewPanel";
@@ -255,27 +253,9 @@ export default function AppShell({
     setDesktopPanelOpen(true);
   };
 
-  // Poster type (map, sky, sport, trail) is chosen in its own group at the
-  // top of the rail; picking one opens the first step.
-  const { kind: posterKind, setKind } = useSkyPoster();
+  // Sport and trail posters call the first step "Parcours".
+  const { kind: posterKind } = useSkyPoster();
   const isRoutePoster = posterKind === "sport" || posterKind === "trail";
-  const railKinds: RailKind[] = (
-    [
-      ["map", "kind.short.map", LuMap],
-      ["sky", "kind.short.sky", LuSparkles],
-      ["sport", "kind.short.sport", FaPersonRunning],
-      ["trail", "kind.short.trail", LuMountainSnow],
-    ] as const
-  ).map(([id, labelKey, Icon]) => ({
-    id,
-    label: t(labelKey),
-    Icon,
-    active: posterKind === id,
-    onSelect: () => {
-      setKind(id);
-      handleDesktopTabChange("location");
-    },
-  }));
 
   // Step buttons can ask to close the mobile drawer (e.g. "Order").
   useEffect(() => onCloseSettingsPanel(() => setMobileDrawerOpen(false)), []);
@@ -325,11 +305,9 @@ export default function AppShell({
       {showStartupModal ? <StartupLocationModal /> : null}
 
       <DesktopNavBar
-        kinds={railKinds}
         activeTab={desktopTab}
         panelOpen={desktopPanelOpen}
         onTabChange={handleDesktopTabChange}
-        kindsLabel={t("nav.posterType")}
         locationLabel={isRoutePoster ? t("nav.route") : undefined}
         LocationStepIcon={isRoutePoster ? RouteIcon : undefined}
         isLocationVisible={
