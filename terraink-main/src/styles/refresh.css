@@ -3605,3 +3605,48 @@ body:has(.store-page) {
 .sport-designs {
   grid-template-columns: repeat(3, minmax(0, 1fr));
 }
+
+/* ── "Au mur" on phones: the room photo behind, the poster hung on its wall ── */
+@media (max-width: 768px), (hover: none) and (pointer: coarse) {
+  .app-shell[data-store-studio][data-scene="wall"] .room-decor--wall {
+    /* Sideboard just under the poster, above the price bar. */
+    background-size: cover;
+    background-position: center 64%;
+  }
+
+  .app-shell.app-shell[data-store-studio][data-scene="wall"] .poster-frame,
+  .app-shell.app-shell[data-store-studio][data-scene="wall"] > .preview-panel .poster-frame {
+    width: min(46%, calc((100dvh - 470px) * var(--poster-aspect, 0.75))) !important;
+    min-width: 0 !important;
+    box-shadow:
+      2px 3px 4px rgba(38, 30, 22, 0.3),
+      8px 12px 22px rgba(38, 30, 22, 0.22) !important;
+  }
+
+  .app-shell[data-store-studio][data-scene="wall"] .map-controls {
+    display: none !important;
+  }
+
+  .app-shell[data-store-studio][data-scene="wall"] .room-decor__scale {
+    display: none;
+  }
+}
+
+/* Phones: the Studio / Au mur switch sits under the place bar, in view. */
+.mobile-view-toggle {
+  display: flex;
+  justify-content: center;
+  margin-top: 8px;
+}
+
+.mobile-view-toggle .studio-view-toggle {
+  position: static !important;
+  transform: none !important;
+  width: max-content;
+}
+
+@media (max-width: 768px), (hover: none) and (pointer: coarse) {
+  .app-shell[data-store-studio] .preview-panel .studio-view-toggle {
+    display: none !important;
+  }
+}

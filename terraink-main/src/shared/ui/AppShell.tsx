@@ -95,6 +95,8 @@ export interface AppShellSlots {
   sizeSection?: ReactNode;
   /** Step guidance above the settings, given the active tab and a setter. */
   panelHeader?: (tab: MobileTab, setTab: (tab: MobileTab) => void) => ReactNode;
+  /** Phones: shown under the place bar (e.g. the Studio / Au mur switch). */
+  mobileBarExtra?: ReactNode;
   /** Shown under the settings of the open tab (e.g. step navigation). */
   panelFooter?: (tab: MobileTab, setTab: (tab: MobileTab) => void) => ReactNode;
   /** Whether to open the "where is your place?" dialog on mount. */
@@ -117,6 +119,7 @@ export default function AppShell({
   belowPoster,
   sizeSection,
   panelHeader,
+  mobileBarExtra,
   panelFooter,
   showStartupModal = true,
   initialTab = "theme",
@@ -337,6 +340,7 @@ export default function AppShell({
           <DesktopLocationBar />
         </Suspense>
         {isMobileViewport ? <MobileSkyBar /> : null}
+        {isMobileViewport && mobileBarExtra ? <div className="mobile-view-toggle">{mobileBarExtra}</div> : null}
       </div>
       {isMobileViewport && isMarkerEditorActive && activeMarker ? (
         <div

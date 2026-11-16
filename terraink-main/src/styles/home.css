@@ -4290,7 +4290,7 @@
   }
 
   .app-shell[data-store-studio][data-scene="wall"] .poster-frame {
-    top: calc(42cqh + var(--wall-h) * 0.345 - var(--cm) * (25 + var(--frame-h-cm) / 2)) !important;
+    top: calc(var(--wall-center, 42cqh) + var(--wall-h) * 0.345 - var(--cm) * (25 + var(--frame-h-cm) / 2)) !important;
     width: calc(var(--cm) * var(--frame-w-cm)) !important;
     border-width: calc(var(--cm) * var(--moulding)) !important;
     border-radius: 1px !important;

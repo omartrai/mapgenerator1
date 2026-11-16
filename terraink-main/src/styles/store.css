@@ -4129,12 +4129,12 @@ button.store-btn--dark[type="submit"] {
 
   .app-shell[data-store-studio][data-scene="wall"] .room-decor--wall {
     background-size: auto var(--wall-h);
-    background-position: center calc(42cqh - var(--wall-h) * 0.42);
+    background-position: center calc(var(--wall-center, 42cqh) - var(--wall-h) * 0.42);
   }
 
   .app-shell[data-store-studio][data-scene="wall"] .poster-frame {
     position: absolute !important;
-    top: 42cqh;
+    top: var(--wall-center, 42cqh);
     left: 50%;
     width: min(
       calc(var(--wall-h) * 0.6 * var(--poster-aspect, 0.7071)),

@@ -194,6 +194,7 @@ export default function StudioPage() {
       header={<StoreHeader variant="studio" />}
       sizeSection={<SizeFrameSection />}
       panelHeader={(tab, setTab) => <StudioStepHeader tab={tab} setTab={setTab} />}
+      mobileBarExtra={<StudioViewToggle />}
       panelFooter={(tab, setTab) => (adminTask ? null : <StudioStepFooter tab={tab} setTab={setTab} />)}
       actionArea={({ isMobile }) =>
         adminTask ? (
