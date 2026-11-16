@@ -51,13 +51,14 @@ export default function MapDimensionFields({
     const maxLog = Math.log(MAX_DISTANCE_METERS);
     const ratio =
       (Math.log(clampDistance(distanceMeters)) - minLog) / (maxLog - minLog);
-    return Math.round(SLIDER_MIN + ratio * (SLIDER_MAX - SLIDER_MIN));
+    // Reversed: sliding right zooms in (smaller area).
+    return Math.round(SLIDER_MAX - ratio * (SLIDER_MAX - SLIDER_MIN));
   };
 
   const sliderValueToDistance = (sliderValue: number) => {
     const minLog = Math.log(MIN_DISTANCE_METERS);
     const maxLog = Math.log(MAX_DISTANCE_METERS);
-    const ratio = (sliderValue - SLIDER_MIN) / (SLIDER_MAX - SLIDER_MIN);
+    const ratio = (SLIDER_MAX - sliderValue) / (SLIDER_MAX - SLIDER_MIN);
     const distance = Math.exp(minLog + ratio * (maxLog - minLog));
     return snapDistanceToAdaptiveStep(distance);
   };
@@ -90,7 +91,7 @@ export default function MapDimensionFields({
   const sliderValue = distanceToSliderValue(distanceValue);
 
   // Only the two ends: the middle marks crowd together on narrow panels.
-  const sliderMetaMarks = [MIN_DISTANCE_METERS, MAX_DISTANCE_METERS];
+  const sliderMetaMarks = [MAX_DISTANCE_METERS, MIN_DISTANCE_METERS];
 
   const sliderPositionPercent = (distanceMeters: number) =>
     ((distanceToSliderValue(distanceMeters) - SLIDER_MIN) /
