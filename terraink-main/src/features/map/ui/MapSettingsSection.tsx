@@ -19,7 +19,6 @@ import ColorPicker from "@/features/theme/ui/ColorPicker";
 import ThemeColorEditor from "@/features/theme/ui/ThemeColorEditor";
 import ThemeSummarySection from "@/features/theme/ui/ThemeSummarySection";
 import SkyShapePicker from "@/features/sky/ui/SkyShapePicker";
-import PosterStylePicker from "@/features/poster/ui/PosterStylePicker";
 import LayoutShapePicker from "@/features/poster/ui/LayoutShapePicker";
 import { CheckIcon, EditIcon } from "@/shared/ui/Icons";
 import type { ResolvedTheme } from "@/features/theme/domain/types";
@@ -428,7 +427,6 @@ export default function MapSettingsSection({
         ) : (
           <>
           <SkyShapePicker />
-          {form.posterKind !== "sky" ? <PosterStylePicker /> : null}
           {form.posterKind !== "sky" ? <LayoutShapePicker /> : null}
           <h3 className="style-presets__title">{t("theme.colorsTitle")}</h3>
           <p className="style-presets__hint">{t("theme.colorsHint")}</p>

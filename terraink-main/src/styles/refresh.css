@@ -2595,3 +2595,7 @@ body:has(.store-page) {
   font-size: 0.74rem;
   font-weight: 600;
 }
+
+.layout-shape .shape-picker__grid {
+  grid-template-columns: repeat(5, minmax(0, 1fr));
+}

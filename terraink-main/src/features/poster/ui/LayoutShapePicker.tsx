@@ -1,4 +1,6 @@
-import { LuBan, LuCircle, LuHeart, LuStar } from "react-icons/lu";
+import { LuBan, LuCircle, LuHeart, LuImage, LuStar } from "react-icons/lu";
+import { usePosterStyles } from "@/features/poster/application/usePosterStyles";
+import PhotoCard from "./PhotoCard";
 import {
   DEFAULT_POSTER_LAYOUT,
   MAP_SHAPES,
@@ -8,7 +10,7 @@ import {
 import { usePosterContext } from "@/features/poster/ui/PosterContext";
 import { useLanguage, type TranslationKey } from "@/shared/i18n/LanguageContext";
 
-const SHAPE_ICONS = { none: LuBan, circle: LuCircle, heart: LuHeart, star: LuStar } as const;
+const SHAPE_ICONS = { none: LuBan, circle: LuCircle, heart: LuHeart, star: LuStar, photo: LuImage } as const;
 
 /** Poster layout and map shape (shown in the Theme step). */
 export default function LayoutShapePicker() {
@@ -16,8 +18,17 @@ export default function LayoutShapePicker() {
   const { state, dispatch } = usePosterContext();
   const { form } = state;
   const set = (name: "posterLayout" | "mapShape", value: string) => dispatch({ type: "SET_FIELD", name, value });
+  const { apply } = usePosterStyles();
+  const isPhoto = form.posterLayout === "duo";
   const layoutId = form.posterLayout || DEFAULT_POSTER_LAYOUT;
-  const shapeId = form.mapShape || "none";
+  const shapeId = isPhoto ? "photo" : form.mapShape || "none";
+
+  const pickShape = (id: string) => {
+    if (id === "photo") return apply("photo");
+    // Leaving the photo layout: back to the classic one.
+    if (isPhoto) set("posterLayout", DEFAULT_POSTER_LAYOUT);
+    set("mapShape", id);
+  };
 
   return (
     <section className="layout-shape" aria-labelledby="layout-shape-title">
@@ -50,7 +61,7 @@ export default function LayoutShapePicker() {
       <fieldset className="layout-picker shape-picker">
         <legend>{t("style.shape")}</legend>
         <div className="shape-picker__grid">
-          {MAP_SHAPES.map((id) => {
+          {[...MAP_SHAPES, "photo" as const].map((id) => {
             const Icon = SHAPE_ICONS[id];
             return (
               <label key={id} className="shape-picker__option">
@@ -59,7 +70,7 @@ export default function LayoutShapePicker() {
                   name="mapShape-theme"
                   value={id}
                   checked={shapeId === id}
-                  onChange={() => set("mapShape", id)}
+                  onChange={() => pickShape(id)}
                 />
                 <span className={`shape-picker__tile shape-picker__tile--${id}`} aria-hidden="true">
                   <Icon />
@@ -70,6 +81,7 @@ export default function LayoutShapePicker() {
           })}
         </div>
       </fieldset>
+      {isPhoto ? <PhotoCard /> : null}
     </section>
   );
 }
