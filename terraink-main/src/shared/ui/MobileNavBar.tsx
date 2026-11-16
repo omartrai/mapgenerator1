@@ -58,9 +58,10 @@ export default function MobileNavBar({
             {tabs.map(({ id, labelKey, Icon }) => {
               const label = t(labelKey);
               const isLocationTab = id === "location";
+              // One tab lit at a time: the place bar counts only when no sheet is open.
               const isActive = isLocationTab
-                ? isLocationVisible
-                : activeTab === id;
+                ? isLocationVisible && !drawerOpen
+                : drawerOpen && activeTab === id;
               return (
                 <button
                   key={id}

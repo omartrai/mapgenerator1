@@ -3339,3 +3339,96 @@ body:has(.store-page) {
 .admin-alerts .admin-subtle {
   font-size: 0.75rem;
 }
+
+/* Phone: poster type tiles in one short row (icon beside the name). */
+.mobile-sky-bar .kind-tiles {
+  margin: 0;
+  gap: 6px;
+}
+
+.mobile-sky-bar .kind-tile {
+  flex-direction: row;
+  gap: 5px;
+  min-height: 40px;
+  padding: 6px 4px;
+  border-radius: 12px;
+  font-size: 0.74rem;
+}
+
+.mobile-sky-bar .kind-tile svg {
+  flex: 0 0 auto;
+  width: 16px;
+  height: 16px;
+}
+
+.mobile-sky-bar .kind-tile span {
+  overflow: hidden;
+  white-space: nowrap;
+  text-overflow: ellipsis;
+}
+
+/* Rail: numbered main steps, then an "Options" group; fits a 900 px screen. */
+@media (min-width: 769px) and (hover: hover) and (pointer: fine) {
+  .app-shell[data-store-studio] .desktop-nav-tab {
+    position: relative;
+    height: 62px !important;
+    gap: 4px !important;
+  }
+
+  .app-shell[data-store-studio] .desktop-nav-bar {
+    gap: 2px !important;
+  }
+}
+
+.desktop-nav-step {
+  position: absolute;
+  top: 5px;
+  right: 9px;
+  display: grid;
+  place-items: center;
+  width: 15px;
+  height: 15px;
+  border-radius: 50%;
+  background: #e7ece8;
+  color: var(--s-green);
+  font-size: 0.56rem;
+  font-weight: 700;
+  line-height: 1;
+}
+
+.desktop-nav-tab.is-active .desktop-nav-step {
+  background: var(--s-green);
+  color: #fff;
+}
+
+.desktop-nav-divider {
+  flex-shrink: 0;
+  width: 60px;
+  margin: 8px 0 4px;
+  padding-top: 8px;
+  border-top: 1px solid #e3e2dc;
+  color: #8a918c;
+  font-size: 0.55rem;
+  font-weight: 700;
+  letter-spacing: 0.08em;
+  text-align: center;
+  text-transform: uppercase;
+}
+
+/* Phone studio: the whole poster fits between the place bar and the price
+   bar (it used to slide under the price bar, hiding the title). */
+@media (max-width: 768px), (hover: none) and (pointer: coarse) {
+  .app-shell[data-store-studio] .poster-frame,
+  .app-shell[data-store-studio] > .preview-panel .poster-frame {
+    width: min(
+      calc(100% - 48px),
+      max(150px, calc((100dvh - 410px) * var(--poster-aspect, 0.75)))
+    ) !important;
+    min-width: 0 !important;
+  }
+
+  .app-shell[data-store-studio] .poster-viewport {
+    padding-top: 44px !important;
+    padding-bottom: 130px !important;
+  }
+}

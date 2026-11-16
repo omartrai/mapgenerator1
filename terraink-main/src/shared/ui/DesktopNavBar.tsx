@@ -1,3 +1,4 @@
+import { Fragment } from "react";
 import {
   LocationIcon,
   ThemeIcon,
@@ -33,6 +34,10 @@ export interface RailKind {
   active: boolean;
   onSelect: () => void;
 }
+
+/** Steps 2–4 (step 1 is the place); everything after is optional. */
+const MAIN_STEPS: MobileTab[] = ["theme", "style", "size"];
+const FIRST_EXTRA: MobileTab = "layers";
 
 interface DesktopNavBarProps {
   kinds?: RailKind[];
@@ -94,15 +99,21 @@ export default function DesktopNavBar({
         aria-label={isLocationVisible ? t("location.hide") : t("location.show")}
         aria-pressed={isLocationVisible}
       >
+        <span className="desktop-nav-step" aria-hidden="true">1</span>
         <LocationStepIcon className="desktop-nav-icon" />
         <span className="desktop-nav-label">{locationLabel ?? t("nav.location")}</span>
       </button>
 
       {tabs.map(({ id, labelKey, Icon }) => {
         const label = t(labelKey);
+        // The four main steps are numbered; the rest are optional extras.
+        const step = MAIN_STEPS.indexOf(id) + 2;
         return (
+        <Fragment key={id}>
+        {id === FIRST_EXTRA ? (
+          <span className="desktop-nav-divider">{t("nav.extras")}</span>
+        ) : null}
         <button
-          key={id}
           type="button"
           className={`btn btn-ghost desktop-nav-tab desktop-nav-tab--${id}${panelOpen && activeTab === id ? " is-active" : ""}`}
           onClick={() => onTabChange(id)}
@@ -110,9 +121,11 @@ export default function DesktopNavBar({
           aria-label={label}
           aria-current={panelOpen && activeTab === id ? "page" : undefined}
         >
+          {step > 1 ? <span className="desktop-nav-step" aria-hidden="true">{step}</span> : null}
           <Icon className="desktop-nav-icon" />
           <span className="desktop-nav-label">{label}</span>
         </button>
+        </Fragment>
         );
       })}
     </nav>

@@ -16,7 +16,7 @@ export default function MobileSkyBar() {
 
   return (
     <div className="mobile-sky-bar">
-      <PosterKindPicker />
+      <PosterKindPicker mini />
       {kind === "sport" || kind === "trail" ? <SportRouteCard compact /> : null}
       {isSky ? (
         <>

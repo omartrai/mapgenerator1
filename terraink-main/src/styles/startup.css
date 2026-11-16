@@ -484,3 +484,60 @@
     margin-bottom: 0 !important;
   }
 }
+
+/* Poster type (map, sky, sport, trail): a segmented row above the place. */
+.startup-modal__types {
+  display: grid;
+  grid-template-columns: repeat(4, minmax(0, 1fr));
+  gap: 4px;
+  margin-top: 22px;
+  padding: 4px;
+  border-radius: 14px;
+  background: #f1f2ee;
+}
+
+.startup-modal__type {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: 6px;
+  min-height: 40px;
+  padding: 6px 4px;
+  border: 0;
+  border-radius: 10px;
+  background: transparent;
+  color: #5d6660;
+  font: inherit;
+  font-size: 0.82rem;
+  font-weight: 600;
+  white-space: nowrap;
+  cursor: pointer;
+}
+
+.startup-modal__type svg {
+  flex: 0 0 auto;
+  width: 16px;
+  height: 16px;
+}
+
+.startup-modal__type:hover {
+  color: var(--s-ink, #1f2a24);
+}
+
+.startup-modal__type.is-selected {
+  background: #fff;
+  color: var(--s-green, #1f3b33);
+  box-shadow: 0 1px 3px rgb(0 0 0 / 0.12);
+}
+
+.startup-modal__types + .startup-modal__kinds {
+  margin-top: 14px;
+}
+
+@media (max-width: 520px) {
+  .startup-modal__type {
+    flex-direction: column;
+    gap: 2px;
+    font-size: 0.7rem;
+  }
+}
