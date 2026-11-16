@@ -13,7 +13,7 @@ import { boundsCenter, routeBounds } from "../infrastructure/helpers";
 import type { Route } from "../domain/types";
 
 /** Sport and trail designs the customer can pick. */
-export type SportDesign = "race" | "bold" | "photorun" | "activity" | "topo";
+export type SportDesign = "race" | "bib" | "bold" | "green" | "photorun" | "activity" | "topo";
 
 const ALL_LAYERS = {
   includeLandcover: true,
@@ -37,6 +37,8 @@ const TRAIL_LAYERS = {
 /** Look of each design: theme, poster font and route line. */
 const DESIGN_LOOK: Record<SportDesign, { theme: string; font: string; color: string; width: number }> = {
   race: { theme: "race_white", font: "Montserrat", color: "#D62F2F", width: 5 },
+  bib: { theme: "race_grey", font: "Oswald", color: "#E0201B", width: 4 },
+  green: { theme: "valencia_green", font: "Montserrat", color: "#F1EBDD", width: 9 },
   bold: { theme: "marrakech_red", font: "Oswald", color: "#141414", width: 5 },
   photorun: { theme: "carbon", font: "Montserrat", color: "#FFFFFF", width: 5 },
   activity: { theme: "carbon", font: "", color: DEFAULT_ACCENT, width: 4 },
@@ -105,6 +107,24 @@ export function useActivityPoster() {
           ].filter(Boolean) as { value: string; label: string }[],
         );
         fields.sportBig = date ? String(date.getUTCFullYear()) : String(new Date().getFullYear());
+      } else if (design === "bib") {
+        setStats(
+          [
+            longDate ? { value: longDate, label: t("sport.stat.date") } : null,
+            { value: `${kmText} km`, label: t("activity.stat.distance") },
+            time ? { value: time, label: t("activity.stat.time") } : null,
+          ].filter(Boolean) as { value: string; label: string }[],
+        );
+      } else if (design === "green") {
+        fields.sportBig = time ? formatDuration(stats.durationS!) : "";
+        fields.activitySubtitle = [pace, longDate].filter(Boolean).join("  ·  ");
+        setStats(
+          [
+            { value: `${kmText} km`, label: t("activity.stat.distance") },
+            stats.elevationGainM !== null ? { value: `+${stats.elevationGainM} m`, label: t("activity.stat.elevation") } : null,
+            { value: "", label: t("sport.stat.place") },
+          ].filter(Boolean) as { value: string; label: string }[],
+        );
       } else if (design === "bold") {
         fields.sportBig = kmText;
         fields.activitySubtitle = monthYear;
@@ -213,13 +233,19 @@ export function useActivityPoster() {
               strokeWidth: look.width,
               opacity: 1,
               lineStyle: "solid",
-              showEndpoints: design === "topo" || design === "race",
-              startMarker: { ...entry.startMarker, iconId: "circle", color: look.color, size: 16, hidden: false },
+              showEndpoints: ["topo", "race", "bib", "green"].includes(design),
+              startMarker: {
+                ...entry.startMarker,
+                iconId: "circle",
+                color: look.color,
+                size: 16,
+                hidden: design === "green" || design === "bib",
+              },
               finishMarker: {
                 ...entry.finishMarker,
-                iconId: design === "topo" ? "circle" : "flag",
-                color: look.color,
-                size: design === "topo" ? 16 : 22,
+                iconId: design === "race" ? "flag" : "circle",
+                color: design === "green" ? "#E2B12C" : look.color,
+                size: design === "race" ? 22 : 16,
                 hidden: false,
               },
             },

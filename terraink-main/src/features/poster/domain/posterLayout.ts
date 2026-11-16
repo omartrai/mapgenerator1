@@ -18,13 +18,13 @@ import {
 
 export const POSTER_LAYOUTS = [
   "classic", "border", "label", "band", "fade", "header", "script", "signature",
-  "activity", "duo", "nursery", "race", "bold", "photorun", "topo",
+  "activity", "duo", "nursery", "race", "bold", "photorun", "topo", "bib", "green",
 ] as const;
 /** Sport poster designs (Sport kind), first = default. */
-export const SPORT_LAYOUTS = ["race", "bold", "photorun", "activity"] as const;
+export const SPORT_LAYOUTS = ["race", "bib", "bold", "green", "photorun", "activity"] as const;
 /** Trail poster designs (Trail kind). */
 export const TRAIL_LAYOUTS = ["topo"] as const;
-export type SportDesignId = "race" | "bold" | "photorun" | "topo";
+export type SportDesignId = "race" | "bold" | "photorun" | "topo" | "bib" | "green";
 /** Layouts reached only through a ready-made style or a sport kind, not the map layout picker. */
 export const STYLE_ONLY_LAYOUTS: ReadonlySet<string> = new Set([
   "duo", "nursery", ...SPORT_LAYOUTS, ...TRAIL_LAYOUTS,
@@ -312,6 +312,25 @@ export const POSTER_LAYOUT_SPECS: Record<PosterLayoutId, PosterLayoutSpec> = {
     divider: null,
     design: "photorun",
     photoBackdrop: true,
+  },
+
+  /** Bib: runner name, huge bib number over a grey map, title, 3 stats with icons. */
+  bib: {
+    ...CLASSIC,
+    fades: { top: 0, bottom: 0 },
+    mapWindow: { x: 0.1, y: 0.175, w: 0.8, h: 0.5 },
+    routeBox: { x: 0.14, y: 0.25, w: 0.72, h: 0.4 },
+    divider: null,
+    design: "bib",
+  },
+
+  /** Green: full-bleed dark map, big title and time on top, stats and name below. */
+  green: {
+    ...CLASSIC,
+    fades: { top: 0, bottom: 0 },
+    routeBox: { x: 0.1, y: 0.24, w: 0.8, h: 0.48 },
+    divider: null,
+    design: "green",
   },
 
   /** Trail: big title, contour map, four stats in a row. */

@@ -27,6 +27,8 @@ export interface SportDesignInput {
   /** Poster font, already wrapped with fallbacks. */
   titleFont: string;
   bodyFont: string;
+  /** "31.6295° N / 7.9811° W" of the map centre (bib design). */
+  coords?: string;
 }
 
 interface TextOptions {
@@ -131,6 +133,120 @@ export function drawSportDesign(
   const name = print?.name ?? "";
   const bib = print?.bib ?? "";
   const big = print?.big ?? "";
+
+  /** Small line icons for the bib design's stats (calendar, route pin, clock). */
+  const icon = (kind: number, cx: number, cy: number, size: number, color: string) => {
+    const r = size * unit;
+    const x = width * cx;
+    const y = height * cy;
+    ctx.save();
+    ctx.strokeStyle = color;
+    ctx.lineWidth = Math.max(1, 4 * unit);
+    ctx.lineJoin = "round";
+    ctx.lineCap = "round";
+    ctx.beginPath();
+    if (kind === 0) {
+      // Calendar
+      ctx.rect(x - r, y - r * 0.8, r * 2, r * 1.8);
+      ctx.moveTo(x - r, y - r * 0.3);
+      ctx.lineTo(x + r, y - r * 0.3);
+      ctx.moveTo(x - r * 0.5, y - r * 1.1);
+      ctx.lineTo(x - r * 0.5, y - r * 0.6);
+      ctx.moveTo(x + r * 0.5, y - r * 1.1);
+      ctx.lineTo(x + r * 0.5, y - r * 0.6);
+      ctx.stroke();
+      ctx.fillStyle = color;
+      for (let row = 0; row < 2; row += 1)
+        for (let col = 0; col < 3; col += 1)
+          ctx.fillRect(x - r * 0.62 + col * r * 0.5, y + row * r * 0.48 - r * 0.02, r * 0.24, r * 0.24);
+    } else if (kind === 1) {
+      // Map pin with a small flag
+      ctx.arc(x - r * 0.3, y - r * 0.35, r * 0.5, Math.PI * 0.85, Math.PI * 2.15);
+      ctx.lineTo(x - r * 0.3, y + r * 0.9);
+      ctx.closePath();
+      ctx.moveTo(x + r * 0.45, y + r * 0.9);
+      ctx.lineTo(x + r * 0.45, y - r * 0.9);
+      ctx.lineTo(x + r * 1.1, y - r * 0.65);
+      ctx.lineTo(x + r * 0.45, y - r * 0.4);
+      ctx.stroke();
+    } else {
+      // Clock
+      ctx.arc(x, y, r, 0, Math.PI * 2);
+      ctx.moveTo(x, y - r * 0.6);
+      ctx.lineTo(x, y);
+      ctx.lineTo(x + r * 0.45, y + r * 0.25);
+      ctx.stroke();
+    }
+    ctx.restore();
+  };
+
+  if (input.design === "bib") {
+    const ink = input.text;
+    text(name.toUpperCase(), 0.5, 0.075, { size: 64, weight: 600, color: ink, spacing: 0.06, maxWidth: 0.7 });
+    // The bib number overlaps the top of the map: a paper halo keeps it readable.
+    if (big) {
+      ctx.save();
+      const size = 540 * unit;
+      ctx.font = `800 ${size}px ${input.titleFont}`;
+      const limit = width * 0.78;
+      const measured = ctx.measureText(big).width;
+      const fitted = measured > limit ? size * (limit / measured) : size;
+      ctx.font = `800 ${fitted}px ${input.titleFont}`;
+      ctx.textAlign = "center";
+      ctx.textBaseline = "middle";
+      ctx.lineJoin = "round";
+      ctx.lineWidth = fitted * 0.12;
+      ctx.strokeStyle = input.paper;
+      ctx.strokeText(big, width / 2, height * 0.165);
+      ctx.fillStyle = ink;
+      ctx.fillText(big, width / 2, height * 0.165);
+      ctx.restore();
+    }
+    // Title in spaced capitals, on two lines when it is long.
+    const words = title.toUpperCase().split(/\s+/).filter(Boolean);
+    const lines =
+      words.length > 1 && title.length > 14
+        ? [words.slice(0, Math.ceil(words.length / 2)).join(" "), words.slice(Math.ceil(words.length / 2)).join(" ")]
+        : [words.join(" ")];
+    lines.forEach((line, i) => {
+      text(line, 0.5, (lines.length > 1 ? 0.725 : 0.745) + i * 0.045, { size: 150, weight: 700, color: ink, spacing: 0.12, maxWidth: 0.82 });
+    });
+    text(input.coords ?? "", 0.5, 0.815, { size: 40, weight: 400, color: ink, alpha: 0.6, spacing: 0.08, font: input.bodyFont });
+    rule(0.36, 0.64, 0.84, ink, 0.9, 6);
+    stats.slice(0, 3).forEach((stat, i, list) => {
+      const cx = 0.5 + (i - (list.length - 1) / 2) * 0.24;
+      icon(i, cx, 0.873, 42, ink);
+      text(stat.label.toUpperCase(), cx, 0.913, { size: 54, weight: 700, color: ink, maxWidth: 0.22 });
+      text(stat.value, cx, 0.94, { size: 50, weight: 400, color: ink, alpha: 0.65, font: input.bodyFont, maxWidth: 0.22 });
+    });
+    return;
+  }
+
+  if (input.design === "green") {
+    const ink = input.text;
+    // Soft shade at the top and bottom so the text stays readable on the map.
+    const shade = (y0: number, y1: number, fromTop: boolean) => {
+      const g = ctx.createLinearGradient(0, height * y0, 0, height * y1);
+      g.addColorStop(fromTop ? 0 : 1, withAlpha(input.paper, 0.92));
+      g.addColorStop(fromTop ? 1 : 0, withAlpha(input.paper, 0));
+      ctx.fillStyle = g;
+      ctx.fillRect(0, height * y0, width, height * (y1 - y0));
+    };
+    shade(0, 0.22, true);
+    shade(0.76, 1, false);
+    text(title.toUpperCase(), 0.07, 0.072, { size: 300, weight: 800, align: "left", color: ink, maxWidth: 0.6 });
+    text(place.toUpperCase(), 0.07, 0.122, { size: 110, weight: 700, align: "left", color: ink, alpha: 0.85, maxWidth: 0.6 });
+    text(big, 0.93, 0.072, { size: 150, weight: 700, align: "right", color: ink, maxWidth: 0.3 });
+    text(date.toUpperCase(), 0.07, 0.162, { size: 42, weight: 600, align: "left", color: ink, alpha: 0.85, spacing: 0.05, font: input.bodyFont, maxWidth: 0.86 });
+    stats.slice(0, 3).forEach((stat, i, list) => {
+      const cx = 0.5 + (i - (list.length - 1) / 2) * 0.26;
+      text(stat.label.toUpperCase(), cx, 0.84, { size: 34, weight: 500, color: ink, alpha: 0.7, spacing: 0.08, font: input.bodyFont, maxWidth: 0.24 });
+      text(stat.value, cx, 0.865, { size: 70, weight: 700, color: ink, maxWidth: 0.24 });
+    });
+    text(name.toUpperCase(), 0.07, 0.93, { size: 100, weight: 800, align: "left", color: ink, maxWidth: 0.55 });
+    text(bib ? `BIB ${bib.startsWith("#") ? bib : `#${bib}`}` : "", 0.93, 0.93, { size: 44, weight: 600, align: "right", color: ink, alpha: 0.75, font: input.bodyFont, maxWidth: 0.3 });
+    return;
+  }
 
   if (input.design === "race") {
     // The map melts into the paper at the top of its window.

@@ -183,6 +183,7 @@ export function drawPosterText(
         paper,
         titleFont: titleFontFamily,
         bodyFont: bodyFontFamily,
+        coords: formatCoordinates(center.lat, center.lon),
       });
     }
     showPosterText = false;

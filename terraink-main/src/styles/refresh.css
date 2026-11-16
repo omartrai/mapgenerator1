@@ -3600,3 +3600,8 @@ body:has(.store-page) {
     display: none;
   }
 }
+
+/* Six sport designs: three per row. */
+.sport-designs {
+  grid-template-columns: repeat(3, minmax(0, 1fr));
+}

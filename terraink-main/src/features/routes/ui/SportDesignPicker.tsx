@@ -24,6 +24,40 @@ function Thumb({ id }: { id: SportDesign }) {
       </svg>
     );
   }
+  if (id === "bib") {
+    return (
+      <svg viewBox="0 0 60 80" aria-hidden="true">
+        <rect width="60" height="80" fill="#fff" />
+        <rect x="8" y="14" width="44" height="38" fill="#e3e3e0" />
+        <path d="M8 24 H52 M8 36 H52 M20 14 V52 M36 14 V52" stroke="#c4c4c0" strokeWidth="0.8" />
+        <path d="M16 46 l6 -8 l-3 -6 l8 -4 l5 -10 l10 4 l-4 8 l6 8" fill="none" stroke="#e0201b" strokeWidth="1.6" strokeLinejoin="round" />
+        <rect x="22" y="5" width="16" height="2" rx="1" fill="#1a1a1a" />
+        <text x="30" y="17" textAnchor="middle" fontSize="11" fontWeight="800" fill="#1a1a1a" stroke="#fff" strokeWidth="1.5" paintOrder="stroke">30946</text>
+        <rect x="15" y="57" width="30" height="3" rx="1" fill="#1a1a1a" />
+        <rect x="24" y="64" width="12" height="1" fill="#1a1a1a" />
+        {[17, 30, 43].map((x) => (
+          <rect key={x} x={x - 4} y="69" width="8" height="5" rx="1" fill="none" stroke="#1a1a1a" strokeWidth="0.8" />
+        ))}
+      </svg>
+    );
+  }
+  if (id === "green") {
+    return (
+      <svg viewBox="0 0 60 80" aria-hidden="true">
+        <rect width="60" height="80" fill="#1d3a2e" />
+        <path d="M0 30 L60 22 M0 50 L60 58 M14 0 L22 80 M44 0 L38 80" stroke="#3b5b4b" strokeWidth="0.8" />
+        <path d="M12 46 l8 -10 l6 4 l4 -12 l10 2 l2 10 l10 0 l-6 10 l-12 2 z" fill="none" stroke="#f1ebdd" strokeWidth="2.2" strokeLinejoin="round" />
+        <circle cx="34" cy="50" r="1.8" fill="#e2b12c" />
+        <rect x="5" y="5" width="26" height="5" rx="1" fill="#f1ebdd" />
+        <rect x="5" y="12" width="15" height="3" rx="1" fill="#f1ebdd" opacity="0.8" />
+        <rect x="42" y="5" width="13" height="3" rx="1" fill="#f1ebdd" />
+        {[16, 30, 44].map((x) => (
+          <rect key={x} x={x - 4} y="64" width="8" height="2.5" rx="1" fill="#f1ebdd" />
+        ))}
+        <rect x="5" y="72" width="18" height="3.5" rx="1" fill="#f1ebdd" />
+      </svg>
+    );
+  }
   if (id === "bold") {
     return (
       <svg viewBox="0 0 60 80" aria-hidden="true">

@@ -354,9 +354,10 @@ export default function PosterTextOverlay({
               paper: paperColor,
               titleFont,
               bodyFont,
+              coords: formatCoordinates(lat, lon),
             })
           }
-          deps={[layout.design, city, country, JSON.stringify(activity ?? null), themeText, paperColor, titleFont]}
+          deps={[layout.design, city, country, JSON.stringify(activity ?? null), themeText, paperColor, titleFont, lat.toFixed(4), lon.toFixed(4)]}
         />
       ) : null}
       {layout.rule && showPosterText ? (

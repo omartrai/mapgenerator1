@@ -779,6 +779,58 @@
           "outline": "#EFEBE3"
         }
       }
+    },
+    "race_grey": {
+      "name": "Race Grey",
+      "description": "White paper around a dense grey street map — for bib-number race posters",
+      "ui": {
+        "bg": "#FFFFFF",
+        "text": "#1A1A1A"
+      },
+      "map": {
+        "land": "#E9E9E7",
+        "landcover": "#E2E2DF",
+        "water": "#C9CDD0",
+        "waterway": "#C9CDD0",
+        "parks": "#DCDDD8",
+        "buildings": "#CFCFCB",
+        "aeroway": "#E2E2DF",
+        "rail": "#B4B4B0",
+        "roads": {
+          "major": "#7E7E7B",
+          "minor_high": "#8C8C88",
+          "minor_mid": "#9A9A96",
+          "minor_low": "#A8A8A4",
+          "path": "#B4B4B0",
+          "outline": "#E9E9E7"
+        }
+      }
+    },
+    "valencia_green": {
+      "name": "Racing Green",
+      "description": "Deep green streets with soft green lines — for marathon posters",
+      "ui": {
+        "bg": "#1D3A2E",
+        "text": "#F1EBDD"
+      },
+      "map": {
+        "land": "#1D3A2E",
+        "landcover": "#1F3D31",
+        "water": "#173126",
+        "waterway": "#173126",
+        "parks": "#20412F",
+        "buildings": "#234536",
+        "aeroway": "#1F3D31",
+        "rail": "#2F4E40",
+        "roads": {
+          "major": "#4C6D5D",
+          "minor_high": "#436454",
+          "minor_mid": "#3B5B4B",
+          "minor_low": "#345343",
+          "path": "#2F4E40",
+          "outline": "#1D3A2E"
+        }
+      }
     }
   }
 }

@@ -20,6 +20,25 @@ const FIELDS: Record<string, { fields: Field[]; stats: number; photo?: boolean }
     ],
     stats: 3,
   },
+  bib: {
+    fields: [
+      { name: "sportName", label: "sport.fields.name", max: 30 },
+      { name: "sportBig", label: "sport.fields.big.bib", max: 7, placeholder: "30946" },
+      { name: "displayCity", label: "sport.fields.title", max: 34, placeholder: "Marathon de Marrakech" },
+    ],
+    stats: 3,
+  },
+  green: {
+    fields: [
+      { name: "displayCity", label: "sport.fields.title", max: 16, placeholder: "Marrakech" },
+      { name: "displayCountry", label: "sport.fields.subtitleGreen", max: 24, placeholder: "Marathon" },
+      { name: "sportBig", label: "sport.fields.big.green", max: 9, placeholder: "3:42:11" },
+      { name: "activitySubtitle", label: "sport.fields.infoLine", max: 50, placeholder: "5:16 /km  ·  26 janvier 2026" },
+      { name: "sportName", label: "sport.fields.name", max: 30 },
+      { name: "sportBib", label: "sport.fields.bib", max: 10, placeholder: "23145" },
+    ],
+    stats: 3,
+  },
   bold: {
     fields: [
       { name: "sportBig", label: "sport.fields.big.bold", max: 7, placeholder: "4,37" },
