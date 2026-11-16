@@ -13,7 +13,7 @@ import { boundsCenter, routeBounds } from "../infrastructure/helpers";
 import type { Route } from "../domain/types";
 
 /** Sport and trail designs the customer can pick. */
-export type SportDesign = "race" | "bib" | "bold" | "green" | "photorun" | "activity" | "topo";
+export type SportDesign = "race" | "bib" | "elevation" | "archive" | "bold" | "green" | "photorun" | "activity" | "topo";
 
 const ALL_LAYERS = {
   includeLandcover: true,
@@ -28,6 +28,12 @@ const ALL_LAYERS = {
   includeRoadOutline: true,
 };
 
+/** Archive: the route alone on plain paper. */
+const PLAIN_LAYERS = Object.fromEntries(Object.keys(ALL_LAYERS).map((key) => [key, false]));
+
+/** Kilometre dots along the route, per design. */
+const KM_MARKS: Partial<Record<SportDesign, number>> = { archive: 5, elevation: 10 };
+
 /** Trail: contours only, plus water so lakes and coasts still read. */
 const TRAIL_LAYERS = {
   ...Object.fromEntries(Object.keys(ALL_LAYERS).map((key) => [key, false])),
@@ -39,6 +45,8 @@ const DESIGN_LOOK: Record<SportDesign, { theme: string; font: string; color: str
   race: { theme: "race_white", font: "Montserrat", color: "#D62F2F", width: 5 },
   bib: { theme: "race_grey", font: "Oswald", color: "#E0201B", width: 4 },
   green: { theme: "valencia_green", font: "Montserrat", color: "#F1EBDD", width: 9 },
+  elevation: { theme: "race_stone", font: "Montserrat", color: "#D2492A", width: 4 },
+  archive: { theme: "archive_cream", font: "Oswald", color: "#D3262E", width: 4 },
   bold: { theme: "marrakech_red", font: "Oswald", color: "#141414", width: 5 },
   photorun: { theme: "carbon", font: "Montserrat", color: "#FFFFFF", width: 5 },
   activity: { theme: "carbon", font: "", color: DEFAULT_ACCENT, width: 4 },
@@ -125,6 +133,25 @@ export function useActivityPoster() {
             { value: "", label: t("sport.stat.place") },
           ].filter(Boolean) as { value: string; label: string }[],
         );
+      } else if (design === "elevation") {
+        const event = km >= 41 ? t("sport.event.marathon") : km >= 20.5 ? t("sport.event.half") : t("sport.event.run");
+        fields.activitySubtitle = `${event}  ·  ${kmText} KM`;
+        fields.sportBig = stats.durationS ? formatDuration(stats.durationS) : "";
+        fields.sportDate = date ? `${two(date.getUTCDate())} . ${two(date.getUTCMonth() + 1)} . ${date.getUTCFullYear()}` : "";
+        setStats([]);
+      } else if (design === "archive") {
+        fields.sportBig = stats.durationS ? formatDuration(stats.durationS) : "";
+        fields.sportDate = date
+          ? `${date.getUTCDate()} ${date.toLocaleDateString(locale, { month: "short", timeZone: "UTC" }).replace(".", "").toUpperCase()} ${date.getUTCFullYear()}`
+          : "";
+        setStats(
+          [
+            { value: `${kmText} km`, label: t("activity.stat.distance") },
+            pace ? { value: pace.replace("/km", " /km"), label: t("activity.stat.pace") } : null,
+            stats.elevationGainM !== null ? { value: `${stats.elevationGainM} m`, label: t("activity.stat.elevation") } : null,
+            { value: "", label: t("sport.fields.bib") },
+          ].filter(Boolean) as { value: string; label: string }[],
+        );
       } else if (design === "bold") {
         fields.sportBig = kmText;
         fields.activitySubtitle = monthYear;
@@ -202,7 +229,7 @@ export function useActivityPoster() {
           showPosterText: true,
           showRoutes: true,
           showContours: design === "topo",
-          ...(design === "topo" ? TRAIL_LAYERS : ALL_LAYERS),
+          ...(design === "topo" ? TRAIL_LAYERS : design === "archive" ? PLAIN_LAYERS : ALL_LAYERS),
           ...(look.font || design !== "activity" ? { fontFamily: look.font } : {}),
           ...(design === "photorun" && !form.photo ? { photoMono: false } : {}),
           ...(design === "activity" && !form.customMessage ? { customMessage: t("activity.defaultMessage") } : {}),
@@ -233,18 +260,19 @@ export function useActivityPoster() {
               strokeWidth: look.width,
               opacity: 1,
               lineStyle: "solid",
-              showEndpoints: ["topo", "race", "bib", "green"].includes(design),
+              kmMarks: KM_MARKS[design] ?? 0,
+              showEndpoints: ["topo", "race", "bib", "green", "elevation", "archive"].includes(design),
               startMarker: {
                 ...entry.startMarker,
                 iconId: "circle",
-                color: look.color,
+                color: design === "archive" ? "#1A1A1A" : look.color,
                 size: 16,
                 hidden: design === "green" || design === "bib",
               },
               finishMarker: {
                 ...entry.finishMarker,
                 iconId: design === "race" ? "flag" : "circle",
-                color: design === "green" ? "#E2B12C" : look.color,
+                color: design === "green" ? "#E2B12C" : design === "archive" ? "#1A1A1A" : look.color,
                 size: design === "race" ? 22 : 16,
                 hidden: false,
               },

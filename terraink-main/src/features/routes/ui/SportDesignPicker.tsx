@@ -24,6 +24,49 @@ function Thumb({ id }: { id: SportDesign }) {
       </svg>
     );
   }
+  if (id === "elevation") {
+    return (
+      <svg viewBox="0 0 60 80" aria-hidden="true">
+        <rect width="60" height="80" fill="#e8e5e0" />
+        <rect width="60" height="44" fill="#d6d3cd" />
+        <path d="M0 14 H60 M0 30 H60 M18 0 V44 M40 0 V44" stroke="#f4f3f0" strokeWidth="1.2" />
+        <rect y="34" width="60" height="10" fill="url(#elfade)" />
+        <defs>
+          <linearGradient id="elfade" x1="0" y1="0" x2="0" y2="1">
+            <stop offset="0" stopColor="#e8e5e0" stopOpacity="0" />
+            <stop offset="1" stopColor="#e8e5e0" />
+          </linearGradient>
+        </defs>
+        <path d="M26 6 l6 0 l2 10 l-8 6 l-4 10 l10 2 l4 -12" fill="none" stroke="#d2492a" strokeWidth="1.6" strokeLinejoin="round" />
+        <path d="M6 48 l6 -2 l6 1 l6 -2 l6 1 l6 -1 l6 1 l6 -2 l6 1" fill="none" stroke="#8a8f99" strokeWidth="0.8" />
+        <rect x="13" y="53" width="34" height="5" rx="1" fill="#1f2533" />
+        <rect x="21" y="61" width="18" height="2" rx="1" fill="#1f2533" />
+        <rect x="20" y="66" width="20" height="4" rx="1" fill="#d2492a" />
+        <rect x="22" y="73" width="16" height="1.5" rx="0.7" fill="#1f2533" opacity="0.6" />
+      </svg>
+    );
+  }
+  if (id === "archive") {
+    return (
+      <svg viewBox="0 0 60 80" aria-hidden="true">
+        <rect width="60" height="80" fill="#ece7e0" />
+        <rect x="4" y="4" width="52" height="0.6" fill="#1a1a1a" />
+        <rect x="4" y="7" width="38" height="6" rx="0.5" fill="#1a1a1a" />
+        <rect x="4" y="15" width="2" height="2" fill="#d3262e" />
+        <path d="M4 20 h3 M4 20 v3 M56 20 h-3 M56 20 v3 M4 50 h3 M4 50 v-3 M56 50 h-3 M56 50 v-3" stroke="#1a1a1a" strokeWidth="0.6" />
+        <path d="M22 26 l10 -2 l6 4 l-8 4 l2 8 l-12 2 l-2 -8 z" fill="none" stroke="#d3262e" strokeWidth="1.4" strokeLinejoin="round" />
+        {[[22, 26], [38, 28], [32, 40], [18, 34]].map(([x, y]) => (
+          <circle key={`${x}-${y}`} cx={x} cy={y} r="1.1" fill="#fff" stroke="#1a1a1a" strokeWidth="0.4" />
+        ))}
+        <path d="M4 58 l6 -3 l6 2 l6 -4 l6 3 l6 -2 l6 3 l6 -3 l8 2 V60 H4 Z" fill="#1a1a1a" opacity="0.25" />
+        <rect x="4" y="64" width="16" height="4" rx="0.5" fill="#1a1a1a" />
+        <rect x="38" y="63" width="18" height="5" rx="0.5" fill="#d3262e" />
+        {[4, 17, 30, 43].map((x) => (
+          <rect key={x} x={x} y="71" width="10" height="3" rx="0.5" fill="#1a1a1a" />
+        ))}
+      </svg>
+    );
+  }
   if (id === "bib") {
     return (
       <svg viewBox="0 0 60 80" aria-hidden="true">

@@ -831,6 +831,58 @@
           "outline": "#1D3A2E"
         }
       }
+    },
+    "race_stone": {
+      "name": "Race Stone",
+      "description": "Pale stone paper, grey blocks and white streets — for marathon posters",
+      "ui": {
+        "bg": "#E8E5E0",
+        "text": "#1F2533"
+      },
+      "map": {
+        "land": "#E3E0DB",
+        "landcover": "#CBC8C2",
+        "water": "#B7C1C6",
+        "waterway": "#B7C1C6",
+        "parks": "#D3D0CA",
+        "buildings": "#BFBCB6",
+        "aeroway": "#CBC8C2",
+        "rail": "#ECEAE6",
+        "roads": {
+          "major": "#F6F5F2",
+          "minor_high": "#F3F2EF",
+          "minor_mid": "#F0EFEC",
+          "minor_low": "#EDECE9",
+          "path": "#ECEAE6",
+          "outline": "#C9C6C0"
+        }
+      }
+    },
+    "archive_cream": {
+      "name": "Archive Cream",
+      "description": "Plain cream paper — the route alone, like a race archive",
+      "ui": {
+        "bg": "#ECE7E0",
+        "text": "#1A1A1A"
+      },
+      "map": {
+        "land": "#ECE7E0",
+        "landcover": "#ECE7E0",
+        "water": "#DCDDD8",
+        "waterway": "#DCDDD8",
+        "parks": "#ECE7E0",
+        "buildings": "#E4DED6",
+        "aeroway": "#ECE7E0",
+        "rail": "#E4DED6",
+        "roads": {
+          "major": "#DCD6CD",
+          "minor_high": "#E0DAD2",
+          "minor_mid": "#E4DED6",
+          "minor_low": "#E8E2DA",
+          "path": "#E4DED6",
+          "outline": "#ECE7E0"
+        }
+      }
     }
   }
 }

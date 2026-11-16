@@ -180,6 +180,149 @@ export function drawSportDesign(
     ctx.restore();
   };
 
+  /** Fixed labels in the site language (the page's lang attribute). */
+  const lang = typeof document !== "undefined" ? document.documentElement.lang : "fr";
+  const L = (en: string, fr: string, ar: string) => (lang === "en" ? en : lang === "ar" ? ar : fr);
+  const profile = print?.profile ?? [];
+
+  /** Elevation profile in a box (ratios): outline only, or filled. */
+  const drawProfile = (box: { x: number; y: number; w: number; h: number }, color: string, filled: boolean) => {
+    if (profile.length < 2) return;
+    const min = Math.min(...profile);
+    const max = Math.max(...profile);
+    const range = Math.max(max - min, 20);
+    const x0 = width * box.x;
+    const y0 = height * box.y;
+    const w = width * box.w;
+    const h = height * box.h;
+    ctx.save();
+    ctx.beginPath();
+    profile.forEach((ele, i) => {
+      const x = x0 + (w * i) / (profile.length - 1);
+      const y = y0 + h - (h * 0.9 * (ele - min)) / range;
+      if (i === 0) ctx.moveTo(x, y);
+      else ctx.lineTo(x, y);
+    });
+    if (filled) {
+      ctx.lineTo(x0 + w, y0 + h);
+      ctx.lineTo(x0, y0 + h);
+      ctx.closePath();
+      ctx.fillStyle = withAlpha(color, 0.28);
+      ctx.fill();
+    }
+    ctx.strokeStyle = withAlpha(color, filled ? 0.7 : 0.55);
+    ctx.lineWidth = Math.max(1, 3 * unit);
+    ctx.stroke();
+    ctx.fillStyle = withAlpha(color, 0.4);
+    ctx.fillRect(x0, y0 + h, w, Math.max(1, 2 * unit));
+    ctx.restore();
+  };
+  const elevationRange = () => {
+    if (profile.length < 2) return "";
+    return `${Math.round(Math.min(...profile))} M ${L("TO", "À", "إلى")} ${Math.round(Math.max(...profile))} M`;
+  };
+  const clock = (seconds: number) => {
+    const h = Math.floor(seconds / 3600);
+    const m = Math.floor((seconds % 3600) / 60);
+    const sec = seconds % 60;
+    const two = (v: number) => String(v).padStart(2, "0");
+    return h ? `${h}:${two(m)}:${two(sec)}` : `${m}:${two(sec)}`;
+  };
+
+  if (input.design === "elevation") {
+    const ink = input.text;
+    const red = accent;
+    // The map melts into the paper above the profile.
+    const fadeTop = height * 0.46;
+    const fade = ctx.createLinearGradient(0, fadeTop, 0, height * 0.6);
+    fade.addColorStop(0, withAlpha(input.paper, 0));
+    fade.addColorStop(1, input.paper);
+    ctx.fillStyle = fade;
+    ctx.fillRect(0, fadeTop, width, height * 0.6 - fadeTop + 1);
+    drawProfile({ x: 0.08, y: 0.6, w: 0.84, h: 0.045 }, ink, false);
+    text(L("ELEVATION", "ALTITUDE", "الارتفاع"), 0.08, 0.657, { size: 26, weight: 600, align: "left", color: ink, alpha: 0.6, spacing: 0.1, font: input.bodyFont });
+    text(elevationRange(), 0.92, 0.657, { size: 26, weight: 600, align: "right", color: ink, alpha: 0.6, spacing: 0.1, font: input.bodyFont });
+    text(title.toUpperCase(), 0.5, 0.715, { size: 300, weight: 800, color: ink, spacing: 0.06, maxWidth: 0.86 });
+    text(date ? date.toUpperCase() : "", 0.5, 0.765, { size: 44, weight: 500, color: ink, alpha: 0.75, spacing: 0.16, font: input.bodyFont, maxWidth: 0.86 });
+    rule(0.465, 0.535, 0.79, red, 1, 5);
+    text(name.toUpperCase(), 0.5, 0.82, { size: 96, weight: 700, color: ink, spacing: 0.04, maxWidth: 0.8 });
+    text(big, 0.5, 0.865, { size: 170, weight: 700, color: red, maxWidth: 0.8 });
+    const when = [print?.date ?? "", bib ? `BIB ${bib.replace(/^#/, "")}` : ""].filter(Boolean).join("   ·   ");
+    text(when, 0.5, 0.905, { size: 42, weight: 500, color: ink, alpha: 0.7, spacing: 0.14, font: input.bodyFont, maxWidth: 0.86 });
+    text(place.toUpperCase(), 0.5, 0.955, { size: 34, weight: 500, color: ink, alpha: 0.6, spacing: 0.2, font: input.bodyFont, maxWidth: 0.86 });
+    return;
+  }
+
+  if (input.design === "archive") {
+    const ink = input.text;
+    const red = accent;
+    const mono = input.bodyFont;
+    // Header: brand · archive, and the date.
+    text(`NORIA   ${L("RACE ARCHIVE", "ARCHIVE DES COURSES", "أرشيف السباقات")}`, 0.07, 0.05, { size: 28, weight: 500, align: "left", color: ink, alpha: 0.7, spacing: 0.08, font: mono });
+    text((print?.date ?? "").toUpperCase(), 0.93, 0.05, { size: 30, weight: 600, align: "right", color: ink, spacing: 0.06, font: mono });
+    rule(0.07, 0.93, 0.066, ink, 0.8, 3);
+    text(title.toUpperCase(), 0.07, 0.115, { size: 330, weight: 800, align: "left", color: ink, maxWidth: 0.86 });
+    // City with a red square, then the coordinates.
+    const squareX = width * 0.07;
+    const squareY = height * 0.162;
+    const sq = 22 * unit;
+    ctx.fillStyle = red;
+    ctx.fillRect(squareX, squareY - sq / 2, sq, sq);
+    text(`${place.toUpperCase()}     ${input.coords ?? ""}`, 0.07 + (sq * 1.8) / width, 0.162, { size: 30, weight: 500, align: "left", color: ink, alpha: 0.75, spacing: 0.06, font: mono, maxWidth: 0.8 });
+    // Corner ticks round the map, and a north arrow.
+    ctx.save();
+    ctx.strokeStyle = withAlpha(ink, 0.7);
+    ctx.lineWidth = Math.max(1, 3 * unit);
+    const box = { x: width * 0.06, y: height * 0.2, w: width * 0.88, h: height * 0.42 };
+    const tick = 40 * unit;
+    ctx.beginPath();
+    for (const [cx, cy, dx, dy] of [
+      [box.x, box.y, 1, 1],
+      [box.x + box.w, box.y, -1, 1],
+      [box.x, box.y + box.h, 1, -1],
+      [box.x + box.w, box.y + box.h, -1, -1],
+    ]) {
+      ctx.moveTo(cx + dx * tick, cy);
+      ctx.lineTo(cx, cy);
+      ctx.lineTo(cx, cy + dy * tick);
+    }
+    ctx.stroke();
+    ctx.restore();
+    text("N", 0.925, 0.225, { size: 30, weight: 700, color: ink, alpha: 0.7, font: mono });
+    // Elevation profile.
+    text(L("ELEVATION", "ALTITUDE", "الارتفاع"), 0.07, 0.638, { size: 24, weight: 600, align: "left", color: ink, alpha: 0.6, spacing: 0.1, font: mono });
+    text(elevationRange(), 0.93, 0.638, { size: 24, weight: 600, align: "right", color: ink, alpha: 0.6, spacing: 0.06, font: mono });
+    drawProfile({ x: 0.07, y: 0.65, w: 0.86, h: 0.05 }, ink, true);
+    // Finisher and finish time.
+    rule(0.07, 0.93, 0.73, ink, 0.8, 3);
+    text(L("FINISHER", "FINISHER", "المتسابق"), 0.07, 0.745, { size: 24, weight: 600, align: "left", color: ink, alpha: 0.55, spacing: 0.1, font: mono });
+    text(L("FINISH TIME", "TEMPS FINAL", "الوقت النهائي"), 0.93, 0.745, { size: 24, weight: 600, align: "right", color: ink, alpha: 0.55, spacing: 0.1, font: mono });
+    text(name.toUpperCase(), 0.07, 0.785, { size: 130, weight: 800, align: "left", color: ink, maxWidth: 0.5 });
+    text(big, 0.93, 0.783, { size: 230, weight: 800, align: "right", color: red, maxWidth: 0.42 });
+    rule(0.07, 0.93, 0.822, ink, 0.8, 3);
+    // Four results with thin separators.
+    const cols = stats.slice(0, 4);
+    const colW = 0.86 / Math.max(1, cols.length);
+    cols.forEach((stat, i) => {
+      const x = 0.07 + colW * i;
+      if (i > 0) rule(x - 0.005, x - 0.003, 0.85, ink, 0.5, 60);
+      text(stat.label.toUpperCase(), x + 0.008, 0.838, { size: 22, weight: 600, align: "left", color: ink, alpha: 0.55, spacing: 0.08, font: mono, maxWidth: colW - 0.02 });
+      text(stat.value.toUpperCase(), x + 0.008, 0.865, { size: 72, weight: 800, align: "left", color: ink, maxWidth: colW - 0.02 });
+    });
+    // 5 km splits from the GPX.
+    const splits = (print?.splits ?? []).slice(0, 8);
+    if (splits.length) {
+      rule(0.07, 0.93, 0.89, ink, 0.8, 3);
+      const sw = 0.86 / splits.length;
+      splits.forEach((secs, i) => {
+        const x = 0.07 + sw * i + 0.004;
+        text(`${(i + 1) * 5}K`, x, 0.905, { size: 22, weight: 600, align: "left", color: ink, alpha: 0.55, font: mono, maxWidth: sw - 0.01 });
+        text(clock(secs), x, 0.925, { size: 28, weight: 600, align: "left", color: ink, font: mono, maxWidth: sw - 0.01 });
+      });
+    }
+    return;
+  }
+
   if (input.design === "bib") {
     const ink = input.text;
     text(name.toUpperCase(), 0.5, 0.075, { size: 64, weight: 600, color: ink, spacing: 0.06, maxWidth: 0.7 });

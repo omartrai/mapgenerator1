@@ -39,6 +39,28 @@ const FIELDS: Record<string, { fields: Field[]; stats: number; photo?: boolean }
     ],
     stats: 3,
   },
+  elevation: {
+    fields: [
+      { name: "displayCity", label: "sport.fields.title", max: 16, placeholder: "Marrakech" },
+      { name: "activitySubtitle", label: "sport.fields.infoLine", max: 44, placeholder: "MARATHON  ·  42,20 KM" },
+      { name: "sportName", label: "sport.fields.name", max: 30 },
+      { name: "sportBig", label: "sport.fields.big.green", max: 9, placeholder: "3:52:10" },
+      { name: "sportDate", label: "sport.fields.raceDate", max: 20, placeholder: "26 . 01 . 2026" },
+      { name: "sportBib", label: "sport.fields.bib", max: 10, placeholder: "2418" },
+      { name: "displayCountry", label: "sport.fields.place", max: 40, placeholder: "Marrakech · Maroc" },
+    ],
+    stats: 0,
+  },
+  archive: {
+    fields: [
+      { name: "displayCity", label: "sport.fields.title", max: 22, placeholder: "Marathon de Marrakech" },
+      { name: "displayCountry", label: "sport.fields.place", max: 20, placeholder: "Marrakech" },
+      { name: "sportDate", label: "sport.fields.raceDate", max: 16, placeholder: "26 JANV 2026" },
+      { name: "sportName", label: "sport.fields.name", max: 24 },
+      { name: "sportBig", label: "sport.fields.big.green", max: 9, placeholder: "3:49:18" },
+    ],
+    stats: 4,
+  },
   bold: {
     fields: [
       { name: "sportBig", label: "sport.fields.big.bold", max: 7, placeholder: "4,37" },

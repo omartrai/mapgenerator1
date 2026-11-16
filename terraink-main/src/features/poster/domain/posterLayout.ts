@@ -18,13 +18,13 @@ import {
 
 export const POSTER_LAYOUTS = [
   "classic", "border", "label", "band", "fade", "header", "script", "signature",
-  "activity", "duo", "nursery", "race", "bold", "photorun", "topo", "bib", "green",
+  "activity", "duo", "nursery", "race", "bold", "photorun", "topo", "bib", "green", "elevation", "archive",
 ] as const;
 /** Sport poster designs (Sport kind), first = default. */
-export const SPORT_LAYOUTS = ["race", "bib", "bold", "green", "photorun", "activity"] as const;
+export const SPORT_LAYOUTS = ["race", "bib", "elevation", "archive", "bold", "green", "photorun", "activity"] as const;
 /** Trail poster designs (Trail kind). */
 export const TRAIL_LAYOUTS = ["topo"] as const;
-export type SportDesignId = "race" | "bold" | "photorun" | "topo" | "bib" | "green";
+export type SportDesignId = "race" | "bold" | "photorun" | "topo" | "bib" | "green" | "elevation" | "archive";
 /** Layouts reached only through a ready-made style or a sport kind, not the map layout picker. */
 export const STYLE_ONLY_LAYOUTS: ReadonlySet<string> = new Set([
   "duo", "nursery", ...SPORT_LAYOUTS, ...TRAIL_LAYOUTS,
@@ -331,6 +331,26 @@ export const POSTER_LAYOUT_SPECS: Record<PosterLayoutId, PosterLayoutSpec> = {
     routeBox: { x: 0.1, y: 0.24, w: 0.8, h: 0.48 },
     divider: null,
     design: "green",
+  },
+
+  /** Elevation: light street map fading into the paper, profile, big title, red time. */
+  elevation: {
+    ...CLASSIC,
+    fades: { top: 0, bottom: 0 },
+    mapWindow: { x: 0, y: 0, w: 1, h: 0.6 },
+    routeBox: { x: 0.16, y: 0.05, w: 0.68, h: 0.46 },
+    divider: null,
+    design: "elevation",
+  },
+
+  /** Archive: plain paper, condensed title, the route alone, profile, results table. */
+  archive: {
+    ...CLASSIC,
+    fades: { top: 0, bottom: 0 },
+    mapWindow: { x: 0.06, y: 0.2, w: 0.88, h: 0.42 },
+    routeBox: { x: 0.14, y: 0.23, w: 0.72, h: 0.36 },
+    divider: null,
+    design: "archive",
   },
 
   /** Trail: big title, contour map, four stats in a row. */

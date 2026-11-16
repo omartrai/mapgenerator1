@@ -53,6 +53,8 @@ export interface PosterForm {
   sportName?: string;
   sportBib?: string;
   sportBig?: string;
+  /** Archive and elevation designs: the race date as printed. */
+  sportDate?: string;
   /** Trail poster: contour lines and hill shading under the route. */
   showContours?: boolean;
   /** Per-line switches inside the poster text (all on by default). */

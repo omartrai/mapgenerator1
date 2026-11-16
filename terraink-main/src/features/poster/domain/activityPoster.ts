@@ -15,6 +15,10 @@ export interface ActivityPrint {
   name: string;
   bib: string;
   big: string;
+  /** Date as printed by the archive and elevation designs. */
+  date: string;
+  /** Elapsed seconds at each 5 km, from the GPX. */
+  splits: number[];
 }
 
 export const ACTIVITY_STAT_COUNT = 4;
@@ -40,5 +44,7 @@ export function activityFromForm(form: ActivityForm, routes: Route[]): ActivityP
     name: String(form.sportName ?? "").trim(),
     bib: String(form.sportBib ?? "").trim(),
     big: String(form.sportBig ?? "").trim(),
+    date: String(form.sportDate ?? "").trim(),
+    splits: route?.stats?.splits ?? [],
   };
 }

@@ -28,6 +28,8 @@ export interface Route {
   showEndpoints: boolean;
   startMarker: RouteEndpointMarker;
   finishMarker: RouteEndpointMarker;
+  /** Dots every N km along the line (sport designs); 0 / missing = none. */
+  kmMarks?: number;
   /** Sport figures read from the GPX (distance, climb, time, profile). */
   stats?: ActivityStats;
 }

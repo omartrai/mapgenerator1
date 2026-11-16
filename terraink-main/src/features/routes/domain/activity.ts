@@ -23,7 +23,11 @@ export interface ActivityStats {
   startDate: string | null;
   /** Elevation samples evenly spaced by distance (empty without elevation). */
   profile: number[];
+  /** Elapsed seconds at each 5 km (empty without times). */
+  splits?: number[];
 }
+
+const SPLIT_M = 5000;
 
 const PROFILE_SAMPLES = 160;
 /** Ignore climbs smaller than this between two counted points (GPS noise). */
@@ -46,12 +50,18 @@ export function computeActivityStats(segments: TrackPoint[][]): ActivityStats {
   let firstTime: number | null = null;
   let lastTime: number | null = null;
   const samples: { at: number; ele: number }[] = [];
+  const splits: number[] = [];
+  let nextSplit = SPLIT_M;
 
   for (const segment of segments) {
     let anchor: number | null = null; // last elevation counted for the climb
     for (let i = 0; i < segment.length; i += 1) {
       const point = segment[i];
       if (i > 0) distanceM += distanceBetween(segment[i - 1], point);
+      if (distanceM >= nextSplit && typeof point.time === "number" && firstTime !== null) {
+        splits.push(Math.round((point.time - firstTime) / 1000));
+        nextSplit += SPLIT_M;
+      }
       if (typeof point.time === "number" && Number.isFinite(point.time)) {
         firstTime = firstTime === null ? point.time : Math.min(firstTime, point.time);
         lastTime = lastTime === null ? point.time : Math.max(lastTime, point.time);
@@ -76,6 +86,7 @@ export function computeActivityStats(segments: TrackPoint[][]): ActivityStats {
     durationS: firstTime !== null && lastTime !== null && lastTime > firstTime ? Math.round((lastTime - firstTime) / 1000) : null,
     startDate: firstTime !== null ? new Date(firstTime).toISOString() : null,
     profile: resampleProfile(samples, distanceM),
+    splits,
   };
 }
 
