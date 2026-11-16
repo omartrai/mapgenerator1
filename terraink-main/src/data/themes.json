@@ -701,6 +701,84 @@
           "minor_low": "#A8461A"
         }
       }
+    },
+    "race_white": {
+      "name": "Race White",
+      "description": "White paper, light grey streets and a pale blue sea — made for race maps",
+      "ui": {
+        "bg": "#FFFFFF",
+        "text": "#1A1A1A"
+      },
+      "map": {
+        "land": "#FFFFFF",
+        "landcover": "#F6F6F6",
+        "water": "#CFE2F0",
+        "waterway": "#CFE2F0",
+        "parks": "#F1F3F1",
+        "buildings": "#EEEEEE",
+        "aeroway": "#F6F6F6",
+        "rail": "#E2E2E2",
+        "roads": {
+          "major": "#B9B9B9",
+          "minor_high": "#C6C6C6",
+          "minor_mid": "#D2D2D2",
+          "minor_low": "#DCDCDC",
+          "path": "#E2E2E2",
+          "outline": "#FFFFFF"
+        }
+      }
+    },
+    "marrakech_red": {
+      "name": "Marrakech Red",
+      "description": "Terracotta streets on a red-ochre city, cream panel underneath",
+      "ui": {
+        "bg": "#F3ECE1",
+        "text": "#C4472F"
+      },
+      "map": {
+        "land": "#C9553C",
+        "landcover": "#C4513A",
+        "water": "#A9412D",
+        "waterway": "#A9412D",
+        "parks": "#C14E37",
+        "buildings": "#BE4B34",
+        "aeroway": "#C4513A",
+        "rail": "#D06149",
+        "roads": {
+          "major": "#DD7B63",
+          "minor_high": "#D86F57",
+          "minor_mid": "#D2654D",
+          "minor_low": "#CE5F47",
+          "path": "#D06149",
+          "outline": "#C9553C"
+        }
+      }
+    },
+    "topo_cream": {
+      "name": "Topo Cream",
+      "description": "Warm paper with fine contour lines — for trails and summits",
+      "ui": {
+        "bg": "#EFEBE3",
+        "text": "#1F1D1A"
+      },
+      "map": {
+        "land": "#EFEBE3",
+        "landcover": "#EFEBE3",
+        "water": "#DCE3E2",
+        "waterway": "#DCE3E2",
+        "parks": "#EFEBE3",
+        "buildings": "#E6E1D6",
+        "aeroway": "#EFEBE3",
+        "rail": "#E3DED4",
+        "roads": {
+          "major": "#D8D2C6",
+          "minor_high": "#DDD7CC",
+          "minor_mid": "#E2DCD2",
+          "minor_low": "#E6E1D8",
+          "path": "#E3DED4",
+          "outline": "#EFEBE3"
+        }
+      }
     }
   }
 }

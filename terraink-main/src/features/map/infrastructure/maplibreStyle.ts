@@ -2,6 +2,7 @@ import type { ResolvedTheme } from "@/features/theme/domain/types";
 import { MAP_OVERZOOM_SCALE } from "@/features/map/infrastructure/constants";
 import { blendHex } from "@/shared/utils/color";
 import type { StyleSpecification } from "maplibre-gl";
+import { contourStyleParts } from "./contours";
 
 const OPENFREEMAP_SOURCE = "https://tiles.openfreemap.org/planet";
 const SOURCE_ID = "openfreemap";
@@ -200,7 +201,25 @@ export function generateMapStyle(
     includeRoadMinorLow?: boolean;
     includeRoadOutline?: boolean;
     distanceMeters?: number;
+    /** Trail posters: contour lines and hill shading. */
+    includeContours?: boolean;
   },
+): StyleSpecification {
+  const style = buildBaseStyle(theme, options);
+  if (!options?.includeContours) return style;
+  const contours = contourStyleParts(theme.ui.text || "#1f1d1a", OVERZOOM_LINE_WIDTH_SCALE);
+  const firstRoad = style.layers.findIndex((layer) => layer.id.startsWith("road") || layer.id === "rail");
+  const at = firstRoad < 0 ? style.layers.length : firstRoad;
+  return {
+    ...style,
+    sources: { ...style.sources, ...contours.sources },
+    layers: [...style.layers.slice(0, at), ...contours.layers, ...style.layers.slice(at)],
+  };
+}
+
+function buildBaseStyle(
+  theme: ResolvedTheme,
+  options?: Parameters<typeof generateMapStyle>[1],
 ): StyleSpecification {
   const buildingFill =
     theme.map.buildings ||

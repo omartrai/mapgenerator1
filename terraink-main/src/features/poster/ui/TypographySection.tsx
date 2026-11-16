@@ -14,6 +14,8 @@ import { useLanguage, type TranslationKey } from "@/shared/i18n/LanguageContext"
 import { usePosterContext } from "@/features/poster/ui/PosterContext";
 import { useActivityPoster } from "@/features/routes/application/useActivityPoster";
 import MessageLookControls from "@/features/poster/ui/MessageLookControls";
+import SportTextFields from "@/features/routes/ui/SportTextFields";
+import { getPosterLayout } from "@/features/poster/domain/posterLayout";
 
 /** Lines of the poster text that can each be hidden on their own. */
 const TEXT_PARTS = [
@@ -47,6 +49,8 @@ export default function TypographySection({
   const { fillFromRoute } = useActivityPoster();
   const sportRoute = state.routes.find((route) => route.stats && route.stats.distanceM > 0);
   const isSport = form.posterLayout === "activity";
+  /** Sport and trail designs that set their own lines (race, bold, photorun, topo). */
+  const design = getPosterLayout(form.posterLayout).design;
 
   // One group open at a time; the sport fields first on a sport poster.
   const [openGroup, setOpenGroup] = useState<string | null>(isSport ? "sport" : "text");
@@ -88,6 +92,17 @@ export default function TypographySection({
     <>
       <section className="panel-block">
         <p className="section-summary-label">{t("nav.style")}</p>
+        {design ? (
+          <PanelGroup
+            id="sporttext"
+            title={t("style.group.text")}
+            summary={[form.displayCity, form.sportName].filter(Boolean).join(" · ")}
+            open={openGroup === "text"}
+            onToggle={() => toggleGroup("text")}
+          >
+            <SportTextFields design={design} form={form} onChange={onChange as (e: React.ChangeEvent<HTMLInputElement>) => void} />
+          </PanelGroup>
+        ) : (
         <PanelGroup
           id="text"
           title={t("style.group.text")}
@@ -160,8 +175,7 @@ export default function TypographySection({
               />
             ) : null}
         </PanelGroup>
-
-
+        )}
 
         {isSport ? (
           <PanelGroup

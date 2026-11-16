@@ -6,6 +6,7 @@ import {
   LuFrame,
   LuGem,
   LuMap,
+  LuMountainSnow,
   LuPackageSearch,
   LuRoute,
   LuSearch,
@@ -67,6 +68,7 @@ export default function StorefrontPage() {
       <main>
         <PopularDesigns />
         <ShopLines />
+        <SportTrail />
         <ArtPrints />
         <ReviewsSection />
 
@@ -403,6 +405,42 @@ function ShopLines() {
             </Link>
           );
         })}
+      </div>
+    </section>
+  );
+}
+
+/** Sport and trail designs, each opening the studio on that design. */
+const SPORT_DESIGNS = [
+  { id: "race", to: "/create?type=sport&design=race" },
+  { id: "bold", to: "/create?type=sport&design=bold" },
+  { id: "activity", to: "/create?type=sport&design=activity" },
+  { id: "topo", to: "/create?type=trail" },
+] as const;
+
+function SportTrail() {
+  const { t } = useStoreText();
+  return (
+    <section className="home-block sport-trail" aria-labelledby="sport-trail-title">
+      <RowHead id="sport-trail-title" title={t("home3.sportTitle")} sub={t("home3.sportSub")} />
+      <div className="sport-trail__grid">
+        {SPORT_DESIGNS.map(({ id, to }) => (
+          <Link key={id} to={to} className="sport-trail__card">
+            <span className="sport-trail__poster">
+              <img src={`/assets/sport/${id}.webp`} alt="" loading="lazy" decoding="async" />
+            </span>
+            <span className="sport-trail__name">{t(`home3.design.${id}` as StoreTextKey)}</span>
+          </Link>
+        ))}
+      </div>
+      <div className="sport-trail__ctas">
+        <Link to="/create?type=sport" className="sport-trail__cta is-primary">
+          <LuRoute aria-hidden="true" /> {t("home3.ctaSport")}
+        </Link>
+        <Link to="/create?type=trail" className="sport-trail__cta">
+          <LuMountainSnow aria-hidden="true" /> {t("home3.ctaTrail")}
+        </Link>
+        <span className="sport-trail__note">{t("home3.photoNote")}</span>
       </div>
     </section>
   );

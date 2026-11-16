@@ -49,6 +49,12 @@ export interface PosterForm {
   activityStat3Label?: string;
   activityStat4?: string;
   activityStat4Label?: string;
+  /** Sport designs: runner name, bib number and the big figure (year, km or time). */
+  sportName?: string;
+  sportBib?: string;
+  sportBig?: string;
+  /** Trail poster: contour lines and hill shading under the route. */
+  showContours?: boolean;
   /** Per-line switches inside the poster text (all on by default). */
   showCity?: boolean;
   showDivider?: boolean;

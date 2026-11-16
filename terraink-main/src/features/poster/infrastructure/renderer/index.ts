@@ -2,6 +2,7 @@ import { mapOffsetOf } from "@/features/poster/domain/posterLayout";
 import { applyFades } from "./layers";
 import { effectiveFades, getPosterLayout } from "@/features/poster/domain/posterLayout";
 import { drawPosterText } from "./typography";
+import { drawPhotoBackdrop } from "./sportDesigns";
 import { drawMarkersOnCanvas } from "@/features/markers/infrastructure/rendering";
 import { drawRoutesOnCanvas } from "@/features/routes/infrastructure/rendering";
 import { routeEndpointMarkerItems } from "@/features/routes/infrastructure/helpers";
@@ -69,6 +70,11 @@ export async function compositeExport(
 
   // 1. Draw map snapshot
   ctx.drawImage(mapCanvas, dx, dy);
+
+  // Photorun: the runner's photo covers the map; the route goes on top.
+  if (getPosterLayout(posterLayout).photoBackdrop) {
+    drawPhotoBackdrop(ctx, width, height, photoImage, photoFrame ?? { zoom: 1, x: 0.5, y: 0.5 }, photoMono);
+  }
 
   // 2. Gradient fades
   if (showOverlay) {

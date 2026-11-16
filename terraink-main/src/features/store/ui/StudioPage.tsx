@@ -17,7 +17,8 @@ import StudioStepFooter from "./StudioStepFooter";
 import StudioStepHeader from "./StudioStepHeader";
 import StudioViewToggle from "./StudioViewToggle";
 import { useStore } from "./StoreContext";
-import { openSettingsTab } from "@/shared/ui/settingsTabs";
+import { useActivityPoster, type SportDesign } from "@/features/routes/application/useActivityPoster";
+import { SPORT_LAYOUTS } from "@/features/poster/domain/posterLayout";
 
 /**
  * The poster studio: the existing map editor wrapped with guided steps,
@@ -43,16 +44,19 @@ export default function StudioPage() {
   );
   useProductSync(store.product);
   const skyPoster = useSkyPoster();
-  // /create?type=sky starts a night-sky poster; ?type=sport a sport poster,
-  // with the Routes tab open for the GPX file.
+  // /create?type=sky starts a night-sky poster; ?type=sport or ?type=trail a
+  // sport or trail poster (optionally &design=bold), on the route step.
+  const activityPoster = useActivityPoster();
   useEffect(() => {
     const type = search.get("type");
     if (type === "sky") skyPoster.setKind("sky");
-    if (type !== "sport") return undefined;
-    skyPoster.setKind("sport");
-    // The shell starts listening once it has mounted.
-    const timer = window.setTimeout(() => openSettingsTab({ tab: "routes" }), 400);
-    return () => window.clearTimeout(timer);
+    if (type === "trail") activityPoster.applyDesign("topo");
+    if (type === "sport") {
+      const design = search.get("design");
+      activityPoster.applyDesign(
+        design && (SPORT_LAYOUTS as readonly string[]).includes(design) ? (design as SportDesign) : "race",
+      );
+    }
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, []);
 
@@ -63,7 +67,9 @@ export default function StudioPage() {
       !search.get("preset") &&
       !search.get("edit") &&
       !search.get("order") &&
-      !search.get("place"),
+      !search.get("place") &&
+      // Sport and trail posters start from a route, not a place.
+      !["sport", "trail"].includes(search.get("type") ?? ""),
   );
 
   useEffect(() => {

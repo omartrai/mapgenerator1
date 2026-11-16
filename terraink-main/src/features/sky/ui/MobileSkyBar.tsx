@@ -2,6 +2,7 @@ import { LuCheck } from "react-icons/lu";
 import PosterKindPicker from "@/features/sky/ui/PosterKindPicker";
 import { useSkyPoster } from "@/features/sky/application/useSkyPoster";
 import { useLanguage } from "@/shared/i18n/LanguageContext";
+import SportRouteCard from "@/features/routes/ui/SportRouteCard";
 
 /**
  * Phones: the place step is a floating search bar, so the poster type and
@@ -9,13 +10,14 @@ import { useLanguage } from "@/shared/i18n/LanguageContext";
  */
 export default function MobileSkyBar() {
   const { t } = useLanguage();
-  const { isSky, form, setTime, set } = useSkyPoster();
+  const { isSky, kind, form, setTime, set } = useSkyPoster();
   const value = form.skyTime ?? "";
   const [date, clock] = value.includes("T") ? value.split("T") : ["", "22:00"];
 
   return (
     <div className="mobile-sky-bar">
       <PosterKindPicker />
+      {kind === "sport" || kind === "trail" ? <SportRouteCard compact /> : null}
       {isSky ? (
         <>
           <div className="mobile-sky-bar__row">

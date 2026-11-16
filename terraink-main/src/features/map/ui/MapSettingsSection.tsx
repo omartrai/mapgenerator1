@@ -20,6 +20,8 @@ import ThemeColorEditor from "@/features/theme/ui/ThemeColorEditor";
 import ThemeSummarySection from "@/features/theme/ui/ThemeSummarySection";
 import SkyShapePicker from "@/features/sky/ui/SkyShapePicker";
 import LayoutShapePicker from "@/features/poster/ui/LayoutShapePicker";
+import SportDesignPicker from "@/features/routes/ui/SportDesignPicker";
+import { isSportLayout, isTrailLayout } from "@/features/poster/domain/posterLayout";
 import { CheckIcon, EditIcon } from "@/shared/ui/Icons";
 import type { ResolvedTheme } from "@/features/theme/domain/types";
 import type { LayoutGroup } from "@/features/layout/domain/types";
@@ -29,6 +31,7 @@ const FALLBACK_COLOR = "#000000";
 
 interface MapSettingsForm {
   posterKind?: string;
+  posterLayout?: string;
   theme: string;
   layout: string;
   width: string;
@@ -427,7 +430,11 @@ export default function MapSettingsSection({
         ) : (
           <>
           <SkyShapePicker />
-          {form.posterKind !== "sky" ? <LayoutShapePicker /> : null}
+          {form.posterKind === "sky" || isTrailLayout(form.posterLayout) ? null : isSportLayout(form.posterLayout) ? (
+            <SportDesignPicker />
+          ) : (
+            <LayoutShapePicker />
+          )}
           <h3 className="style-presets__title">{t("theme.colorsTitle")}</h3>
           <p className="style-presets__hint">{t("theme.colorsHint")}</p>
           <ThemeSummarySection

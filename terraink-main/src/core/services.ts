@@ -37,6 +37,7 @@ export const ensureFont =
 /* ── Poster compositing ── */
 
 export { compositeExport } from "@/features/poster/infrastructure/renderer";
+export { drawSportDesign, drawPhotoBackdrop } from "@/features/poster/infrastructure/renderer/sportDesigns";
 
 /* ── Export helpers ── */
 
@@ -62,6 +63,7 @@ export { fetchMarkdownDoc } from "@/features/legal/infrastructure/legalDocsAdapt
 /* ── Routes ── */
 
 export { gpxParser } from "@/features/routes/infrastructure/gpxParser";
+export { loadRaceCatalog, loadRaceGpx, type RaceEntry } from "@/features/routes/infrastructure/raceCatalog";
 export { drawRoutesOnCanvas } from "@/features/routes/infrastructure/rendering";
 
 /* ── Store: cart persistence and order API ── */

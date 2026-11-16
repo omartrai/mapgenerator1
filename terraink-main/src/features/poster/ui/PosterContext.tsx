@@ -238,6 +238,7 @@ export function PosterProvider({ children }: { children: ReactNode }) {
         includeRoadMinorLow: state.form.includeRoadMinorLow,
         includeRoadOutline: state.form.includeRoadOutline,
         distanceMeters: Number(state.form.distance),
+        includeContours: Boolean(state.form.showContours),
       }),
     [
       effectiveTheme,
@@ -252,6 +253,7 @@ export function PosterProvider({ children }: { children: ReactNode }) {
       state.form.includeRoadMinorLow,
       state.form.includeRoadOutline,
       state.form.distance,
+      state.form.showContours,
     ],
   );
 

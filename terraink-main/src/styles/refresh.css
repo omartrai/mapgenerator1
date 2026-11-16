@@ -2677,3 +2677,507 @@ body:has(.store-page) {
   color: var(--s-green);
   font-weight: 700;
 }
+
+/* ── Sport & trail: poster type tiles (4), route source, designs, texts ── */
+
+.kind-tiles--four {
+  grid-template-columns: repeat(4, minmax(0, 1fr));
+  gap: 6px;
+}
+
+.kind-tiles--four .kind-tile {
+  min-height: 68px;
+  padding: 8px 4px;
+  font-size: 0.74rem;
+}
+
+.sport-source {
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+  margin-bottom: 20px;
+  padding: 16px;
+  border: 1px solid #e3e2dc;
+  border-radius: 16px;
+  background: #fff;
+}
+
+.sport-source__title {
+  margin: 0;
+  font-size: 0.95rem;
+  font-weight: 700;
+  color: var(--s-ink);
+}
+
+.sport-source__tabs {
+  display: grid;
+  grid-template-columns: repeat(3, minmax(0, 1fr));
+  gap: 4px;
+  padding: 4px;
+  border-radius: 12px;
+  background: #f1f1ec;
+}
+
+.sport-source__tab {
+  min-height: 36px;
+  padding: 6px 4px;
+  border: 0;
+  border-radius: 9px;
+  background: transparent;
+  color: #5d6660;
+  font: inherit;
+  font-size: 0.8rem;
+  font-weight: 600;
+  white-space: nowrap;
+  cursor: pointer;
+}
+
+.sport-source__tab.is-active {
+  background: #fff;
+  color: var(--s-green);
+  box-shadow: 0 1px 3px rgb(0 0 0 / 0.1);
+}
+
+.sport-source .gpx-drop {
+  margin: 0;
+}
+
+.sport-source__hint {
+  margin: 0;
+  color: #66706a;
+  font-size: 0.82rem;
+  line-height: 1.45;
+}
+
+.sport-source__current {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  padding: 10px 12px;
+  border-radius: 12px;
+  background: var(--s-hero-card);
+}
+
+.sport-source__current.is-empty {
+  background: #f5f5f1;
+}
+
+.sport-source__swatch {
+  flex: 0 0 auto;
+  width: 22px;
+  height: 4px;
+  border-radius: 2px;
+  background: #c9c9c2;
+}
+
+.sport-source__current-text {
+  display: flex;
+  flex-direction: column;
+  min-width: 0;
+  flex: 1;
+}
+
+.sport-source__current-text small {
+  color: #66706a;
+  font-size: 0.7rem;
+  text-transform: uppercase;
+  letter-spacing: 0.06em;
+}
+
+.sport-source__current-text strong {
+  overflow: hidden;
+  font-size: 0.88rem;
+  white-space: nowrap;
+  text-overflow: ellipsis;
+}
+
+.sport-source__km {
+  font-size: 0.85rem;
+  font-weight: 700;
+  color: var(--s-green);
+  white-space: nowrap;
+}
+
+.race-list {
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+  margin: 0;
+  padding: 0;
+  list-style: none;
+}
+
+.race-list__item {
+  display: grid;
+  grid-template-columns: auto 1fr;
+  align-items: center;
+  column-gap: 10px;
+  width: 100%;
+  padding: 10px 12px;
+  border: 1px solid #e3e2dc;
+  border-radius: 12px;
+  background: #fff;
+  font: inherit;
+  text-align: start;
+  cursor: pointer;
+}
+
+.race-list__item:hover {
+  border-color: var(--s-green);
+}
+
+.race-list__item svg {
+  grid-row: span 2;
+  color: var(--s-green);
+}
+
+.race-list__name {
+  font-size: 0.88rem;
+  font-weight: 600;
+}
+
+.race-list__meta {
+  color: #66706a;
+  font-size: 0.75rem;
+}
+
+.draw-panel {
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+}
+
+.draw-panel__start {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: 8px;
+  min-height: 44px;
+  border: 0;
+  border-radius: 999px;
+  background: var(--s-green);
+  color: #fff;
+  font: inherit;
+  font-weight: 600;
+  cursor: pointer;
+}
+
+.draw-panel__count {
+  margin: 0;
+  font-weight: 700;
+  font-size: 0.85rem;
+}
+
+.draw-panel__actions {
+  display: grid;
+  grid-template-columns: 1fr 1fr 1fr;
+  gap: 6px;
+}
+
+.draw-panel__actions button {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: 5px;
+  min-height: 38px;
+  padding: 6px;
+  border: 1px solid #e3e2dc;
+  border-radius: 10px;
+  background: #fff;
+  font: inherit;
+  font-size: 0.78rem;
+  font-weight: 600;
+  cursor: pointer;
+}
+
+.draw-panel__actions button:disabled {
+  opacity: 0.45;
+  cursor: default;
+}
+
+.draw-panel__actions button.is-primary {
+  border-color: var(--s-green);
+  background: var(--s-green);
+  color: #fff;
+}
+
+/* Click layer over the poster while drawing a route. */
+.draw-route-layer {
+  position: absolute;
+  inset: 0;
+  z-index: 40;
+  cursor: crosshair;
+  touch-action: none;
+}
+
+.draw-route-layer__dot {
+  position: absolute;
+  width: 10px;
+  height: 10px;
+  margin: -5px 0 0 -5px;
+  border: 2px solid #fff;
+  border-radius: 50%;
+  background: #d62f2f;
+  box-shadow: 0 1px 3px rgb(0 0 0 / 0.35);
+  pointer-events: none;
+}
+
+.draw-route-layer__dot.is-last {
+  width: 14px;
+  height: 14px;
+  margin: -7px 0 0 -7px;
+}
+
+.draw-route-layer__hint {
+  position: absolute;
+  left: 50%;
+  top: 10px;
+  max-width: 90%;
+  margin: 0;
+  padding: 6px 12px;
+  transform: translateX(-50%);
+  border-radius: 999px;
+  background: rgb(20 24 22 / 0.82);
+  color: #fff;
+  font-size: 0.75rem;
+  text-align: center;
+  pointer-events: none;
+}
+
+.sport-designs {
+  display: grid;
+  grid-template-columns: repeat(4, minmax(0, 1fr));
+  gap: 8px;
+}
+
+.sport-designs__option {
+  position: relative;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 6px;
+  padding: 8px 6px 10px;
+  border: 1px solid #e3e2dc;
+  border-radius: 14px;
+  background: #fff;
+  cursor: pointer;
+}
+
+.sport-designs__option input {
+  position: absolute;
+  opacity: 0;
+  pointer-events: none;
+}
+
+.sport-designs__option:has(input:checked) {
+  border-color: var(--s-green);
+  background: var(--s-hero-card);
+  box-shadow: 0 0 0 1px var(--s-green);
+}
+
+.sport-designs__option:has(input:focus-visible) {
+  outline: 2px solid var(--s-green);
+  outline-offset: 2px;
+}
+
+.sport-designs__thumb svg {
+  display: block;
+  width: 100%;
+  max-width: 60px;
+  height: auto;
+  border-radius: 4px;
+  box-shadow: 0 1px 4px rgb(0 0 0 / 0.18);
+}
+
+.sport-designs .layout-picker__name {
+  font-size: 0.75rem;
+  white-space: nowrap;
+}
+
+.sport-text {
+  display: flex;
+  flex-direction: column;
+  gap: 14px;
+}
+
+.sport-text__grid {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 10px;
+}
+
+.sport-text__grid .is-wide {
+  grid-column: 1 / -1;
+}
+
+.sport-text__label {
+  margin: 0 0 6px;
+  padding: 0;
+  font-size: 0.8rem;
+  font-weight: 700;
+}
+
+.sport-text .sport-fields__row {
+  grid-template-columns: minmax(0, 1fr) minmax(0, 1fr);
+}
+
+.sport-photo {
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+}
+
+.sport-photo__pick {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  padding: 10px;
+  border: 1.5px dashed #cfd5cf;
+  border-radius: 12px;
+  background: #fafaf7;
+  font: inherit;
+  font-weight: 600;
+  cursor: pointer;
+}
+
+.sport-photo__pick img,
+.sport-photo__pick svg {
+  flex: 0 0 auto;
+  width: 48px;
+  height: 48px;
+  border-radius: 8px;
+  object-fit: cover;
+}
+
+.sport-photo__pick svg {
+  padding: 12px;
+  background: #fff;
+  color: var(--s-green);
+}
+
+.sport-photo__slider {
+  display: grid;
+  grid-template-columns: 110px 1fr;
+  align-items: center;
+  gap: 8px;
+  font-size: 0.8rem;
+}
+
+/* ── Home: sport & trail designs ── */
+
+.sport-trail__grid {
+  display: grid;
+  grid-template-columns: repeat(4, minmax(0, 1fr));
+  gap: 20px;
+}
+
+.sport-trail__card {
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+  color: var(--s-ink) !important;
+  text-decoration: none;
+}
+
+.sport-trail__poster {
+  display: grid;
+  place-items: center;
+  padding: 11% 13%;
+  border-radius: 20px;
+  background: var(--s-hero-card);
+  transition: background-color 0.2s ease;
+}
+
+.sport-trail__poster img {
+  display: block;
+  width: 100%;
+  height: auto;
+  aspect-ratio: 3 / 4;
+  object-fit: cover;
+  border: 6px solid #1c1c1c;
+  box-shadow: 0 14px 28px rgb(20 30 25 / 0.22);
+  transition: transform 0.3s ease;
+}
+
+.sport-trail__card:hover .sport-trail__poster img {
+  transform: translateY(-4px);
+}
+
+.sport-trail__name {
+  font-weight: 600;
+  text-align: center;
+}
+
+.sport-trail__ctas {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: 12px;
+  margin-top: 28px;
+}
+
+.sport-trail__cta {
+  display: inline-flex;
+  align-items: center;
+  gap: 8px;
+  min-height: 48px;
+  padding: 0 22px;
+  border: 1px solid var(--s-green);
+  border-radius: 999px;
+  color: var(--s-green) !important;
+  font-weight: 600;
+  text-decoration: none;
+}
+
+.sport-trail__cta.is-primary {
+  background: var(--s-green);
+  color: #fff !important;
+}
+
+.sport-trail__note {
+  color: #66706a;
+  font-size: 0.9rem;
+}
+
+@media (max-width: 900px) {
+  .sport-trail__grid {
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+    gap: 14px;
+  }
+}
+
+@media (max-width: 520px) {
+  .sport-trail__cta {
+    flex: 1 1 100%;
+    justify-content: center;
+  }
+}
+
+/* Phone: the route card under the floating search bar. */
+.sport-source.is-compact {
+  gap: 8px;
+  margin: 8px 0 0;
+  padding: 10px;
+  border-radius: 14px;
+}
+
+.sport-source.is-compact .gpx-drop {
+  padding: 10px 12px;
+}
+
+.sport-source.is-compact .gpx-drop__icon {
+  width: 32px;
+  height: 32px;
+}
+
+.sport-source.is-compact .sport-source__hint {
+  font-size: 0.78rem;
+}
+
+.sport-source.is-compact .sport-source__current {
+  padding: 6px 10px;
+}
+
+.sport-source.is-compact .sport-source__current-text small {
+  display: none;
+}

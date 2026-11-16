@@ -42,6 +42,7 @@ import {
 import { useLanguage } from "@/shared/i18n/LanguageContext";
 import { useActivityPoster } from "@/features/routes/application/useActivityPoster";
 import { openSettingsTab } from "@/shared/ui/settingsTabs";
+import { isSportLayout, isTrailLayout } from "@/features/poster/domain/posterLayout";
 
 type RouteEndpointKind = "start" | "finish";
 
@@ -198,7 +199,7 @@ export default function RoutesSection() {
         // On a sport poster the new track becomes the poster's route (orange,
         // fitted, stats filled); otherwise only pre-fill the stats.
         if (result.status === "added") {
-          if (form.posterLayout === "activity") makeSportPoster(result.route);
+          if (isSportLayout(form.posterLayout) || isTrailLayout(form.posterLayout)) makeSportPoster(result.route);
           else fillFromRoute(result.route);
         }
         if (result.status === "needs-confirmation") {
@@ -413,7 +414,7 @@ export default function RoutesSection() {
       ) : null}
 
       {sportRoute ? (
-        form.posterLayout === "activity" ? (
+        isSportLayout(form.posterLayout) || isTrailLayout(form.posterLayout) ? (
           <div className="sport-cta is-active">
             <p className="sport-cta__title">
               <span className="sport-cta__check" aria-hidden="true">✓</span> {t("activity.active")}

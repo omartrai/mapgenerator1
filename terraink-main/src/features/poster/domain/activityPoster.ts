@@ -11,6 +11,10 @@ export interface ActivityPrint {
   stats: StatField[];
   profile: number[];
   accent: string;
+  /** Sport designs: runner name, bib and the big figure (year, km or time). */
+  name: string;
+  bib: string;
+  big: string;
 }
 
 export const ACTIVITY_STAT_COUNT = 4;
@@ -33,5 +37,8 @@ export function activityFromForm(form: ActivityForm, routes: Route[]): ActivityP
     stats,
     profile: route?.stats?.profile ?? [],
     accent: route?.color || DEFAULT_ACCENT,
+    name: String(form.sportName ?? "").trim(),
+    bib: String(form.sportBib ?? "").trim(),
+    big: String(form.sportBig ?? "").trim(),
   };
 }

@@ -25,6 +25,7 @@ import {
 import { skyTextLayout } from "@/features/sky/domain/chart";
 import { profileAreaPath } from "@/features/routes/domain/activity";
 import { withAlpha } from "@/shared/utils/color";
+import { drawSportDesign } from "./sportDesigns";
 import {
   TEXT_DIMENSION_REFERENCE_PX,
   MESSAGE_FONT_BASE_PX,
@@ -170,6 +171,23 @@ export function drawPosterText(
 
   const textColor = layout.box ? layout.box.text : themeText;
 
+  // Sport and trail designs set all their own text.
+  if (layout.design) {
+    if (showPosterText) {
+      drawSportDesign(ctx, width, height, {
+        design: layout.design,
+        title: city,
+        place: country,
+        print: activity,
+        text: themeText,
+        paper,
+        titleFont: titleFontFamily,
+        bodyFont: bodyFontFamily,
+      });
+    }
+    showPosterText = false;
+  }
+
   if (showPosterText) {
     const cityLabel = cityText(layout, city, formatCityLabel);
     const spacedCity = layout.cityStyle.case === "spaced";
@@ -269,7 +287,9 @@ export function drawPosterText(
   }
 
   if (!mapCredit) return;
-  ctx.fillStyle = layout.band || layout.border || mask ? themeText : attributionColor;
+  ctx.fillStyle = layout.photoBackdrop
+    ? "#ffffff"
+    : layout.band || layout.border || mask ? themeText : attributionColor;
   ctx.globalAlpha = attributionAlpha;
   ctx.textAlign = "right";
   ctx.textBaseline = "bottom";

@@ -2,6 +2,8 @@ import { useCallback } from "react";
 import { usePosterContext } from "@/features/poster/ui/PosterContext";
 import { parseLocalDateTime } from "@/features/sky/domain/astronomy";
 import { defaultSkyTime, isSkyPoster } from "./skyOptions";
+import { useActivityPoster } from "@/features/routes/application/useActivityPoster";
+import { isSportLayout, isTrailLayout } from "@/features/poster/domain/posterLayout";
 
 /** "12 novembre 2026" in the site language, from "YYYY-MM-DDTHH:mm". */
 export function formatSkyDate(value: string, language: string): string {
@@ -23,7 +25,7 @@ export function skyCoordsLabel(skyTime: string, coordinates: string, language: s
   return [date, clock, coordinates].filter(Boolean).join("  ·  ");
 }
 
-export type PosterKind = "map" | "sky" | "sport";
+export type PosterKind = "map" | "sky" | "sport" | "trail";
 
 const BORN: Record<string, string> = { en: "Born", fr: "Né(e) le", ar: "وُلد في" };
 
@@ -51,33 +53,35 @@ export function skyDetailsLabel(
     .toUpperCase();
 }
 
-/** Switches between a map, night-sky or sport poster and sets the sky's moment. */
+/** Switches between a map, night-sky, sport or trail poster and sets the sky's moment. */
 export function useSkyPoster() {
   const { state, dispatch } = usePosterContext();
   const { form } = state;
+  const { applyDesign, leaveSport } = useActivityPoster();
   const set = useCallback(
     (name: string, value: string | boolean) => dispatch({ type: "SET_FIELD", name, value }),
     [dispatch],
   );
 
   const isSky = isSkyPoster(form);
-  const kind: PosterKind = isSky ? "sky" : form.posterLayout === "activity" ? "sport" : "map";
+  const kind: PosterKind = isSky
+    ? "sky"
+    : isSportLayout(form.posterLayout)
+      ? "sport"
+      : isTrailLayout(form.posterLayout)
+        ? "trail"
+        : "map";
 
   const setKind = useCallback(
     (next: PosterKind) => {
+      if (next === kind) return;
+      if (next === "sport") return applyDesign("race");
+      if (next === "trail") return applyDesign("topo");
+      if (kind === "sport" || kind === "trail") leaveSport();
       if (next === "sky" && !form.skyTime) set("skyTime", defaultSkyTime());
       set("posterKind", next === "sky" ? "sky" : "map");
-      if (next === "sport") {
-        // The sport layout: title, date line, route map, elevation, stats.
-        set("posterLayout", "activity");
-        set("mapShape", "none");
-        set("showPosterText", true);
-        if (form.posterLayout !== "activity") dispatch({ type: "SET_THEME", themeId: "carbon" });
-      } else if (form.posterLayout === "activity") {
-        set("posterLayout", "classic");
-      }
     },
-    [dispatch, form.posterLayout, form.skyTime, set],
+    [applyDesign, form.skyTime, kind, leaveSport, set],
   );
 
   const setTime = useCallback((time: string) => set("skyTime", time), [set]);

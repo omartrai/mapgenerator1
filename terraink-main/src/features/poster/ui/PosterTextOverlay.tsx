@@ -1,5 +1,6 @@
 import { useEffect, useId, useLayoutEffect, useRef, useState, type CSSProperties, type RefObject } from "react";
-import { ensureFont } from "@/core/services";
+import { drawSportDesign, ensureFont } from "@/core/services";
+import CanvasLayer from "./CanvasLayer";
 import { formatCoordinates } from "@/shared/geo/posterBounds";
 import {
   cityText,
@@ -264,8 +265,9 @@ export default function PosterTextOverlay({
     });
   }, [messageType.family]);
   const attributionFontSize = `${toCqMin(ATTRIBUTION_FONT_BASE_PX)}cqmin`;
-  const attributionColor =
-    layout.band || layout.border || mapShape !== "none" || layout.mapWindow
+  const attributionColor = layout.photoBackdrop
+    ? "#ffffff"
+    : layout.band || layout.border || mapShape !== "none" || layout.mapWindow
       ? themeText
       : computeAttributionColor(themeText, landColor, showOverlay);
   const attributionOpacity = showOverlay ? 0.55 : 0.9;
@@ -340,6 +342,23 @@ export default function PosterTextOverlay({
           ) : null}
         </svg>
       ) : null}
+      {layout.design && showPosterText ? (
+        <CanvasLayer
+          draw={(ctx, width, height) =>
+            drawSportDesign(ctx, width, height, {
+              design: layout.design!,
+              title: city,
+              place: country,
+              print: activity,
+              text: themeText,
+              paper: paperColor,
+              titleFont,
+              bodyFont,
+            })
+          }
+          deps={[layout.design, city, country, JSON.stringify(activity ?? null), themeText, paperColor, titleFont]}
+        />
+      ) : null}
       {layout.rule && showPosterText ? (
         <div
           className="poster-layout-hrule"
@@ -391,7 +410,7 @@ export default function PosterTextOverlay({
         />
       ) : null}
 
-      {showPosterText && (
+      {showPosterText && !layout.design && (
         <>
           {textParts.city ? (
             <p

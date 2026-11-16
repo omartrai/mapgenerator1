@@ -181,7 +181,7 @@ export function useExport() {
       const withOverlays = hasVisibleOverlays && !sky;
       // Photo layout: decode the customer's photo before drawing.
       const photoImage =
-        !sky && form.photo && getPosterLayout(form.posterLayout).photo
+        !sky && form.photo && (getPosterLayout(form.posterLayout).photo || getPosterLayout(form.posterLayout).photoBackdrop)
           ? await loadImage(form.photo).catch(() => null)
           : null;
 

@@ -3,6 +3,7 @@ import { useStoreText, type StoreTextKey } from "./storeText";
 import { MAIN_STEPS } from "./StudioStepFooter";
 import { usePosterContext } from "@/features/poster/ui/PosterContext";
 import { isSkyPoster } from "@/features/sky/application/skyOptions";
+import { isSportLayout, isTrailLayout } from "@/features/poster/domain/posterLayout";
 
 const SECTIONS: MobileTab[] = ["location", "theme", "style", "size", "layers", "markers", "routes", "advanced"];
 
@@ -18,7 +19,17 @@ export default function StudioStepHeader({ tab }: StudioStepHeaderProps) {
   const step = MAIN_STEPS.indexOf(tab);
   const { state } = usePosterContext();
   // A night-sky poster asks for a place and a moment in the first step.
-  const key = tab === "location" && isSkyPoster(state.form) ? "locationSky" : tab;
+  const layout = state.form.posterLayout;
+  const key =
+    tab !== "location"
+      ? tab
+      : isSkyPoster(state.form)
+        ? "locationSky"
+        : isSportLayout(layout)
+          ? "locationSport"
+          : isTrailLayout(layout)
+            ? "locationTrail"
+            : tab;
 
   // One heading per panel: the page name as a small eyebrow, then the
   // open section's name and what to do there.

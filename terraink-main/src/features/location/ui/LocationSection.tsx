@@ -11,6 +11,8 @@ import { MyLocationIcon } from "@/shared/ui/Icons";
 import { useLanguage } from "@/shared/i18n/LanguageContext";
 import PosterKindPicker from "@/features/sky/ui/PosterKindPicker";
 import SkyMomentCard from "@/features/sky/ui/SkyMomentCard";
+import SportRouteCard from "@/features/routes/ui/SportRouteCard";
+import { isSportLayout, isTrailLayout } from "@/features/poster/domain/posterLayout";
 
 interface LocationSectionProps {
   form: PosterForm;
@@ -48,6 +50,7 @@ export default function LocationSection({
   return (
     <section className="panel-block">
       <PosterKindPicker />
+      {isSportLayout(form.posterLayout) || isTrailLayout(form.posterLayout) ? <SportRouteCard /> : null}
       <h2>{t("nav.location")}</h2>
       <label>
         {t("nav.location")}

@@ -16,9 +16,21 @@ import {
   TEXT_MESSAGE_Y_RATIO,
 } from "./textLayout";
 
-export const POSTER_LAYOUTS = ["classic", "border", "label", "band", "fade", "header", "script", "signature", "activity", "duo", "nursery"] as const;
-/** Layouts reached only through a ready-made style, not the layout picker. */
-export const STYLE_ONLY_LAYOUTS: ReadonlySet<string> = new Set(["duo", "nursery"]);
+export const POSTER_LAYOUTS = [
+  "classic", "border", "label", "band", "fade", "header", "script", "signature",
+  "activity", "duo", "nursery", "race", "bold", "photorun", "topo",
+] as const;
+/** Sport poster designs (Sport kind), first = default. */
+export const SPORT_LAYOUTS = ["race", "bold", "photorun", "activity"] as const;
+/** Trail poster designs (Trail kind). */
+export const TRAIL_LAYOUTS = ["topo"] as const;
+export type SportDesignId = "race" | "bold" | "photorun" | "topo";
+/** Layouts reached only through a ready-made style or a sport kind, not the map layout picker. */
+export const STYLE_ONLY_LAYOUTS: ReadonlySet<string> = new Set([
+  "duo", "nursery", ...SPORT_LAYOUTS, ...TRAIL_LAYOUTS,
+]);
+export const isSportLayout = (id: string | undefined) => (SPORT_LAYOUTS as readonly string[]).includes(id ?? "");
+export const isTrailLayout = (id: string | undefined) => (TRAIL_LAYOUTS as readonly string[]).includes(id ?? "");
 export type PosterLayoutId = (typeof POSTER_LAYOUTS)[number];
 export const DEFAULT_POSTER_LAYOUT: PosterLayoutId = "classic";
 
@@ -96,6 +108,15 @@ export interface PosterLayoutSpec {
   centreMapInWindow?: boolean;
   /** Heart holding the customer's photo, next to the map heart (ratios). */
   photo?: Rect;
+  /**
+   * Sport and trail designs draw all their own text (see sportDesigns.ts);
+   * the city, country, coordinates and message lines are not printed.
+   */
+  design?: SportDesignId;
+  /** The customer's photo covers the whole poster under the route. */
+  photoBackdrop?: boolean;
+  /** Where the route is fitted (ratios); missing = the map window. */
+  routeBox?: Rect;
   /** Font size multipliers against the classic layout. */
   scale: { city: number; country: number; coords: number; message: number };
   /** Max text line width, ratio of the poster width. */
@@ -261,6 +282,46 @@ export const POSTER_LAYOUT_SPECS: Record<PosterLayoutId, PosterLayoutSpec> = {
     coords: center(0.882),
     scale: { city: 0.3, country: 0.75, coords: 0.85, message: 1.3 },
     maxWidth: 0.8,
+  },
+
+  /** Race finisher: event title, runner name over a ghost year, map, 3 stats. */
+  race: {
+    ...CLASSIC,
+    fades: { top: 0, bottom: 0 },
+    mapWindow: { x: 0, y: 0.36, w: 1, h: 0.5 },
+    routeBox: { x: 0.1, y: 0.45, w: 0.8, h: 0.32 },
+    divider: null,
+    design: "race",
+  },
+
+  /** Coloured map on top, cream panel with a huge distance underneath. */
+  bold: {
+    ...CLASSIC,
+    fades: { top: 0, bottom: 0 },
+    mapWindow: { x: 0, y: 0, w: 1, h: 0.66 },
+    routeBox: { x: 0.12, y: 0.08, w: 0.76, h: 0.5 },
+    divider: null,
+    design: "bold",
+  },
+
+  /** The runner's photo full bleed, route drawn over it, big finish time. */
+  photorun: {
+    ...CLASSIC,
+    fades: { top: 0, bottom: 0 },
+    routeBox: { x: 0.12, y: 0.2, w: 0.76, h: 0.3 },
+    divider: null,
+    design: "photorun",
+    photoBackdrop: true,
+  },
+
+  /** Trail: big title, contour map, four stats in a row. */
+  topo: {
+    ...CLASSIC,
+    fades: { top: 0, bottom: 0 },
+    mapWindow: { x: 0.06, y: 0.16, w: 0.88, h: 0.705 },
+    routeBox: { x: 0.12, y: 0.2, w: 0.76, h: 0.63 },
+    divider: null,
+    design: "topo",
   },
 
   activity: {
@@ -454,4 +515,23 @@ export function getPosterLayout(id: string | undefined | null): PosterLayoutSpec
 
 export function isPosterLayoutId(id: unknown): id is PosterLayoutId {
   return typeof id === "string" && (POSTER_LAYOUTS as readonly string[]).includes(id);
+}
+
+/** Like placePhoto, for a rectangle: cover it at the chosen zoom and focus point. */
+export function placePhotoCover(
+  imageWidth: number,
+  imageHeight: number,
+  box: Rect,
+  frame: PhotoFrame,
+): Rect {
+  const scale = Math.max(box.w / imageWidth, box.h / imageHeight) * frame.zoom;
+  const w = imageWidth * scale;
+  const h = imageHeight * scale;
+  const clamp = (value: number, min: number, max: number) => Math.min(max, Math.max(min, value));
+  return {
+    x: clamp(box.x + box.w / 2 - frame.x * w, box.x + box.w - w, box.x),
+    y: clamp(box.y + box.h / 2 - frame.y * h, box.y + box.h - h, box.y),
+    w,
+    h,
+  };
 }
