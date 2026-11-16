@@ -1,15 +1,13 @@
 import { useCallback } from "react";
 import { usePosterContext } from "@/features/poster/ui/PosterContext";
 import { DEFAULT_MARKER_SIZE } from "@/features/markers/domain/constants";
-import { useActivityPoster } from "@/features/routes/application/useActivityPoster";
 import { useLanguage } from "@/shared/i18n/LanguageContext";
-import { openSettingsTab } from "@/shared/ui/settingsTabs";
 
 /**
  * Ready-made looks that set the layout, colours, map shape, layers and a
  * heart pin in one tap. The customer can still change any of it afterwards.
  */
-export const POSTER_STYLES = ["classic", "heart", "photo", "trail"] as const;
+export const POSTER_STYLES = ["classic", "heart", "photo"] as const;
 export type PosterStyleId = (typeof POSTER_STYLES)[number];
 
 const ALL_LAYERS = {
@@ -36,7 +34,6 @@ function markerId(): string {
 export function usePosterStyles() {
   const { state, dispatch } = usePosterContext();
   const { t } = useLanguage();
-  const { makeTrailPoster } = useActivityPoster();
   const { form } = state;
 
   /** A red heart at the centre of the map, unless one is already pinned. */
@@ -105,14 +102,8 @@ export function usePosterStyles() {
         return;
       }
 
-      // Trail: needs a route; without one, open the Routes tab to import it.
-      dispatch({ type: "SET_THEME", themeId: "monochrome" });
-      dispatch({ type: "SET_FORM_FIELDS", fields: { ...base, posterStyle: "trail" } });
-      const route = state.routes.find((entry) => entry.visible);
-      if (route) makeTrailPoster(route);
-      else openSettingsTab({ tab: "routes" });
     },
-    [dispatch, form.customMessage, form.photoMono, makeTrailPoster, pinHeart, state.routes, t],
+    [dispatch, form.customMessage, form.photoMono, pinHeart, t],
   );
 
   const active = (form.posterStyle as PosterStyleId | undefined) ?? null;

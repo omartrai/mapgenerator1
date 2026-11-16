@@ -2281,22 +2281,6 @@ body:has(.store-page) {
   transform: skewX(-20deg);
 }
 
-/* Trail: a single route line on plain paper */
-.style-preset__sketch--trail .style-preset__map {
-  inset: 10% 30% 30%;
-  background: #fff;
-  -webkit-mask: none;
-}
-
-.style-preset__sketch--trail .style-preset__map::after {
-  content: "";
-  position: absolute;
-  inset: 14% 18%;
-  border: 2px solid #1a1a1a;
-  border-radius: 46% 54% 38% 62% / 55% 40% 60% 45%;
-  rotate: -14deg;
-}
-
 /* Classic: map with a fade and a centred title (the base sketch). */
 
 /* Photo layout: the map and its overlays move so the chosen place sits in
@@ -2575,4 +2559,16 @@ body:has(.store-page) {
 
 .photo-framer .photo-card__btn {
   align-self: flex-start;
+}
+
+/* Three templates fit side by side; no sideways scrolling. */
+.style-presets__grid {
+  display: grid;
+  grid-template-columns: repeat(3, minmax(0, 1fr));
+  overflow: visible;
+}
+
+.style-presets__grid .style-preset {
+  flex: none;
+  min-width: 0;
 }
