@@ -25,7 +25,17 @@ const tabs: {
   { id: "advanced", labelKey: "nav.advanced", Icon: AdvancedIcon },
 ];
 
+/** Extra rail buttons that switch the poster type (sport, trail). */
+export interface RailKind {
+  id: string;
+  label: string;
+  Icon: React.ComponentType<{ className?: string }>;
+  active: boolean;
+  onSelect: () => void;
+}
+
 interface DesktopNavBarProps {
+  kinds?: RailKind[];
   activeTab: MobileTab;
   panelOpen: boolean;
   onTabChange: (tab: MobileTab) => void;
@@ -39,6 +49,7 @@ export default function DesktopNavBar({
   onTabChange,
   isLocationVisible,
   onLocationToggle,
+  kinds = [],
 }: DesktopNavBarProps) {
   const { t } = useLanguage();
   return (
@@ -58,6 +69,21 @@ export default function DesktopNavBar({
         <LocationIcon className="desktop-nav-icon" />
         <span className="desktop-nav-label">{t("nav.location")}</span>
       </button>
+
+      {kinds.map(({ id, label, Icon, active, onSelect }) => (
+        <button
+          key={id}
+          type="button"
+          className={`btn btn-ghost desktop-nav-tab desktop-nav-tab--kind desktop-nav-tab--${id}${active ? " is-active" : ""}`}
+          onClick={onSelect}
+          title={label}
+          aria-label={label}
+          aria-pressed={active}
+        >
+          <Icon className="desktop-nav-icon" />
+          <span className="desktop-nav-label">{label}</span>
+        </button>
+      ))}
 
       {tabs.map(({ id, labelKey, Icon }) => {
         const label = t(labelKey);

@@ -6,7 +6,10 @@ import {
   MIN_MARKER_SIZE,
 } from "@/features/markers/domain/constants";
 import GeneralHeader from "@/shared/ui/GeneralHeader";
-import DesktopNavBar from "@/shared/ui/DesktopNavBar";
+import DesktopNavBar, { type RailKind } from "@/shared/ui/DesktopNavBar";
+import { useSkyPoster } from "@/features/sky/application/useSkyPoster";
+import { FaPersonRunning } from "react-icons/fa6";
+import { LuMountainSnow } from "react-icons/lu";
 import FooterNote from "@/shared/ui/FooterNote";
 import PreviewPanel from "@/features/poster/ui/PreviewPanel";
 import MobileSkyBar from "@/features/sky/ui/MobileSkyBar";
@@ -251,6 +254,24 @@ export default function AppShell({
     setDesktopPanelOpen(true);
   };
 
+  // Sport and trail posters have their own rail buttons; they open the route step.
+  const { kind: posterKind, setKind } = useSkyPoster();
+  const railKinds: RailKind[] = (
+    [
+      ["sport", "kind.short.sport", FaPersonRunning],
+      ["trail", "kind.short.trail", LuMountainSnow],
+    ] as const
+  ).map(([id, labelKey, Icon]) => ({
+    id,
+    label: t(labelKey),
+    Icon,
+    active: posterKind === id,
+    onSelect: () => {
+      setKind(id);
+      handleDesktopTabChange("location");
+    },
+  }));
+
   // Step buttons can ask to close the mobile drawer (e.g. "Order").
   useEffect(() => onCloseSettingsPanel(() => setMobileDrawerOpen(false)), []);
 
@@ -299,13 +320,15 @@ export default function AppShell({
       {showStartupModal ? <StartupLocationModal /> : null}
 
       <DesktopNavBar
+        kinds={railKinds}
         activeTab={desktopTab}
         panelOpen={desktopPanelOpen}
         onTabChange={handleDesktopTabChange}
         isLocationVisible={
-          locationAsTab
-            ? desktopPanelOpen && desktopTab === "location"
-            : desktopLocationRowVisible
+          // On a sport or trail poster, its own rail button shows as active instead.
+          posterKind !== "sport" &&
+          posterKind !== "trail" &&
+          (locationAsTab ? desktopPanelOpen && desktopTab === "location" : desktopLocationRowVisible)
         }
         onLocationToggle={() =>
           locationAsTab

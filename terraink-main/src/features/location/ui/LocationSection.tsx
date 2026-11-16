@@ -49,7 +49,7 @@ export default function LocationSection({
   const hasLocationValue = form.location.trim().length > 0;
   return (
     <section className="panel-block">
-      <PosterKindPicker />
+      <PosterKindPicker only={["map", "sky"]} />
       {isSportLayout(form.posterLayout) || isTrailLayout(form.posterLayout) ? <SportRouteCard /> : null}
       <h2>{t("nav.location")}</h2>
       <label>
