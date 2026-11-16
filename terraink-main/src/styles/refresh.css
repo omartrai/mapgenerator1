@@ -2596,6 +2596,84 @@ body:has(.store-page) {
   font-weight: 600;
 }
 
+/* Map shape: cards with the icon and the name inside, one look for all five. */
 .layout-shape .shape-picker__grid {
-  grid-template-columns: repeat(5, minmax(0, 1fr));
+  display: grid;
+  grid-template-columns: repeat(3, minmax(0, 1fr));
+  gap: 8px;
+}
+
+.layout-shape .shape-picker__option {
+  position: relative;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  gap: 6px;
+  min-height: 76px;
+  padding: 10px 6px;
+  border: 1px solid #e3e2dc;
+  border-radius: 14px;
+  background: #fff;
+  cursor: pointer;
+  transition: border-color 0.15s, background-color 0.15s, box-shadow 0.15s;
+}
+
+/* The last card (Photo & carte) takes the rest of its row, icon beside the name. */
+.layout-shape .shape-picker__option:last-child {
+  grid-column: span 2;
+  flex-direction: row;
+  gap: 10px;
+}
+
+.layout-shape .shape-picker__option:hover {
+  border-color: var(--s-green);
+}
+
+.layout-shape .shape-picker__option:has(input:checked) {
+  border-color: var(--s-green);
+  background: var(--s-hero-card);
+  box-shadow: 0 0 0 1px var(--s-green);
+}
+
+.layout-shape .shape-picker__option:has(input:focus-visible) {
+  outline: 2px solid var(--s-green);
+  outline-offset: 2px;
+}
+
+.layout-shape .shape-picker__tile,
+.layout-shape .shape-picker__option input:checked + .shape-picker__tile {
+  width: 28px;
+  height: 28px;
+  aspect-ratio: auto;
+  border: 0;
+  border-radius: 0;
+  background: none;
+  box-shadow: none;
+  color: #4f5a53;
+}
+
+.layout-shape .shape-picker__tile svg,
+.layout-shape .shape-picker__tile--none svg {
+  width: 24px;
+  height: 24px;
+  fill: none !important;
+}
+
+.layout-shape .shape-picker__option:has(input:checked) .shape-picker__tile {
+  color: var(--s-green);
+}
+
+.layout-shape .shape-picker__option .layout-picker__name {
+  color: var(--s-ink);
+  font-size: 0.78rem;
+  font-weight: 600;
+  line-height: 1.2;
+  text-align: center;
+  white-space: nowrap;
+}
+
+.layout-shape .shape-picker__option input:checked ~ .layout-picker__name {
+  color: var(--s-green);
+  font-weight: 700;
 }

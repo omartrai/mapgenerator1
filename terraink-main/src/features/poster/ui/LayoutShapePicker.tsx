@@ -1,3 +1,4 @@
+import { useId } from "react";
 import { LuBan, LuCircle, LuHeart, LuImage, LuStar } from "react-icons/lu";
 import { usePosterStyles } from "@/features/poster/application/usePosterStyles";
 import PhotoCard from "./PhotoCard";
@@ -19,6 +20,8 @@ export default function LayoutShapePicker() {
   const { form } = state;
   const set = (name: "posterLayout" | "mapShape", value: string) => dispatch({ type: "SET_FIELD", name, value });
   const { apply } = usePosterStyles();
+  // The studio renders a desktop and a phone copy of this panel: each needs its own radio groups.
+  const uid = useId();
   const isPhoto = form.posterLayout === "duo";
   const layoutId = form.posterLayout || DEFAULT_POSTER_LAYOUT;
   const shapeId = isPhoto ? "photo" : form.mapShape || "none";
@@ -42,7 +45,7 @@ export default function LayoutShapePicker() {
             <label key={id} className="layout-picker__option">
               <input
                 type="radio"
-                name="posterLayout-theme"
+                name={`${uid}-layout`}
                 value={id}
                 checked={layoutId === id}
                 onChange={() => set("posterLayout", id)}
@@ -67,7 +70,7 @@ export default function LayoutShapePicker() {
               <label key={id} className="shape-picker__option">
                 <input
                   type="radio"
-                  name="mapShape-theme"
+                  name={`${uid}-shape`}
                   value={id}
                   checked={shapeId === id}
                   onChange={() => pickShape(id)}
