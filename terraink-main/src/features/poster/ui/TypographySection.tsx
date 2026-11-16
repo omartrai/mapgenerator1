@@ -11,8 +11,6 @@ import {
   PLACEHOLDER_EXAMPLE_COUNTRY,
 } from "@/features/location/ui/constants";
 import { useLanguage, type TranslationKey } from "@/shared/i18n/LanguageContext";
-import { MAP_SHAPES, POSTER_LAYOUTS, DEFAULT_POSTER_LAYOUT, STYLE_ONLY_LAYOUTS } from "@/features/poster/domain/posterLayout";
-import { LuBan, LuCircle, LuHeart, LuStar } from "react-icons/lu";
 import { usePosterContext } from "@/features/poster/ui/PosterContext";
 import { useActivityPoster } from "@/features/routes/application/useActivityPoster";
 import MessageLookControls from "@/features/poster/ui/MessageLookControls";
@@ -28,8 +26,6 @@ const TEXT_PARTS = [
 
 /** One-tap ideas for the personal message. */
 const MESSAGE_IDEAS = ["style.idea.1", "style.idea.2", "style.idea.3"] as const;
-
-const SHAPE_ICONS = { none: LuBan, circle: LuCircle, heart: LuHeart, star: LuStar } as const;
 
 interface TypographySectionProps {
   form: PosterForm;
@@ -67,12 +63,6 @@ export default function TypographySection({
     [],
   );
 
-  const layoutId = form.posterLayout || DEFAULT_POSTER_LAYOUT;
-  const shapeId = form.mapShape || "none";
-  const layoutSummary = [
-    t(`style.layout.${layoutId}` as TranslationKey),
-    ...(shapeId !== "none" ? [t(`style.shape.${shapeId}` as TranslationKey)] : []),
-  ].join(" · ");
   const fontName = fontOptions.find((option) => option.value === form.fontFamily)?.label ?? "";
   const textSummary = [form.displayCity, form.displayCountry, form.customMessage ? `“${form.customMessage}”` : ""]
     .filter(Boolean)
@@ -228,68 +218,6 @@ export default function TypographySection({
           </PanelGroup>
         ) : null}
 
-        <PanelGroup
-          id="layout"
-          title={t("style.group.layout")}
-          summary={layoutSummary}
-          preview={
-            <span className={`layout-thumb layout-thumb--${layoutId} layout-thumb--mini`} aria-hidden="true">
-              <i className="layout-thumb__map" />
-              <i className="layout-thumb__deco" />
-              <i className="layout-thumb__title" />
-              <i className="layout-thumb__sub" />
-            </span>
-          }
-          open={openGroup === "layout"}
-          onToggle={() => toggleGroup("layout")}
-        >
-            <fieldset className="layout-picker">
-              <legend>{t("style.layout")}</legend>
-              <div className="layout-picker__grid">
-                {POSTER_LAYOUTS.filter((id) => !STYLE_ONLY_LAYOUTS.has(id)).map((id) => (
-                  <label key={id} className="layout-picker__option">
-                    <input
-                      type="radio"
-                      name="posterLayout"
-                      value={id}
-                      checked={(form.posterLayout || DEFAULT_POSTER_LAYOUT) === id}
-                      onChange={onChange}
-                    />
-                    <span className={`layout-thumb layout-thumb--${id}`} aria-hidden="true">
-                      <i className="layout-thumb__map" />
-                      <i className="layout-thumb__deco" />
-                      <i className="layout-thumb__title" />
-                      <i className="layout-thumb__sub" />
-                    </span>
-                    <span className="layout-picker__name">{t(`style.layout.${id}` as TranslationKey)}</span>
-                  </label>
-                ))}
-              </div>
-            </fieldset>
-            <fieldset className="layout-picker shape-picker">
-              <legend>{t("style.shape")}</legend>
-              <div className="shape-picker__grid">
-                {MAP_SHAPES.map((id) => {
-                  const Icon = SHAPE_ICONS[id];
-                  return (
-                    <label key={id} className="shape-picker__option">
-                      <input
-                        type="radio"
-                        name="mapShape"
-                        value={id}
-                        checked={(form.mapShape || "none") === id}
-                        onChange={onChange}
-                      />
-                      <span className={`shape-picker__tile shape-picker__tile--${id}`} aria-hidden="true">
-                        <Icon />
-                      </span>
-                      <span className="layout-picker__name">{t(`style.shape.${id}` as TranslationKey)}</span>
-                    </label>
-                  );
-                })}
-              </div>
-            </fieldset>
-        </PanelGroup>
 
         <PanelGroup
           id="display"
