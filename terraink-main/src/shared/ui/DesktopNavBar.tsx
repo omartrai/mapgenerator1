@@ -36,6 +36,11 @@ export interface RailKind {
 
 interface DesktopNavBarProps {
   kinds?: RailKind[];
+  /** Caption over the poster type group. */
+  kindsLabel?: string;
+  /** The first step's name and icon (Lieu, or Parcours on a sport poster). */
+  locationLabel?: string;
+  LocationStepIcon?: React.ComponentType<{ className?: string }>;
   activeTab: MobileTab;
   panelOpen: boolean;
   onTabChange: (tab: MobileTab) => void;
@@ -50,6 +55,9 @@ export default function DesktopNavBar({
   isLocationVisible,
   onLocationToggle,
   kinds = [],
+  kindsLabel,
+  locationLabel,
+  LocationStepIcon = LocationIcon,
 }: DesktopNavBarProps) {
   const { t } = useLanguage();
   return (
@@ -58,6 +66,26 @@ export default function DesktopNavBar({
       aria-label={t("nav.settings")}
       data-od-id="editor-tool-rail"
     >
+      {kinds.length ? (
+        <div className="desktop-nav-kinds" role="radiogroup" aria-label={kindsLabel}>
+          {kindsLabel ? <span className="desktop-nav-kinds__label">{kindsLabel}</span> : null}
+          {kinds.map(({ id, label, Icon, active, onSelect }) => (
+            <button
+              key={id}
+              type="button"
+              role="radio"
+              aria-checked={active}
+              className={`desktop-nav-kind${active ? " is-active" : ""}`}
+              onClick={onSelect}
+              title={label}
+            >
+              <Icon className="desktop-nav-kind__icon" />
+              <span className="desktop-nav-kind__label">{label}</span>
+            </button>
+          ))}
+        </div>
+      ) : null}
+
       <button
         type="button"
         className={`btn btn-ghost desktop-nav-tab${isLocationVisible ? " is-active" : ""}`}
@@ -66,24 +94,9 @@ export default function DesktopNavBar({
         aria-label={isLocationVisible ? t("location.hide") : t("location.show")}
         aria-pressed={isLocationVisible}
       >
-        <LocationIcon className="desktop-nav-icon" />
-        <span className="desktop-nav-label">{t("nav.location")}</span>
+        <LocationStepIcon className="desktop-nav-icon" />
+        <span className="desktop-nav-label">{locationLabel ?? t("nav.location")}</span>
       </button>
-
-      {kinds.map(({ id, label, Icon, active, onSelect }) => (
-        <button
-          key={id}
-          type="button"
-          className={`btn btn-ghost desktop-nav-tab desktop-nav-tab--kind desktop-nav-tab--${id}${active ? " is-active" : ""}`}
-          onClick={onSelect}
-          title={label}
-          aria-label={label}
-          aria-pressed={active}
-        >
-          <Icon className="desktop-nav-icon" />
-          <span className="desktop-nav-label">{label}</span>
-        </button>
-      ))}
 
       {tabs.map(({ id, labelKey, Icon }) => {
         const label = t(labelKey);

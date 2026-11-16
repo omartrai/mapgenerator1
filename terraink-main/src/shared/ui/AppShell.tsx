@@ -9,7 +9,8 @@ import GeneralHeader from "@/shared/ui/GeneralHeader";
 import DesktopNavBar, { type RailKind } from "@/shared/ui/DesktopNavBar";
 import { useSkyPoster } from "@/features/sky/application/useSkyPoster";
 import { FaPersonRunning } from "react-icons/fa6";
-import { LuMountainSnow } from "react-icons/lu";
+import { LuMap, LuMountainSnow, LuSparkles } from "react-icons/lu";
+import { RouteIcon } from "@/shared/ui/Icons";
 import FooterNote from "@/shared/ui/FooterNote";
 import PreviewPanel from "@/features/poster/ui/PreviewPanel";
 import MobileSkyBar from "@/features/sky/ui/MobileSkyBar";
@@ -254,10 +255,14 @@ export default function AppShell({
     setDesktopPanelOpen(true);
   };
 
-  // Sport and trail posters have their own rail buttons; they open the route step.
+  // Poster type (map, sky, sport, trail) is chosen in its own group at the
+  // top of the rail; picking one opens the first step.
   const { kind: posterKind, setKind } = useSkyPoster();
+  const isRoutePoster = posterKind === "sport" || posterKind === "trail";
   const railKinds: RailKind[] = (
     [
+      ["map", "kind.short.map", LuMap],
+      ["sky", "kind.short.sky", LuSparkles],
       ["sport", "kind.short.sport", FaPersonRunning],
       ["trail", "kind.short.trail", LuMountainSnow],
     ] as const
@@ -324,11 +329,13 @@ export default function AppShell({
         activeTab={desktopTab}
         panelOpen={desktopPanelOpen}
         onTabChange={handleDesktopTabChange}
+        kindsLabel={t("nav.posterType")}
+        locationLabel={isRoutePoster ? t("nav.route") : undefined}
+        LocationStepIcon={isRoutePoster ? RouteIcon : undefined}
         isLocationVisible={
-          // On a sport or trail poster, its own rail button shows as active instead.
-          posterKind !== "sport" &&
-          posterKind !== "trail" &&
-          (locationAsTab ? desktopPanelOpen && desktopTab === "location" : desktopLocationRowVisible)
+          locationAsTab
+            ? desktopPanelOpen && desktopTab === "location"
+            : desktopLocationRowVisible
         }
         onLocationToggle={() =>
           locationAsTab
