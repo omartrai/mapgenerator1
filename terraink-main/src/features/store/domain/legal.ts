@@ -45,8 +45,8 @@ export const LEGAL_DOCS: Record<LegalSlug, LegalDoc> = {
       {
         title: "Hébergement",
         body: [
-          "Le site est hébergé par Vercel Inc., 440 N Barranca Ave #4133, Covina, CA 91723, États-Unis — vercel.com.",
-          "Les commandes et fichiers associés sont stockés de manière privée chez le même hébergeur (Vercel Blob), dans un centre de données en Europe.",
+          "Le site est hébergé par Railway Corporation, 548 Market St PMB 68956, San Francisco, CA 94104, États-Unis — railway.com.",
+          "Les commandes et fichiers associés sont stockés de manière privée chez le même hébergeur, sur un serveur situé en Europe (Pays-Bas).",
         ],
       },
       {
@@ -182,13 +182,14 @@ export const LEGAL_DOCS: Record<LegalSlug, LegalDoc> = {
         body: [
           "UrbanArt, notre partenaire d'impression et de livraison au Maroc, et le transporteur : nom, téléphone, ville et adresse, uniquement pour produire et livrer la commande.",
           "Meta Platforms (WhatsApp Business) : votre numéro et les messages de confirmation, si la confirmation WhatsApp est utilisée.",
-          "Vercel Inc. (hébergement du site et du stockage des commandes).",
+          "Railway Corporation (hébergement du site et du stockage des commandes).",
+          "Telegram : le numéro, le nom, la ville et le contenu de chaque nouvelle commande sont envoyés à l'équipe Noria par une alerte privée, pour traiter la commande rapidement.",
         ],
       },
       {
         title: "Transferts hors du Maroc",
         body: [
-          "L'hébergement (Vercel) et WhatsApp (Meta) impliquent un traitement de données hors du Maroc, notamment dans l'Union européenne et aux États-Unis, dans le cadre prévu par la loi n° 09-08 et avec des garanties contractuelles de ces prestataires.",
+          "L'hébergement (Railway), les alertes de commande (Telegram) et WhatsApp (Meta) impliquent un traitement de données hors du Maroc, notamment dans l'Union européenne et aux États-Unis, dans le cadre prévu par la loi n° 09-08 et avec des garanties contractuelles de ces prestataires.",
         ],
       },
       {

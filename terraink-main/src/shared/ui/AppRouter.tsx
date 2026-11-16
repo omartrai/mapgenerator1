@@ -2,6 +2,7 @@ import { lazy, Suspense, useEffect } from "react";
 import { matchPath, useRouter } from "@/core/router/router";
 import { useScrollReveal } from "@/shared/hooks/useScrollReveal";
 import StorefrontPage from "@/features/store/ui/StorefrontPage";
+import { useStoreText, type StoreTextKey } from "@/features/store/ui/storeText";
 
 const StudioPage = lazy(() => import("@/features/store/ui/StudioPage"));
 const CartPage = lazy(() => import("@/features/store/ui/CartPage"));
@@ -15,30 +16,46 @@ const TrackOrderPage = lazy(() => import("@/features/store/ui/TrackOrderPage"));
 const LegalPage = lazy(() => import("@/features/store/ui/LegalPage"));
 const AdminOrderPage = lazy(() => import("@/features/store/ui/AdminOrderPage"));
 
-const TITLES: [RegExp, string][] = [
-  [/^\/create/, "Design your poster — Noria"],
-  [/^\/cart/, "Your cart — Noria"],
-  [/^\/checkout/, "Checkout — Noria"],
-  [/^\/order\//, "Order confirmed — Noria"],
-  [/^\/admin/, "Orders — Noria admin"],
-  [/^\/collection$/, "The collection — Noria"],
-  [/^\/suivi/, "Suivre ma commande — Noria"],
+const NotFoundPage = lazy(() => import("@/features/store/ui/NotFoundPage"));
+
+/** Browser tab title per page, in the site language. */
+const TITLES: [RegExp, StoreTextKey][] = [
+  [/^\/create/, "title.create"],
+  [/^\/cart/, "title.cart"],
+  [/^\/checkout/, "title.checkout"],
+  [/^\/order\//, "title.order"],
+  [/^\/collection$/, "title.collection"],
+  [/^\/suivi/, "title.track"],
 ];
+
+/** Addresses that show the home page; anything unknown gets the 404 page. */
+const HOME_PATHS = new Set(["/", "/index.html", "/faq", "/modeles"]);
 
 function PageFallback() {
   return <div className="page-fallback" aria-busy="true" />;
 }
 
+/** Routes handled by a page (not the 404). */
+function isKnownPath(path: string): boolean {
+  return (
+    HOME_PATHS.has(path) ||
+    /^\/(create|cart|checkout|collection|suivi|admin)(\/|$)/.test(path) ||
+    /^\/(order|legal)\//.test(path)
+  );
+}
+
 export default function AppRouter() {
   const { path } = useRouter();
+  const { t } = useStoreText();
   useScrollReveal(path);
 
   useEffect(() => {
-    document.title =
-      TITLES.find(([pattern]) => pattern.test(path))?.[1] ??
-      "Noria — Personalised map posters";
+    const key = TITLES.find(([pattern]) => pattern.test(path))?.[1];
+    document.title = path.startsWith("/admin")
+      ? "Orders — Noria admin"
+      : t(key ?? (isKnownPath(path) ? "title.home" : "title.notFound"));
     document.documentElement.dataset.route = path === "/create" ? "studio" : "store";
-  }, [path]);
+  }, [path, t]);
 
   let page = <StorefrontPage />;
   let params: Record<string, string> | null;
@@ -54,6 +71,7 @@ export default function AppRouter() {
   else if (path === "/admin") page = <AdminOrdersPage />;
   else if (path === "/admin/reviews") page = <AdminReviewsPage />;
   else if ((params = matchPath("/admin/orders/:number", path))) page = <AdminOrderPage number={params.number} />;
+  else if (!HOME_PATHS.has(path)) page = <NotFoundPage />;
 
   return <Suspense fallback={<PageFallback />}>{page}</Suspense>;
 }

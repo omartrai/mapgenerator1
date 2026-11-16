@@ -100,6 +100,10 @@ async function isFile(file: string): Promise<boolean> {
   return fs.stat(file).then((stat) => stat.isFile(), () => false);
 }
 
+/** Paths the app has a page for (keep in step with shared/ui/AppRouter.tsx). */
+const APP_ROUTE =
+  /^\/(?:|index\.html|faq|modeles|create|cart|checkout|collection(?:\/\d+)?|suivi|admin(?:\/.*)?|order\/[^/]+|legal\/[^/]+)\/?$/;
+
 async function serveStatic(request: IncomingMessage, response: ServerResponse) {
   let pathname: string;
   try {
@@ -118,7 +122,11 @@ async function serveStatic(request: IncomingMessage, response: ServerResponse) {
     else if (path.extname(pathname)) {
       file = path.join(DIST, "404.html");
       status = 404;
-    } else file = path.join(DIST, "index.html");
+    } else {
+      file = path.join(DIST, "index.html");
+      // The app shows its "page not found" screen; tell search engines too.
+      if (!APP_ROUTE.test(pathname)) status = 404;
+    }
   }
 
   const extension = path.extname(file).toLowerCase();

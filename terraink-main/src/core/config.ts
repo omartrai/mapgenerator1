@@ -74,7 +74,8 @@ export const APP_VERSION = String(
   import.meta.env.VITE_APP_VERSION ?? "0.0.0",
 ).trim();
 export const UPDATES_URL = String(
-  import.meta.env.VITE_UPDATES_URL ?? "/updates.json",
+  // No "what's new" feed unless one is configured (avoids a 404 on every visit).
+  import.meta.env.VITE_UPDATES_URL ?? "",
 ).trim();
 
 export const INSTALL_DIAGNOSTICS_ENABLED = false;
