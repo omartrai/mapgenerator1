@@ -11,7 +11,6 @@ import FooterNote from "@/shared/ui/FooterNote";
 import PreviewPanel from "@/features/poster/ui/PreviewPanel";
 import MobileSkyBar from "@/features/sky/ui/MobileSkyBar";
 import MobileNavBar, { type MobileTab } from "@/shared/ui/MobileNavBar";
-import InstallPrompt from "@/features/install/ui/InstallPrompt";
 import { useSwipeDown } from "@/shared/hooks/useSwipeDown";
 import StartupLocationModal from "@/features/location/ui/StartupLocationModal";
 import { CheckIcon } from "@/shared/ui/Icons";
@@ -297,7 +296,6 @@ export default function AppShell({
       {...dataAttributes}
     >
       {header ?? <GeneralHeader />}
-      <InstallPrompt />
       {showStartupModal ? <StartupLocationModal /> : null}
 
       <DesktopNavBar
