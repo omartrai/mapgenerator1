@@ -41,11 +41,13 @@ function OrdersList({ storage }: { storage: string }) {
           <p className="admin-subtle">
             Storage: {storage === "blob" ? "Vercel Blob (private)" : storage === "filesystem" ? "Local disk (development)" : storage}
           </p>
-          <AdminAlertsStatus />
         </div>
-        <button type="button" className="store-btn store-btn--outline store-btn--sm" onClick={() => void refresh()} disabled={isLoading}>
-          <LuRefreshCw className={isLoading ? "store-spin" : ""} aria-hidden="true" /> Refresh
-        </button>
+        <div className="admin-title-actions">
+          <AdminAlertsStatus />
+          <button type="button" className="store-btn store-btn--outline store-btn--sm" onClick={() => void refresh()} disabled={isLoading}>
+            <LuRefreshCw className={isLoading ? "store-spin" : ""} aria-hidden="true" /> Refresh
+          </button>
+        </div>
       </div>
 
       <div className="admin-stats">

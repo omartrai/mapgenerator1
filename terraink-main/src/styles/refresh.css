@@ -3322,22 +3322,20 @@ body:has(.store-page) {
   border-radius: 2px;
 }
 
-/* Admin: Telegram order alerts status. */
-.admin-alerts {
+/* Admin: Telegram order alerts (test button next to Refresh). */
+.admin-title-actions {
   display: flex;
-  flex-wrap: wrap;
-  align-items: center;
-  gap: 6px;
-  margin-top: 4px;
+  align-items: flex-start;
+  gap: 10px;
 }
 
-.admin-alerts__test {
-  padding: 0;
-  border: 0;
-  background: none;
-  color: var(--s-green);
-  font: inherit;
-  font-weight: 600;
-  text-decoration: underline;
-  cursor: pointer;
+.admin-alerts {
+  display: flex;
+  flex-direction: column;
+  align-items: flex-end;
+  gap: 4px;
+}
+
+.admin-alerts .admin-subtle {
+  font-size: 0.75rem;
 }

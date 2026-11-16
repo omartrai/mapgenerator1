@@ -31,19 +31,19 @@ export default function AdminAlertsStatus() {
   };
 
   return (
-    <p className="admin-subtle admin-alerts">
-      <LuBellRing aria-hidden="true" />
-      {enabled ? (
-        <>
-          Telegram alerts on ·{" "}
-          <button type="button" className="admin-alerts__test" onClick={() => void test()} disabled={busy}>
-            {busy ? "Sending…" : "Send a test"}
-          </button>
-        </>
-      ) : (
-        <>Telegram alerts off — set TELEGRAM_BOT_TOKEN on Railway.</>
-      )}
-      {message ? <span className="admin-alerts__msg"> {message}</span> : null}
-    </p>
+    <div className="admin-alerts">
+      <button
+        type="button"
+        className="store-btn store-btn--outline store-btn--sm"
+        onClick={() => void test()}
+        disabled={busy || !enabled}
+        title={enabled ? "Send a test message to your Telegram" : "Set TELEGRAM_BOT_TOKEN on Railway"}
+      >
+        <LuBellRing aria-hidden="true" /> {busy ? "Sending…" : "Test Telegram alert"}
+      </button>
+      <span className="admin-subtle">
+        {message || (enabled ? "Telegram alerts on" : "Telegram alerts off — set TELEGRAM_BOT_TOKEN on Railway")}
+      </span>
+    </div>
   );
 }
