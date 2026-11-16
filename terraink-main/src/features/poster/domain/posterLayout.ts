@@ -18,13 +18,13 @@ import {
 
 export const POSTER_LAYOUTS = [
   "classic", "border", "label", "band", "fade", "header", "script", "signature",
-  "activity", "duo", "nursery", "race", "bold", "photorun", "topo", "bib", "green", "elevation", "archive",
+  "activity", "duo", "nursery", "race", "bold", "photorun", "topo", "bib", "green", "elevation", "archive", "midnight",
 ] as const;
 /** Sport poster designs (Sport kind), first = default. */
-export const SPORT_LAYOUTS = ["race", "bib", "elevation", "archive", "bold", "green", "photorun", "activity"] as const;
+export const SPORT_LAYOUTS = ["race", "bib", "elevation", "midnight", "archive", "bold", "green", "photorun", "activity"] as const;
 /** Trail poster designs (Trail kind). */
 export const TRAIL_LAYOUTS = ["topo"] as const;
-export type SportDesignId = "race" | "bold" | "photorun" | "topo" | "bib" | "green" | "elevation" | "archive";
+export type SportDesignId = "race" | "bold" | "photorun" | "topo" | "bib" | "green" | "elevation" | "archive" | "midnight";
 /** Layouts reached only through a ready-made style or a sport kind, not the map layout picker. */
 export const STYLE_ONLY_LAYOUTS: ReadonlySet<string> = new Set([
   "duo", "nursery", ...SPORT_LAYOUTS, ...TRAIL_LAYOUTS,
@@ -341,6 +341,16 @@ export const POSTER_LAYOUT_SPECS: Record<PosterLayoutId, PosterLayoutSpec> = {
     routeBox: { x: 0.16, y: 0.05, w: 0.68, h: 0.46 },
     divider: null,
     design: "elevation",
+  },
+
+  /** Midnight: the Altitude layout on a navy night map. */
+  midnight: {
+    ...CLASSIC,
+    fades: { top: 0, bottom: 0 },
+    mapWindow: { x: 0, y: 0, w: 1, h: 0.6 },
+    routeBox: { x: 0.16, y: 0.05, w: 0.68, h: 0.46 },
+    divider: null,
+    design: "midnight",
   },
 
   /** Archive: plain paper, condensed title, the route alone, profile, results table. */

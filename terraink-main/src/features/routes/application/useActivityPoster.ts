@@ -13,7 +13,7 @@ import { boundsCenter, routeBounds } from "../infrastructure/helpers";
 import type { Route } from "../domain/types";
 
 /** Sport and trail designs the customer can pick. */
-export type SportDesign = "race" | "bib" | "elevation" | "archive" | "bold" | "green" | "photorun" | "activity" | "topo";
+export type SportDesign = "race" | "bib" | "elevation" | "midnight" | "archive" | "bold" | "green" | "photorun" | "activity" | "topo";
 
 const ALL_LAYERS = {
   includeLandcover: true,
@@ -32,7 +32,7 @@ const ALL_LAYERS = {
 const PLAIN_LAYERS = Object.fromEntries(Object.keys(ALL_LAYERS).map((key) => [key, false]));
 
 /** Kilometre dots along the route, per design. */
-const KM_MARKS: Partial<Record<SportDesign, number>> = { archive: 5, elevation: 10 };
+const KM_MARKS: Partial<Record<SportDesign, number>> = { archive: 5, elevation: 10, midnight: 10 };
 
 /** Trail: contours only, plus water so lakes and coasts still read. */
 const TRAIL_LAYERS = {
@@ -46,6 +46,7 @@ const DESIGN_LOOK: Record<SportDesign, { theme: string; font: string; color: str
   bib: { theme: "race_grey", font: "Oswald", color: "#E0201B", width: 4 },
   green: { theme: "valencia_green", font: "Montserrat", color: "#F1EBDD", width: 9 },
   elevation: { theme: "race_stone", font: "Montserrat", color: "#D2492A", width: 4 },
+  midnight: { theme: "midnight_navy", font: "Montserrat", color: "#F07A4A", width: 4 },
   archive: { theme: "archive_cream", font: "Oswald", color: "#D3262E", width: 4 },
   bold: { theme: "marrakech_red", font: "Oswald", color: "#141414", width: 5 },
   photorun: { theme: "carbon", font: "Montserrat", color: "#FFFFFF", width: 5 },
@@ -133,7 +134,7 @@ export function useActivityPoster() {
             { value: "", label: t("sport.stat.place") },
           ].filter(Boolean) as { value: string; label: string }[],
         );
-      } else if (design === "elevation") {
+      } else if (design === "elevation" || design === "midnight") {
         const event = km >= 41 ? t("sport.event.marathon") : km >= 20.5 ? t("sport.event.half") : t("sport.event.run");
         fields.activitySubtitle = `${event}  ·  ${kmText} KM`;
         fields.sportBig = stats.durationS ? formatDuration(stats.durationS) : "";
@@ -261,7 +262,7 @@ export function useActivityPoster() {
               opacity: 1,
               lineStyle: "solid",
               kmMarks: KM_MARKS[design] ?? 0,
-              showEndpoints: ["topo", "race", "bib", "green", "elevation", "archive"].includes(design),
+              showEndpoints: ["topo", "race", "bib", "green", "elevation", "midnight", "archive"].includes(design),
               startMarker: {
                 ...entry.startMarker,
                 iconId: "circle",

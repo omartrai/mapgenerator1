@@ -229,7 +229,7 @@ export function drawSportDesign(
     return h ? `${h}:${two(m)}:${two(sec)}` : `${m}:${two(sec)}`;
   };
 
-  if (input.design === "elevation") {
+  if (input.design === "elevation" || input.design === "midnight") {
     const ink = input.text;
     const red = accent;
     // The map melts into the paper above the profile.

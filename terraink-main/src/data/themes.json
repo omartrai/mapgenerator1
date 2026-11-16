@@ -883,6 +883,32 @@
           "outline": "#ECE7E0"
         }
       }
+    },
+    "midnight_navy": {
+      "name": "Midnight Navy",
+      "description": "Navy night map with a grey-blue sea and soft streets — for marathon posters",
+      "ui": {
+        "bg": "#121A2B",
+        "text": "#EDE6DC"
+      },
+      "map": {
+        "land": "#1A2236",
+        "landcover": "#1E273C",
+        "water": "#3A4559",
+        "waterway": "#3A4559",
+        "parks": "#1F293E",
+        "buildings": "#232C43",
+        "aeroway": "#1E273C",
+        "rail": "#323C55",
+        "roads": {
+          "major": "#3A4560",
+          "minor_high": "#343E58",
+          "minor_mid": "#2E3850",
+          "minor_low": "#2A3349",
+          "path": "#283147",
+          "outline": "#1A2236"
+        }
+      }
     }
   }
 }

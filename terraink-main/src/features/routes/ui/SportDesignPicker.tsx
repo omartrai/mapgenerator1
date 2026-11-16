@@ -46,6 +46,28 @@ function Thumb({ id }: { id: SportDesign }) {
       </svg>
     );
   }
+  if (id === "midnight") {
+    return (
+      <svg viewBox="0 0 60 80" aria-hidden="true">
+        <rect width="60" height="80" fill="#141b2d" />
+        <rect width="60" height="44" fill="#1c2438" />
+        <path d="M0 14 H60 M0 30 H60 M18 0 V44 M40 0 V44" stroke="#2e3850" strokeWidth="1.2" />
+        <rect y="34" width="60" height="10" fill="url(#mnfade)" />
+        <defs>
+          <linearGradient id="mnfade" x1="0" y1="0" x2="0" y2="1">
+            <stop offset="0" stopColor="#141b2d" stopOpacity="0" />
+            <stop offset="1" stopColor="#141b2d" />
+          </linearGradient>
+        </defs>
+        <path d="M26 6 l6 0 l2 10 l-8 6 l-4 10 l10 2 l4 -12" fill="none" stroke="#f07a4a" strokeWidth="1.6" strokeLinejoin="round" />
+        <path d="M6 48 l6 -2 l6 1 l6 -2 l6 1 l6 -1 l6 1 l6 -2 l6 1" fill="none" stroke="#7d879c" strokeWidth="0.8" />
+        <rect x="13" y="53" width="34" height="5" rx="1" fill="#ede6dc" />
+        <rect x="21" y="61" width="18" height="2" rx="1" fill="#ede6dc" />
+        <rect x="20" y="66" width="20" height="4" rx="1" fill="#f07a4a" />
+        <rect x="22" y="73" width="16" height="1.5" rx="0.7" fill="#ede6dc" opacity="0.6" />
+      </svg>
+    );
+  }
   if (id === "archive") {
     return (
       <svg viewBox="0 0 60 80" aria-hidden="true">
