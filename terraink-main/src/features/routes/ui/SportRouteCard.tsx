@@ -6,6 +6,7 @@ import { useSportRouteInput } from "@/features/routes/application/useSportRouteI
 import { useDrawRouteState } from "@/features/routes/application/drawRouteStore";
 import { isTrailLayout } from "@/features/poster/domain/posterLayout";
 import { routeLengthMeters } from "@/features/routes/infrastructure/helpers";
+import RouteStyleSection from "./RouteStyleSection";
 import { useLanguage, type TranslationKey } from "@/shared/i18n/LanguageContext";
 
 type Source = "gpx" | "race" | "draw";
@@ -207,6 +208,7 @@ export default function SportRouteCard({ compact = false }: { compact?: boolean 
         </span>
         {route ? <span className="sport-source__km">{formatKm(routeLengthMeters(route), language !== "en")}</span> : null}
       </div>
+      {route && !compact && !draw.active ? <RouteStyleSection route={route} /> : null}
     </section>
   );
 }

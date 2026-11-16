@@ -3250,3 +3250,74 @@ body:has(.store-page) {
 .desktop-nav-kind.is-active .desktop-nav-kind__label {
   font-weight: 700;
 }
+
+/* ── Route step: "Style du tracé" ── */
+
+.route-style {
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+  padding-top: 12px;
+  border-top: 1px solid #ecebe6;
+}
+
+.route-style__title {
+  margin: 0;
+  font-size: 0.85rem;
+  font-weight: 700;
+}
+
+.route-style .route-swatches {
+  margin: 0;
+}
+
+.route-style .route-swatch[aria-label="#FFFFFF"] {
+  box-shadow: inset 0 0 0 1px #d5d5cf;
+}
+
+.route-style__row {
+  display: grid;
+  grid-template-columns: 80px 1fr;
+  align-items: center;
+  gap: 10px;
+  font-size: 0.82rem;
+}
+
+.route-style__seg {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 6px;
+}
+
+.route-style__seg button {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: 8px;
+  min-height: 38px;
+  border: 1px solid #e3e2dc;
+  border-radius: 10px;
+  background: #fff;
+  color: #5d6660;
+  font: inherit;
+  font-size: 0.8rem;
+  font-weight: 600;
+  cursor: pointer;
+}
+
+.route-style__seg button.is-active {
+  border-color: var(--s-green);
+  background: var(--s-hero-card);
+  color: var(--s-green);
+}
+
+.route-style__dot {
+  width: 10px;
+  height: 10px;
+  border-radius: 50%;
+  background: currentColor;
+}
+
+.route-style__dot.is-finish {
+  border-radius: 2px;
+}
