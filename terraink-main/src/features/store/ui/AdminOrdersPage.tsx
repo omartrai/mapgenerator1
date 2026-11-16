@@ -1,4 +1,5 @@
 import { useMemo, useState } from "react";
+import AdminAlertsStatus from "./AdminAlertsStatus";
 import { LuFileImage, LuRefreshCw, LuSearch } from "react-icons/lu";
 import { Link } from "@/core/router/router";
 import { useAdminOrders } from "../application/useAdmin";
@@ -40,6 +41,7 @@ function OrdersList({ storage }: { storage: string }) {
           <p className="admin-subtle">
             Storage: {storage === "blob" ? "Vercel Blob (private)" : storage === "filesystem" ? "Local disk (development)" : storage}
           </p>
+          <AdminAlertsStatus />
         </div>
         <button type="button" className="store-btn store-btn--outline store-btn--sm" onClick={() => void refresh()} disabled={isLoading}>
           <LuRefreshCw className={isLoading ? "store-spin" : ""} aria-hidden="true" /> Refresh

@@ -143,9 +143,13 @@ export const adminApi = {
   },
 
   session: () =>
-    request<{ ok: boolean; storage: string; fulfillment: string; whatsapp?: boolean }>("/admin/session", {
+    request<{ ok: boolean; storage: string; fulfillment: string; whatsapp?: boolean; alerts?: boolean }>("/admin/session", {
       headers: adminHeaders(),
     }),
+
+  /** Sends a test Telegram order alert. */
+  testAlerts: () =>
+    request<{ ok: boolean; chatIds: string[] }>("/admin/alerts/test", { method: "POST", headers: adminHeaders() }),
 
   listReviews: () => request<{ reviews: Review[] }>("/admin/reviews", { headers: adminHeaders() }),
 

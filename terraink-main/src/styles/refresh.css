@@ -3321,3 +3321,23 @@ body:has(.store-page) {
 .route-style__dot.is-finish {
   border-radius: 2px;
 }
+
+/* Admin: Telegram order alerts status. */
+.admin-alerts {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: 6px;
+  margin-top: 4px;
+}
+
+.admin-alerts__test {
+  padding: 0;
+  border: 0;
+  background: none;
+  color: var(--s-green);
+  font: inherit;
+  font-weight: 600;
+  text-decoration: underline;
+  cursor: pointer;
+}

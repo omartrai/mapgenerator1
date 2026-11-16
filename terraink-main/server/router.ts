@@ -9,6 +9,7 @@ import { createFulfillmentProvider } from "./fulfillment/index.js";
 import { createUrbanArtCatalog } from "./urbanart.js";
 import { createReviewService, type ReviewService } from "./reviews.js";
 import { createWhatsApp, parseWebhook } from "./whatsapp.js";
+import { createTelegramNotifier } from "./telegram.js";
 import {
   confirmationReply,
   parseConfirmationPayload,
@@ -102,6 +103,7 @@ export function createApiHandler(options: RouterOptions) {
       catalog ? async () => framedPricesFromCollection(await catalog.listProducts()) : undefined,
       whatsapp,
       catalog ? (reference) => catalog.getOrderStatus(reference) : undefined,
+      notifier,
     );
     return service;
   };
@@ -141,6 +143,7 @@ export function createApiHandler(options: RouterOptions) {
 
   const catalog = createUrbanArtCatalog(options.env);
   const whatsapp = createWhatsApp(options.env);
+  const notifier = createTelegramNotifier(options.env);
   /** Tracking lookups per IP (in memory, per instance) to slow down guessing. */
   const trackAttempts = new Map<string, number[]>();
 
@@ -357,7 +360,18 @@ export function createApiHandler(options: RouterOptions) {
           storage: getService().storageKind,
           fulfillment: getService().fulfillmentLabel,
           whatsapp: getService().whatsappEnabled,
+          alerts: getService().alertsEnabled,
         });
+      }
+
+      // POST /api/admin/alerts/test — sends a test Telegram message
+      if (rest[0] === "alerts" && rest[1] === "test" && method === "POST") {
+        if (!notifier) throw new HttpError(400, "Set TELEGRAM_BOT_TOKEN to turn on order alerts.");
+        try {
+          return json(200, { ok: true, ...(await notifier.test()) });
+        } catch (error) {
+          throw new HttpError(502, error instanceof Error ? error.message : "Telegram error.");
+        }
       }
 
       if (rest[0] === "reviews") {

@@ -37,6 +37,7 @@ import { normalizeCustomer, validateCustomer } from "../src/features/store/domai
 import type { IOrderStorage } from "./storage/ports.js";
 import type { IFulfillmentProvider } from "./fulfillment/ports.js";
 import type { WhatsAppClient } from "./whatsapp.js";
+import type { OrderNotifier } from "./telegram.js";
 import {
   toWhatsAppNumber,
   type ConfirmationAction,
@@ -160,6 +161,7 @@ export function createOrderService(
   loadFramedPrices?: () => Promise<FramedPriceTable | null>,
   whatsapp?: WhatsAppClient | null,
   partnerOrderStatus?: (reference: string) => Promise<{ status: string } | null>,
+  notifier?: OrderNotifier | null,
 ) {
   async function load(number: string): Promise<Order> {
     const order = await storage.getJson<Order>(orderPath(assertOrderNumber(number)));
@@ -271,6 +273,7 @@ export function createOrderService(
       return toTracking(await syncWithPartner(order));
     },
     whatsappEnabled: !!whatsapp,
+    alertsEnabled: !!notifier,
     sendConfirmation: async (number: string) => sendConfirmation(await load(number)),
 
     /**
@@ -484,6 +487,8 @@ export function createOrderService(
 
       await save(order);
       await fulfillment.onOrderCreated(order);
+      // Owner alert (Telegram): never delays or fails the order.
+      if (notifier) void notifier.newOrder(order);
       return sendConfirmation(order);
     },
 
