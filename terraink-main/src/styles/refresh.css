@@ -3650,3 +3650,24 @@ body:has(.store-page) {
     display: none !important;
   }
 }
+
+/* "Au mur": a closer view of the room so the poster reads bigger.
+   Poster and sideboard zoom together, so the scale stays true. */
+@media (min-width: 769px) and (hover: hover) and (pointer: fine) {
+  .app-shell[data-store-studio][data-scene="wall"] {
+    --wall-h: max(100cqh * 1.3, 100cqw * 0.6711 * 1.3);
+    --wall-center: 47cqh;
+  }
+}
+
+@media (max-width: 768px), (hover: none) and (pointer: coarse) {
+  .app-shell.app-shell[data-store-studio][data-scene="wall"] .poster-frame,
+  .app-shell.app-shell[data-store-studio][data-scene="wall"] > .preview-panel .poster-frame {
+    width: min(64%, calc((100dvh - 455px) * var(--poster-aspect, 0.75))) !important;
+  }
+
+  .app-shell[data-store-studio][data-scene="wall"] .room-decor--wall {
+    background-size: auto 150%;
+    background-position: center 70%;
+  }
+}
