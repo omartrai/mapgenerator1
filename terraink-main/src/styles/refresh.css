@@ -2711,7 +2711,7 @@ body:has(.store-page) {
 
 .sport-source__tabs {
   display: grid;
-  grid-template-columns: repeat(3, minmax(0, 1fr));
+  grid-template-columns: repeat(2, minmax(0, 1fr));
   gap: 4px;
   padding: 4px;
   border-radius: 12px;
@@ -4113,5 +4113,13 @@ body:has(.store-page) {
     border-radius: 50%;
     background: var(--s-green);
     cursor: pointer;
+  }
+}
+
+@media (min-width: 769px) and (hover: hover) and (pointer: fine) {
+  /* "Verrouiller" stays green (slightly darker) on hover. */
+  .app-shell.app-shell[data-store-studio] .poster-frame .map-control-btn--primary:hover {
+    background: #16302a !important;
+    color: #fff !important;
   }
 }

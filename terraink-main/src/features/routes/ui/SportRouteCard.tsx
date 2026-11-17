@@ -68,7 +68,6 @@ export default function SportRouteCard({ compact = false }: { compact?: boolean 
   const tabs: { id: Source; label: string }[] = [
     { id: "gpx", label: t("sport.route.gpx") },
     { id: "race", label: t("sport.route.race") },
-    { id: "draw", label: t("sport.route.draw") },
   ];
 
   return (
