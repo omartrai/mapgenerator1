@@ -63,6 +63,10 @@ interface MarkerOverlayProps {
   onActiveMarkerChange?: (markerId: string | null) => void;
   onMarkerPositionChange?: (markerId: string, lat: number, lon: number) => void;
   onMarkerSizeChange?: (markerId: string, size: number) => void;
+  /** Shows a small × on the selected pin to delete it. */
+  onMarkerRemove?: (markerId: string) => void;
+  /** Accessible name of that × button. */
+  removeLabel?: string;
   overzoomScale: number;
 }
 
@@ -93,10 +97,13 @@ export default function MarkerOverlay({
   onActiveMarkerChange,
   onMarkerPositionChange,
   onMarkerSizeChange,
+  onMarkerRemove,
+  removeLabel,
   overzoomScale,
 }: MarkerOverlayProps) {
   const [renderTick, setRenderTick] = useState(0);
   const overlayRef = useRef<HTMLDivElement | null>(null);
+  const [revealId, setRevealId] = useState<string | null>(null);
   const [draggingMarkerId, setDraggingMarkerId] = useState<string | null>(null);
   const canDrag = isMarkerEditMode || dragAnywhere;
   const [isTouchSelectionActive, setIsTouchSelectionActive] = useState(false);
@@ -218,8 +225,10 @@ export default function MarkerOverlay({
       event.preventDefault();
       event.stopPropagation();
 
-      // Outside the Icons tab: a plain drag, no selection or resize handles.
+      // Outside the Icons tab: a plain drag, no selection or resize handles
+      // (the tapped pin shows its × to delete it).
       if (!isMarkerEditMode) {
+        setRevealId(markerId);
         setDraggingMarkerId(markerId);
         return;
       }
@@ -545,7 +554,7 @@ export default function MarkerOverlay({
           data-id={marker.id}
           className={`poster-marker${canDrag ? " is-draggable" : ""}${
             draggingMarkerId === marker.id ? " is-dragging" : ""
-          }${activeMarkerId === marker.id ? " is-selected" : ""}${
+          }${activeMarkerId === marker.id ? " is-selected" : ""}${revealId === marker.id ? " is-revealed" : ""}${
             touchResizeState?.markerId === marker.id ? " is-resizing" : ""
           }`}
           style={
@@ -561,6 +570,21 @@ export default function MarkerOverlay({
           onTouchCancel={handleMarkerTouchEnd}
         >
           <MarkerVisual icon={icon} size={marker.size} color={marker.color} />
+          {onMarkerRemove ? (
+            <button
+              type="button"
+              className="poster-marker__remove"
+              aria-label={removeLabel}
+              title={removeLabel}
+              onPointerDown={(event) => event.stopPropagation()}
+              onClick={(event) => {
+                event.stopPropagation();
+                onMarkerRemove(marker.id);
+              }}
+            >
+              ×
+            </button>
+          ) : null}
         </div>
       ))}
     </div>

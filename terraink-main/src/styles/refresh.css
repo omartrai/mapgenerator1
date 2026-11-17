@@ -3854,3 +3854,149 @@ body:has(.store-page) {
     text-align: start;
   }
 }
+
+/* 1000–1180 px: keep four columns (rail · step · poster · buy) instead of a
+   buy box floating over the poster. */
+@media (min-width: 1000px) and (max-width: 1180px) and (hover: hover) and (pointer: fine) {
+  .app-shell.app-shell[data-store-studio] {
+    grid-template-columns: 60px 280px minmax(0, 1fr) 290px !important;
+    grid-template-areas:
+      "dheader dheader dheader dheader"
+      "dnav dside dmap dbuy" !important;
+  }
+
+  .app-shell.app-shell[data-store-studio] > .studio-buy {
+    position: relative !important;
+    right: auto !important;
+    bottom: auto !important;
+    width: auto !important;
+    max-height: none !important;
+    border-radius: 0 !important;
+    box-shadow: none !important;
+    padding: 18px 18px 0 !important;
+  }
+}
+
+/* 769–999 px: the floating buy box stays small (size & frame are a step). */
+@media (min-width: 769px) and (max-width: 999px) and (hover: hover) and (pointer: fine) {
+  .app-shell[data-store-studio] > .studio-buy {
+    width: 260px !important;
+  }
+
+  .app-shell[data-store-studio] > .studio-buy .buy-summary__edit {
+    text-align: start;
+  }
+}
+
+/* Selected pin on the poster: a small × to delete it. */
+.poster-marker__remove {
+  position: absolute;
+  top: -10px;
+  right: -14px;
+  z-index: 3;
+  display: grid;
+  place-items: center;
+  width: 22px;
+  height: 22px;
+  padding: 0;
+  border: 2px solid #fff;
+  border-radius: 50%;
+  background: #1f2a24;
+  color: #fff;
+  font: 700 14px/1 system-ui, sans-serif;
+  cursor: pointer;
+  pointer-events: auto;
+  box-shadow: 0 2px 6px rgb(0 0 0 / 0.3);
+}
+
+.poster-marker__remove:hover {
+  background: #c8352b;
+}
+
+/* Shown on hover, or once the pin is tapped / selected. */
+.poster-marker:not(:hover):not(.is-revealed):not(.is-selected) .poster-marker__remove {
+  opacity: 0;
+  pointer-events: none;
+}
+
+.app-shell[data-scene="wall"] .poster-marker__remove {
+  display: none;
+}
+
+/* 769–999 px: the buy box becomes a slim bar along the bottom of the preview. */
+@media (min-width: 769px) and (max-width: 999px) and (hover: hover) and (pointer: fine) {
+  .app-shell.app-shell[data-store-studio] > .studio-buy {
+    left: calc(68px + 300px + 16px) !important;
+    right: 16px !important;
+    bottom: 16px !important;
+    width: auto !important;
+    max-height: none !important;
+    display: grid !important;
+    grid-template-columns: minmax(0, 1fr) auto;
+    align-items: center;
+    column-gap: 14px;
+    row-gap: 2px;
+    padding: 12px 14px !important;
+  }
+
+  .app-shell[data-store-studio] > .studio-buy > .store-eyebrow,
+  .app-shell[data-store-studio] > .studio-buy > .studio-buy__subtitle,
+  .app-shell[data-store-studio] > .studio-buy > .studio-buy__trust {
+    display: none !important;
+  }
+
+  .app-shell[data-store-studio] > .studio-buy > .studio-buy__title {
+    grid-column: 1;
+    margin: 0 !important;
+    font-size: 1.1rem !important;
+  }
+
+  .app-shell[data-store-studio] > .studio-buy > .buy-summary__edit {
+    grid-column: 1;
+    justify-self: start;
+    margin: 0 !important;
+    font-size: 0.78rem;
+  }
+
+  .app-shell[data-store-studio] > .studio-buy > .studio-buy__checkout {
+    grid-column: 2;
+    grid-row: 1 / 3;
+    display: flex !important;
+    align-items: center;
+    gap: 12px;
+    margin: 0 !important;
+    padding: 0 !important;
+    border: 0 !important;
+    position: static !important;
+    background: none !important;
+    box-shadow: none !important;
+  }
+
+  .app-shell[data-store-studio] > .studio-buy .studio-buy__price {
+    margin: 0 !important;
+  }
+
+  .app-shell[data-store-studio] > .studio-buy .studio-buy__amount {
+    font-size: 1.4rem !important;
+  }
+
+  .app-shell[data-store-studio] > .studio-buy .studio-buy__note {
+    display: none !important;
+  }
+
+  .app-shell[data-store-studio] > .studio-buy .studio-buy__cta {
+    width: auto !important;
+    white-space: nowrap;
+    padding-inline: 16px !important;
+  }
+
+  .app-shell[data-store-studio] > .preview-panel .poster-viewport {
+    padding-top: 60px !important;
+    padding-bottom: 96px !important;
+  }
+
+  .app-shell.app-shell[data-store-studio] > .preview-panel .poster-frame {
+    width: min(calc(100% - 40px), calc((100vh - 270px) * var(--poster-aspect, 0.75))) !important;
+    min-width: 0 !important;
+  }
+}

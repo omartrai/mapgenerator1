@@ -19,7 +19,7 @@ export default function LayoutShapePicker() {
   const { state, dispatch } = usePosterContext();
   const { form } = state;
   const set = (name: "posterLayout" | "mapShape", value: string) => dispatch({ type: "SET_FIELD", name, value });
-  const { apply } = usePosterStyles();
+  const { apply, leavePhoto } = usePosterStyles();
   // The studio renders a desktop and a phone copy of this panel: each needs its own radio groups.
   const uid = useId();
   const isPhoto = form.posterLayout === "duo";
@@ -28,8 +28,11 @@ export default function LayoutShapePicker() {
 
   const pickShape = (id: string) => {
     if (id === "photo") return apply("photo");
-    // Leaving the photo layout: back to the classic one.
-    if (isPhoto) set("posterLayout", DEFAULT_POSTER_LAYOUT);
+    // Leaving the photo layout: back to the classic one, without its heart pin.
+    if (isPhoto) {
+      set("posterLayout", DEFAULT_POSTER_LAYOUT);
+      leavePhoto();
+    }
     set("mapShape", id);
   };
 

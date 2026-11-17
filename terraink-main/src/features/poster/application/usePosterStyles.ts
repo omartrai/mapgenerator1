@@ -106,6 +106,26 @@ export function usePosterStyles() {
     [dispatch, form.customMessage, form.photoMono, pinHeart, t],
   );
 
+  /**
+   * Leaving the photo & map style: take away what it added (the red heart
+   * pin, and its message if the customer kept it as is).
+   */
+  const leavePhoto = useCallback(() => {
+    for (const marker of state.markers) {
+      if (marker.iconId === "heart" && marker.color === HEART_RED) {
+        dispatch({ type: "REMOVE_MARKER", markerId: marker.id });
+      }
+    }
+    const presetMessages = [t("style.preset.photo.message"), t("style.preset.heart.message")];
+    dispatch({
+      type: "SET_FORM_FIELDS",
+      fields: {
+        posterStyle: "classic",
+        ...(presetMessages.includes(form.customMessage?.trim() ?? "") ? { customMessage: "" } : {}),
+      },
+    });
+  }, [dispatch, form.customMessage, state.markers, t]);
+
   const active = (form.posterStyle as PosterStyleId | undefined) ?? null;
-  return { apply, active };
+  return { apply, active, leavePhoto };
 }

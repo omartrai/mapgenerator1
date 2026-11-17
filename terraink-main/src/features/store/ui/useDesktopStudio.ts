@@ -1,9 +1,10 @@
 import { useEffect, useState } from "react";
 
-/** Same breakpoint as the desktop studio layout (side rail + buy panel). */
-const QUERY = "(min-width: 769px) and (hover: hover) and (pointer: fine)";
+/** Wide enough for the 4-column studio, where size & frame live in the buy panel. */
+export const WIDE_STUDIO_QUERY = "(min-width: 1000px) and (hover: hover) and (pointer: fine)";
+const QUERY = WIDE_STUDIO_QUERY;
 
-/** True when the studio shows the desktop layout, where size & frame live in the buy panel. */
+/** True when size & frame are chosen in the buy panel (wide desktop). */
 export function useDesktopStudio(): boolean {
   const [matches, setMatches] = useState(() => typeof window !== "undefined" && window.matchMedia(QUERY).matches);
   useEffect(() => {

@@ -15,6 +15,7 @@ import { FREE_SHIPPING_THRESHOLD, formatRatio, frameDepthOf, unitPrice } from ".
 import { useStore } from "./StoreContext";
 import { useStoreText } from "./storeText";
 import SizeFrameSection from "./SizeFrameSection";
+import { useDesktopStudio } from "./useDesktopStudio";
 
 /** The "buy box": a summary of the configured poster with its price. */
 export default function PurchasePanel({ isMobile }: { isMobile: boolean }) {
@@ -22,6 +23,7 @@ export default function PurchasePanel({ isMobile }: { isMobile: boolean }) {
   const { product, setProduct, setEditingItemId } = useStore();
   const { navigate } = useRouter();
   const { addToCart, isAdding, error, isEditing } = useAddToCart();
+  const wide = useDesktopStudio();
 
   const { t, money, sizeLabel, shapeName, frameLabel, depthLabel, language } = useStoreText();
   const price = unitPrice(product);
@@ -88,10 +90,16 @@ export default function PurchasePanel({ isMobile }: { isMobile: boolean }) {
         </p>
       ) : null}
 
-      {/* Size and frame are chosen here, next to the price they change. */}
-      <div className="studio-buy__options">
-        <SizeFrameSection />
-      </div>
+      {/* Wide screens choose size and frame here, next to the price; narrower ones in a step. */}
+      {wide ? (
+        <div className="studio-buy__options">
+          <SizeFrameSection />
+        </div>
+      ) : (
+        <button type="button" className="buy-summary__edit" onClick={() => openSettingsTab({ tab: "size" })}>
+          {`${sizeLabel(product.sizeId)} · ${frameLabel(product.frameId)}`} — {t("buyStep.change")}
+        </button>
+      )}
 
       <div className="studio-buy__checkout">
       <div className="studio-buy__price">

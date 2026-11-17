@@ -501,6 +501,8 @@ export default function PreviewPanel({ sidePanel, belowPoster }: PreviewPanelPro
               onActiveMarkerChange={handleMarkerActiveChange}
               onMarkerPositionChange={handleMarkerPositionChange}
               onMarkerSizeChange={handleMarkerSizeChange}
+              onMarkerRemove={(markerId) => dispatch({ type: "REMOVE_MARKER", markerId })}
+              removeLabel={t("markers.remove")}
               overzoomScale={overzoomScale}
             />
           ) : null}

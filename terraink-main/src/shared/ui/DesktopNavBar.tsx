@@ -1,6 +1,7 @@
-import { Fragment } from "react";
+import { Fragment, useEffect, useState } from "react";
 import {
   LocationIcon,
+  LayoutIcon,
   ThemeIcon,
   LayersIcon,
   MarkersIcon,
@@ -18,6 +19,7 @@ const tabs: {
   { id: "theme", labelKey: "nav.theme", Icon: ThemeIcon },
   { id: "style", labelKey: "nav.style", Icon: StyleIcon },
   { id: "layers", labelKey: "nav.layers", Icon: LayersIcon },
+  { id: "size", labelKey: "nav.size", Icon: LayoutIcon },
   { id: "markers", labelKey: "nav.icons", Icon: MarkersIcon },
   { id: "advanced", labelKey: "nav.advanced", Icon: AdvancedIcon },
 ];
@@ -32,7 +34,20 @@ export interface RailKind {
 }
 
 /** Steps 2–3 (step 1 is the place); size & frame are in the buy panel. */
-const MAIN_STEPS: MobileTab[] = ["theme", "style"];
+const MAIN_STEPS: MobileTab[] = ["theme", "style", "size"];
+/** Same as the store's wide-studio breakpoint: size & frame then live in the buy panel. */
+const WIDE_QUERY = "(min-width: 1000px) and (hover: hover) and (pointer: fine)";
+
+function useWide(): boolean {
+  const [wide, setWide] = useState(() => typeof window !== "undefined" && window.matchMedia(WIDE_QUERY).matches);
+  useEffect(() => {
+    const media = window.matchMedia(WIDE_QUERY);
+    const sync = () => setWide(media.matches);
+    media.addEventListener("change", sync);
+    return () => media.removeEventListener("change", sync);
+  }, []);
+  return wide;
+}
 const FIRST_EXTRA: MobileTab = "layers";
 
 interface DesktopNavBarProps {
@@ -61,6 +76,7 @@ export default function DesktopNavBar({
   LocationStepIcon = LocationIcon,
 }: DesktopNavBarProps) {
   const { t } = useLanguage();
+  const wide = useWide();
   return (
     <nav
       className="desktop-nav-bar"
@@ -100,7 +116,7 @@ export default function DesktopNavBar({
         <span className="desktop-nav-label">{locationLabel ?? t("nav.location")}</span>
       </button>
 
-      {tabs.map(({ id, labelKey, Icon }) => {
+      {tabs.filter(({ id }) => !(wide && id === "size")).map(({ id, labelKey, Icon }) => {
         const label = t(labelKey);
         // The four main steps are numbered; the rest are optional extras.
         const step = MAIN_STEPS.indexOf(id) + 2;
