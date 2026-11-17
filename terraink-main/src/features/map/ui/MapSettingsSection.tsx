@@ -444,7 +444,7 @@ export default function MapSettingsSection({
           />
           {/* Most customers only change colours: layout and shape fold below. */}
           {form.posterKind === "sky" || isSportLayout(form.posterLayout) || isTrailLayout(form.posterLayout) ? null : (
-            <details className="theme-more" open={form.posterLayout === "duo" || undefined}>
+            <details className="theme-more" open>
               <summary>
                 <span className="theme-more__title">{t("style.group.layout")}</span>
                 <span className="theme-more__value">
