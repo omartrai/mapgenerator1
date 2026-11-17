@@ -4000,3 +4000,118 @@ body:has(.store-page) {
     min-width: 0 !important;
   }
 }
+
+/* Poster tools: one compact pill centred under the poster, never wider than the preview. */
+@media (min-width: 769px) and (hover: hover) and (pointer: fine) {
+  .app-shell.app-shell[data-store-studio] .poster-frame .map-controls {
+    position: absolute !important;
+    left: 50% !important;
+    right: auto !important;
+    top: calc(100% + 10px) !important;
+    bottom: auto !important;
+    display: flex !important;
+    flex-direction: row !important;
+    align-items: center;
+    gap: 2px !important;
+    width: max-content !important;
+    max-width: none !important;
+    padding: 4px !important;
+    border-radius: 999px;
+    background: rgb(255 255 255 / 0.96);
+    box-shadow: 0 4px 16px rgb(20 30 25 / 0.14);
+    translate: -50% 0;
+  }
+
+  .app-shell.app-shell[data-store-studio] .poster-frame .map-control-group {
+    display: flex !important;
+    align-items: center;
+    gap: 2px;
+    padding: 0 !important;
+    border: 0 !important;
+    background: none !important;
+    box-shadow: none !important;
+  }
+
+  .app-shell.app-shell[data-store-studio] .poster-frame .map-control-btn {
+    height: 32px !important;
+    min-height: 32px !important;
+    min-width: 32px !important;
+    padding: 0 10px !important;
+    gap: 5px;
+    border: 0 !important;
+    border-radius: 999px !important;
+    background: transparent !important;
+    color: #2a332e !important;
+    font-size: 0.74rem !important;
+    font-weight: 600 !important;
+    box-shadow: none !important;
+  }
+
+  .app-shell.app-shell[data-store-studio] .poster-frame .map-control-btn:hover {
+    background: #eef1ee !important;
+  }
+
+  .app-shell.app-shell[data-store-studio] .poster-frame .map-control-btn--primary {
+    background: var(--s-green) !important;
+    color: #fff !important;
+  }
+
+  .app-shell.app-shell[data-store-studio] .poster-frame .map-control-btn svg {
+    width: 14px;
+    height: 14px;
+  }
+
+  .app-shell.app-shell[data-store-studio] .poster-frame .map-control-slider-row .map-control-btn {
+    padding: 0 !important;
+    width: 32px;
+  }
+
+  .app-shell.app-shell[data-store-studio] .poster-frame .map-control-slider {
+    width: 96px !important;
+    min-width: 0 !important;
+    margin: 0 4px;
+  }
+
+  .app-shell.app-shell[data-store-studio] .poster-frame .map-control-group + .map-control-group {
+    padding-left: 4px !important;
+    border-left: 1px solid #e3e2dc !important;
+    border-radius: 0 !important;
+  }
+}
+
+@media (min-width: 769px) and (hover: hover) and (pointer: fine) {
+  .app-shell.app-shell[data-store-studio] .poster-frame .map-controls {
+    background: rgb(255 255 255 / 0.97) !important;
+  }
+
+  .app-shell.app-shell[data-store-studio] .poster-frame .map-control-slider {
+    -webkit-appearance: none;
+    appearance: none;
+    height: 4px !important;
+    padding: 0 !important;
+    border: 0 !important;
+    border-radius: 999px;
+    background: #dfe3df !important;
+    box-shadow: none !important;
+  }
+
+  .app-shell.app-shell[data-store-studio] .poster-frame .map-control-slider::-webkit-slider-thumb {
+    -webkit-appearance: none;
+    width: 14px;
+    height: 14px;
+    border: 2px solid #fff;
+    border-radius: 50%;
+    background: var(--s-green);
+    box-shadow: 0 1px 3px rgb(0 0 0 / 0.3);
+    cursor: pointer;
+  }
+
+  .app-shell.app-shell[data-store-studio] .poster-frame .map-control-slider::-moz-range-thumb {
+    width: 12px;
+    height: 12px;
+    border: 2px solid #fff;
+    border-radius: 50%;
+    background: var(--s-green);
+    cursor: pointer;
+  }
+}
