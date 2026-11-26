@@ -1,4 +1,5 @@
 import { useEffect, useRef, useState } from "react";
+import LanguageFlag from "./LanguageFlag";
 import {
   useLanguage,
   type AppLanguage,
@@ -45,6 +46,7 @@ export default function LanguageSwitcher() {
         aria-expanded={isOpen}
         onClick={() => setIsOpen((open) => !open)}
       >
+        <LanguageFlag code={language} />
         <span>{language.toUpperCase()}</span>
         <svg viewBox="0 0 12 8" aria-hidden="true">
           <path d="m2 2 4 4 4-4" />
@@ -65,6 +67,7 @@ export default function LanguageSwitcher() {
                 setIsOpen(false);
               }}
             >
+              <LanguageFlag code={code} />
               <span className="language-switcher__code">{code.toUpperCase()}</span>
               <span>{languageNames[code]}</span>
             </button>

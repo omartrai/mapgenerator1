@@ -1,4 +1,5 @@
 import { useEffect, useRef, useState } from "react";
+import LanguageFlag from "@/shared/ui/LanguageFlag";
 import { LuChevronDown, LuShoppingCart } from "react-icons/lu";
 import { Link, useRouter } from "@/core/router/router";
 import BrandMark, { BrandWordmark } from "@/shared/ui/BrandMark";
@@ -111,6 +112,7 @@ function LanguageMenu() {
         aria-label={`${t("header.language")}: ${current.name}`}
         onClick={() => setOpen((value) => !value)}
       >
+        <LanguageFlag code={current.code} />
         <span lang={current.code}>{current.label}</span>
         <LuChevronDown aria-hidden="true" />
       </button>
@@ -129,7 +131,8 @@ function LanguageMenu() {
                 setOpen(false);
               }}
             >
-              {entry.name}
+              <LanguageFlag code={entry.code} />
+              <span>{entry.name}</span>
             </button>
           ))}
         </div>

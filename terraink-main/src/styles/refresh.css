@@ -4058,3 +4058,22 @@ body:has(.store-page) {
     grid-auto-columns: 44%;
   }
 }
+
+/* Flags in the language menus. */
+.lang-flag {
+  flex: 0 0 auto;
+  width: 20px;
+  height: 14px;
+  border-radius: 3px;
+  box-shadow: 0 0 0 1px rgb(0 0 0 / 0.12);
+  overflow: hidden;
+}
+
+.lang-menu__trigger,
+.lang-menu__list button,
+.language-switcher__trigger,
+.language-switcher__option {
+  display: inline-flex !important;
+  align-items: center;
+  gap: 8px;
+}
