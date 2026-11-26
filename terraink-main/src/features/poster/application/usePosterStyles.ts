@@ -2,12 +2,13 @@ import { useCallback } from "react";
 import { usePosterContext } from "@/features/poster/ui/PosterContext";
 import { DEFAULT_MARKER_SIZE } from "@/features/markers/domain/constants";
 import { useLanguage } from "@/shared/i18n/LanguageContext";
+import { DEFAULT_TWIN } from "@/features/poster/domain/twinCities";
 
 /**
  * Ready-made looks that set the layout, colours, map shape, layers and a
  * heart pin in one tap. The customer can still change any of it afterwards.
  */
-export const POSTER_STYLES = ["classic", "heart", "photo"] as const;
+export const POSTER_STYLES = ["classic", "heart", "photo", "twin"] as const;
 export type PosterStyleId = (typeof POSTER_STYLES)[number];
 
 const ALL_LAYERS = {
@@ -80,6 +81,40 @@ export function usePosterStyles() {
         return;
       }
 
+      if (id === "twin") {
+        // The two pieces carry their own heart pins.
+        for (const marker of state.markers) {
+          if (marker.iconId === "heart" && marker.color === HEART_RED) {
+            dispatch({ type: "REMOVE_MARKER", markerId: marker.id });
+          }
+        }
+        dispatch({
+          type: "SET_FORM_FIELDS",
+          fields: {
+            ...base,
+            ...ALL_LAYERS,
+            posterLayout: "twin",
+            mapShape: "heart",
+            posterStyle: "twin",
+            // Start with a second place, saved like a chosen one.
+            ...(form.twinLat && form.twinLon
+              ? {}
+              : {
+                  twinCity: DEFAULT_TWIN.city,
+                  twinCountry: DEFAULT_TWIN.country,
+                  twinLat: String(DEFAULT_TWIN.lat),
+                  twinLon: String(DEFAULT_TWIN.lon),
+                }),
+            messageFont: "elegant",
+            messageSize: "m",
+            messageX: "",
+            messageY: "",
+            ...message(t("twin.message")),
+          },
+        });
+        return;
+      }
+
       if (id === "photo") {
         dispatch({ type: "SET_THEME", themeId: "monochrome" });
         dispatch({
@@ -103,7 +138,7 @@ export function usePosterStyles() {
       }
 
     },
-    [dispatch, form.customMessage, form.photoMono, pinHeart, t],
+    [dispatch, form.customMessage, form.photoMono, form.twinLat, form.twinLon, pinHeart, state.markers, t],
   );
 
   /**
@@ -116,7 +151,7 @@ export function usePosterStyles() {
         dispatch({ type: "REMOVE_MARKER", markerId: marker.id });
       }
     }
-    const presetMessages = [t("style.preset.photo.message"), t("style.preset.heart.message")];
+    const presetMessages = [t("style.preset.photo.message"), t("style.preset.heart.message"), t("twin.message")];
     dispatch({
       type: "SET_FORM_FIELDS",
       fields: {

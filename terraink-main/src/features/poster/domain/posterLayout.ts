@@ -18,7 +18,7 @@ import {
 
 export const POSTER_LAYOUTS = [
   "classic", "border", "label", "band", "fade", "header", "script", "signature",
-  "activity", "duo", "nursery", "race", "bold", "photorun", "topo", "bib", "green", "elevation", "archive", "midnight",
+  "activity", "duo", "twin", "nursery", "race", "bold", "photorun", "topo", "bib", "green", "elevation", "archive", "midnight",
 ] as const;
 /** Sport poster designs (Sport kind), first = default. */
 export const SPORT_LAYOUTS = ["race", "bib", "elevation", "midnight", "archive", "bold", "green", "photorun", "activity"] as const;
@@ -27,7 +27,7 @@ export const TRAIL_LAYOUTS = ["topo"] as const;
 export type SportDesignId = "race" | "bold" | "photorun" | "topo" | "bib" | "green" | "elevation" | "archive" | "midnight";
 /** Layouts reached only through a ready-made style or a sport kind, not the map layout picker. */
 export const STYLE_ONLY_LAYOUTS: ReadonlySet<string> = new Set([
-  "duo", "nursery", ...SPORT_LAYOUTS, ...TRAIL_LAYOUTS,
+  "duo", "twin", "nursery", ...SPORT_LAYOUTS, ...TRAIL_LAYOUTS,
 ]);
 export const isSportLayout = (id: string | undefined) => (SPORT_LAYOUTS as readonly string[]).includes(id ?? "");
 export const isTrailLayout = (id: string | undefined) => (TRAIL_LAYOUTS as readonly string[]).includes(id ?? "");
@@ -108,6 +108,11 @@ export interface PosterLayoutSpec {
   centreMapInWindow?: boolean;
   /** Heart holding the customer's photo, next to the map heart (ratios). */
   photo?: Rect;
+  /**
+   * Two cities: the heart (mapWindow) is cut in two puzzle pieces, the first
+   * place in the left one and the second place (a second map) in the right.
+   */
+  twin?: boolean;
   /**
    * Sport and trail designs draw all their own text (see sportDesigns.ts);
    * the city, country, coordinates and message lines are not printed.
@@ -282,6 +287,22 @@ export const POSTER_LAYOUT_SPECS: Record<PosterLayoutId, PosterLayoutSpec> = {
     coords: center(0.882),
     scale: { city: 0.3, country: 0.75, coords: 0.85, message: 1.3 },
     maxWidth: 0.8,
+  },
+
+  /** Two cities in one heart, as two puzzle pieces; names and message below. */
+  twin: {
+    ...CLASSIC,
+    fades: { top: 0, bottom: 0 },
+    mapWindow: { x: 0.06, y: 0.045, w: 0.88, h: 0.63 },
+    twin: true,
+    cityStyle: { case: "upper", family: null, weight: 600 },
+    message: center(0.725),
+    divider: { y: 0.775 },
+    city: center(0.822),
+    country: center(0.856),
+    coords: center(0.886),
+    scale: { city: 0.42, country: 0.85, coords: 0.85, message: 1.3 },
+    maxWidth: 0.86,
   },
 
   /** Race finisher: event title, runner name over a ghost year, map, 3 stats. */
@@ -465,8 +486,13 @@ export function paperMaskPath(
   return `${outer}${shapePath(shapeId, box)}`;
 }
 
-/** Shift (ratio of the poster) that puts the map centre in its window's middle. */
-export function mapOffsetOf(layout: PosterLayoutSpec): { x: number; y: number } | null {
+/**
+ * Shift (ratio of the poster) that puts the map centre in its window's
+ * middle, or in the left piece of a two-cities heart. `aspect` is the
+ * poster's width / height (the heart is square, so it moves with it).
+ */
+export function mapOffsetOf(layout: PosterLayoutSpec, aspect = 0.75): { x: number; y: number } | null {
+  if (layout.twin && layout.mapWindow) return twinPointRatio(layout.mapWindow, TWIN_LEFT_CENTRE, aspect);
   if (!layout.centreMapInWindow || !layout.mapWindow) return null;
   const w = layout.mapWindow;
   return { x: w.x + w.w / 2 - 0.5, y: w.y + w.h / 2 - 0.5 };
@@ -583,4 +609,76 @@ export function placePhotoCover(
     w,
     h,
   };
+}
+
+/* ── Two cities: one heart cut in two puzzle pieces ── */
+
+/** Centres of the two pieces, in the unit heart (see shapePath). */
+const TWIN_LEFT_CENTRE = { u: 0.25, v: 0.4 };
+const TWIN_RIGHT_CENTRE = { u: 0.75, v: 0.4 };
+
+/** Size and corner of the square the heart is drawn in. */
+function heartSquare(box: Rect) {
+  const size = Math.min(box.w, box.h);
+  return { size, x0: box.x + (box.w - size) / 2, y0: box.y + (box.h - size) / 2 };
+}
+
+/** Point of the unit heart as a shift from the poster centre (ratios). */
+function twinPointRatio(window: Rect, point: { u: number; v: number }, aspect: number) {
+  // Pixel box of the window on a poster `aspect` wide and 1 tall.
+  const box = { x: window.x * aspect, y: window.y, w: window.w * aspect, h: window.h };
+  const { size, x0, y0 } = heartSquare(box);
+  return {
+    x: (x0 + point.u * size) / aspect - 0.5,
+    y: y0 + (point.v + 0.04) * size - 0.5,
+  };
+}
+
+/** Shift (ratio of the poster) that puts the second map's centre in the right piece. */
+export function twinMapOffsetOf(layout: PosterLayoutSpec, aspect: number): { x: number; y: number } | null {
+  if (!layout.twin || !layout.mapWindow) return null;
+  return twinPointRatio(layout.mapWindow, TWIN_RIGHT_CENTRE, aspect);
+}
+
+/**
+ * The two pieces in pixels of a width × height poster: the heart, the area
+ * right of the cut (clip with both for the right piece), the cut line, and
+ * where the two pins go.
+ */
+export function twinPieces(layout: PosterLayoutSpec, width: number, height: number) {
+  if (!layout.twin || !layout.mapWindow) return null;
+  const w = layout.mapWindow;
+  const box = { x: w.x * width, y: w.y * height, w: w.w * width, h: w.h * height };
+  const { size, x0, y0 } = heartSquare(box);
+  const p = (u: number, v: number) => `${n(x0 + u * size)} ${n(y0 + (v + 0.04) * size)}`;
+  const at = (u: number, v: number) => ({ x: x0 + u * size, y: y0 + (v + 0.04) * size });
+  // The cut runs down the middle with a round tab sticking into the left piece.
+  const r = 0.065;
+  const head = { u: 0.415, v: 0.44 };
+  const neckTop = { u: head.u + r * Math.cos(-0.9), v: head.v + r * Math.sin(-0.9) };
+  const neckBottom = { u: head.u + r * Math.cos(0.9), v: head.v + r * Math.sin(0.9) };
+  const cut = [
+    `M${p(0.5, -0.1)}`,
+    `L${p(0.5, 0.36)}`,
+    `C${p(0.5, 0.385)} ${p(neckTop.u + 0.012, neckTop.v - 0.006)} ${p(neckTop.u, neckTop.v)}`,
+    `A${n(r * size)} ${n(r * size)} 0 1 0 ${p(neckBottom.u, neckBottom.v)}`,
+    `C${p(neckBottom.u + 0.012, neckBottom.v + 0.006)} ${p(0.5, 0.495)} ${p(0.5, 0.52)}`,
+    `L${p(0.5, 1.1)}`,
+  ].join("");
+  return {
+    heartPath: shapePath("heart", box),
+    cutPath: cut,
+    /** Everything right of the cut (closed round the right side). */
+    rightPath: `${cut}L${p(1.2, 1.1)}L${p(1.2, -0.1)}Z`,
+    leftPin: at(TWIN_LEFT_CENTRE.u, TWIN_LEFT_CENTRE.v),
+    rightPin: at(TWIN_RIGHT_CENTRE.u, TWIN_RIGHT_CENTRE.v),
+    /** Pin height and cut line width, in pixels. */
+    pinSize: size * 0.075,
+    cutWidth: size * 0.009,
+  };
+}
+
+/** Heart pin (point at the bottom on the spot), as an SVG path. */
+export function pinPath(at: { x: number; y: number }, size: number): string {
+  return shapePath("heart", { x: at.x - size / 2, y: at.y - size * 0.96, w: size, h: size });
 }

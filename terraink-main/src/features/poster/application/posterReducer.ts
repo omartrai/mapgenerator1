@@ -106,6 +106,11 @@ export interface PosterForm {
   photoZoom?: string;
   photoX?: string;
   photoY?: string;
+  /** Two-cities poster: the second place (name as printed, country, centre). */
+  twinCity?: string;
+  twinCountry?: string;
+  twinLat?: string;
+  twinLon?: string;
   showRoutes: boolean;
 }
 

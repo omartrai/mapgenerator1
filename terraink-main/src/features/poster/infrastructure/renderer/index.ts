@@ -3,6 +3,7 @@ import { applyFades } from "./layers";
 import { effectiveFades, getPosterLayout } from "@/features/poster/domain/posterLayout";
 import { drawPosterText } from "./typography";
 import { drawPhotoBackdrop } from "./sportDesigns";
+import { drawTwinDecor, drawTwinMap } from "./twin";
 import { drawMarkersOnCanvas } from "@/features/markers/infrastructure/rendering";
 import { drawRoutesOnCanvas } from "@/features/routes/infrastructure/rendering";
 import { routeEndpointMarkerItems } from "@/features/routes/infrastructure/helpers";
@@ -40,6 +41,7 @@ export async function compositeExport(
     mapCredit = true,
     starChart = false,
     photoImage = null,
+    twinMap = null,
     photoMono = true,
     photoFrame,
     showOverlay = true,
@@ -64,12 +66,15 @@ export async function compositeExport(
   if (!ctx) throw new Error("Canvas rendering is not available.");
 
   // Photo layout: the map (and what sits on it) moves into the map heart.
-  const offset = mapOffsetOf(getPosterLayout(posterLayout));
+  const layout = getPosterLayout(posterLayout);
+  const offset = mapOffsetOf(layout, width / height);
   const dx = offset ? offset.x * width : 0;
   const dy = offset ? offset.y * height : 0;
 
   // 1. Draw map snapshot
   ctx.drawImage(mapCanvas, dx, dy);
+  // Two cities: the second map fills the right piece of the heart.
+  if (layout.twin && twinMap) drawTwinMap(ctx, layout, width, height, twinMap);
 
   // Photorun: the runner's photo covers the map; the route goes on top.
   if (getPosterLayout(posterLayout).photoBackdrop) {
@@ -126,6 +131,8 @@ export async function compositeExport(
   }
 
   ctx.restore();
+
+  if (layout.twin) drawTwinDecor(ctx, layout, width, height, theme.ui.bg);
 
   // 6. Poster text
   drawPosterText(

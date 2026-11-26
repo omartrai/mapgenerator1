@@ -43,6 +43,8 @@ export interface ExportOptions {
   starChart?: boolean;
   /** Photo layout: the customer's photo, loaded, and black and white. */
   photoImage?: CanvasImageSource | null;
+  /** Two-cities poster: full-poster snapshot of the second map. */
+  twinMap?: CanvasImageSource | null;
   photoMono?: boolean;
   photoFrame?: import("./posterLayout").PhotoFrame;
   showOverlay?: boolean;

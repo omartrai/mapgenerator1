@@ -4,6 +4,7 @@ import { useCallback, useMemo } from "react";
 import { usePosterContext } from "@/features/poster/ui/PosterContext";
 import { textPartsFromForm } from "@/features/poster/domain/textLayout";
 import { getPosterLayout } from "@/features/poster/domain/posterLayout";
+import { twinTextFromForm } from "@/features/poster/application/twinText";
 import { activityFromForm } from "@/features/poster/domain/activityPoster";
 import { messageLookFromForm, resolveMessageType } from "@/features/poster/domain/messageStyle";
 import { localStorageCache } from "@/core/cache/localStorageCache";
@@ -107,7 +108,7 @@ function writePosterExportCount(nextCount: number): void {
  * 5. Download.
  */
 export function useExport() {
-  const { state, dispatch, effectiveTheme, mapRef } = usePosterContext();
+  const { state, dispatch, effectiveTheme, mapRef, twinMapRef } = usePosterContext();
   const { form } = state;
   const { language } = useLanguage();
   const hasVisibleMarkers = form.showMarkers && state.markers.length > 0;
@@ -179,6 +180,11 @@ export function useExport() {
           }
         : await captureMapAsCanvas(map, width, height);
       const withOverlays = hasVisibleOverlays && !sky;
+      // Two cities: a snapshot of the second map, the same size as the first.
+      const twinLayout = !sky && getPosterLayout(form.posterLayout).twin;
+      if (twinLayout && !twinMapRef.current) throw new Error("Map is not ready.");
+      const twinMap = twinLayout ? (await captureMapAsCanvas(twinMapRef.current!, width, height)).canvas : null;
+      const twinText = sky ? null : twinTextFromForm(form, form.displayCity || form.location || "", form.displayCountry || "");
       // Photo layout: decode the customer's photo before drawing.
       const photoImage =
         !sky && form.photo && (getPosterLayout(form.posterLayout).photo || getPosterLayout(form.posterLayout).photoBackdrop)
@@ -190,8 +196,8 @@ export function useExport() {
         center: { lat, lon },
         widthInches: widthCm / CM_PER_INCH,
         heightInches: heightCm / CM_PER_INCH,
-        displayCity: form.displayCity || form.location || "",
-        displayCountry: form.displayCountry || "",
+        displayCity: twinText?.city ?? (form.displayCity || form.location || ""),
+        displayCountry: twinText?.country ?? (form.displayCountry || ""),
         fontFamily: form.fontFamily.trim(),
         showPosterText: form.showPosterText,
         showOverlay: form.showMarkers && !sky,
@@ -203,6 +209,8 @@ export function useExport() {
         activity: activityFromForm(form as unknown as Record<string, unknown>, state.routes),
         messageLook: messageLookFromForm(form),
         photoImage,
+        twinMap,
+        ...(twinText ? { coordsLabel: twinText.coords } : {}),
         photoMono: form.photoMono !== false,
         photoFrame: photoFrameFromForm(form),
         ...(sky ? { mapCredit: false, starChart: true, coordsLabel: skyDetailsLabel(form, formatCoordinates(lat, lon), language) } : {}),
@@ -218,6 +226,7 @@ export function useExport() {
     },
     [
       mapRef,
+      twinMapRef,
       form,
       effectiveTheme,
       hasVisibleMarkers,
@@ -256,6 +265,9 @@ export function useExport() {
 
       if (format === "svg" && isSkyPoster(form)) {
         throw new Error("SVG is not available for night-sky posters — use PNG or PDF.");
+      }
+      if (format === "svg" && getPosterLayout(form.posterLayout).twin) {
+        throw new Error("SVG is not available for two-cities posters — use PNG or PDF.");
       }
       if (format === "svg") {
         if (form.showPosterText && form.fontFamily.trim()) {

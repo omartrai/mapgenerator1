@@ -149,6 +149,8 @@ interface PosterContextValue {
   effectiveTheme: ResolvedTheme;
   mapStyle: StyleSpecification;
   mapRef: MapInstanceRef;
+  /** The second map of a two-cities poster (null otherwise). */
+  twinMapRef: MapInstanceRef;
 }
 
 const PosterContext = createContext<PosterContextValue | null>(null);
@@ -158,6 +160,7 @@ const PosterContext = createContext<PosterContextValue | null>(null);
 export function PosterProvider({ children }: { children: ReactNode }) {
   const [state, dispatch] = useReducer(posterReducer, INITIAL_STATE);
   const mapRef = useRef(null) as MapInstanceRef;
+  const twinMapRef = useRef(null) as MapInstanceRef;
   const lastSyncedRouteThemeColorRef = useRef<string | null>(null);
   const hasLoadedCustomIconsRef = useRef(false);
 
@@ -270,6 +273,7 @@ export function PosterProvider({ children }: { children: ReactNode }) {
       effectiveTheme,
       mapStyle,
       mapRef,
+      twinMapRef,
     }),
     [state, selectedTheme, effectiveTheme, mapStyle],
   );

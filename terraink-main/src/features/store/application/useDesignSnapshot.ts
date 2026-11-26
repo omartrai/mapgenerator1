@@ -1,4 +1,5 @@
 import { useCallback } from "react";
+import { twinTextFromForm } from "@/features/poster/application/twinText";
 import { usePosterContext } from "@/features/poster/ui/PosterContext";
 import type { MarkerIconDefinition, MarkerItem } from "@/features/markers/domain/types";
 import type { Route } from "@/features/routes/domain/types";
@@ -36,9 +37,11 @@ export function useDesignSnapshot() {
 
   const summarize = useCallback((): DesignSummary => {
     const { form } = state;
+    // Two cities: "Casablanca & Paris", "Maroc · France".
+    const twin = twinTextFromForm(form, form.displayCity || form.location || "", form.displayCountry || "");
     return {
-      title: (form.displayCity || form.location || "Custom map").trim(),
-      subtitle: (form.displayCountry || "").trim(),
+      title: (twin?.city || form.displayCity || form.location || "Custom map").trim(),
+      subtitle: (twin?.country ?? form.displayCountry ?? "").trim(),
       message: (form.customMessage || "").trim() || undefined,
       themeId: form.theme,
       themeName:

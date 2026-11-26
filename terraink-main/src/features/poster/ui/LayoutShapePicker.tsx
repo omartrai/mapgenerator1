@@ -1,7 +1,8 @@
 import { useId } from "react";
-import { LuBan, LuCircle, LuHeart, LuImage, LuStar } from "react-icons/lu";
+import { LuBan, LuCircle, LuHeart, LuImage, LuPuzzle, LuStar } from "react-icons/lu";
 import { usePosterStyles } from "@/features/poster/application/usePosterStyles";
 import PhotoCard from "./PhotoCard";
+import TwinCityCard from "./TwinCityCard";
 import {
   DEFAULT_POSTER_LAYOUT,
   MAP_SHAPES,
@@ -11,7 +12,7 @@ import {
 import { usePosterContext } from "@/features/poster/ui/PosterContext";
 import { useLanguage, type TranslationKey } from "@/shared/i18n/LanguageContext";
 
-const SHAPE_ICONS = { none: LuBan, circle: LuCircle, heart: LuHeart, star: LuStar, photo: LuImage } as const;
+const SHAPE_ICONS = { none: LuBan, circle: LuCircle, heart: LuHeart, star: LuStar, photo: LuImage, twin: LuPuzzle } as const;
 
 /** Poster layout and map shape (shown in the Theme step). */
 export default function LayoutShapePicker() {
@@ -23,13 +24,14 @@ export default function LayoutShapePicker() {
   // The studio renders a desktop and a phone copy of this panel: each needs its own radio groups.
   const uid = useId();
   const isPhoto = form.posterLayout === "duo";
+  const isTwin = form.posterLayout === "twin";
   const layoutId = form.posterLayout || DEFAULT_POSTER_LAYOUT;
-  const shapeId = isPhoto ? "photo" : form.mapShape || "none";
+  const shapeId = isPhoto ? "photo" : isTwin ? "twin" : form.mapShape || "none";
 
   const pickShape = (id: string) => {
-    if (id === "photo") return apply("photo");
-    // Leaving the photo layout: back to the classic one, without its heart pin.
-    if (isPhoto) {
+    if (id === "photo" || id === "twin") return apply(id);
+    // Leaving the photo or two-cities layout: back to the classic one, without its heart pin.
+    if (isPhoto || isTwin) {
       set("posterLayout", DEFAULT_POSTER_LAYOUT);
       leavePhoto();
     }
@@ -67,7 +69,7 @@ export default function LayoutShapePicker() {
       <fieldset className="layout-picker shape-picker">
         <legend>{t("style.shape")}</legend>
         <div className="shape-picker__grid">
-          {[...MAP_SHAPES, "photo" as const].map((id) => {
+          {[...MAP_SHAPES, "photo" as const, "twin" as const].map((id) => {
             const Icon = SHAPE_ICONS[id];
             return (
               <label key={id} className="shape-picker__option">
@@ -88,6 +90,7 @@ export default function LayoutShapePicker() {
         </div>
       </fieldset>
       {isPhoto ? <PhotoCard /> : null}
+      {isTwin ? <TwinCityCard /> : null}
     </section>
   );
 }

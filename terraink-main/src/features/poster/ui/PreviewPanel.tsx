@@ -19,6 +19,8 @@ import RouteEndpointsOverlay from "@/features/routes/ui/RouteEndpointsOverlay";
 import GradientFades from "./GradientFades";
 import { effectiveFades, getPosterLayout } from "@/features/poster/domain/posterLayout";
 import PhotoBackdrop from "./PhotoBackdrop";
+import TwinMapLayer from "./TwinMapLayer";
+import { twinTextFromForm } from "@/features/poster/application/twinText";
 import { activityFromForm } from "@/features/poster/domain/activityPoster";
 import { messageLookFromForm } from "@/features/poster/domain/messageStyle";
 import SkyPreview from "@/features/sky/ui/SkyPreview";
@@ -73,7 +75,9 @@ export default function PreviewPanel({ sidePanel, belowPoster }: PreviewPanelPro
   const { state, dispatch, effectiveTheme, mapStyle, mapRef } =
     usePosterContext();
   const sky = isSkyPoster(state.form);
-  const mapOffset = mapOffsetOf(getPosterLayout(state.form.posterLayout));
+  const posterAspect =
+    (Number(state.form.width) || DEFAULT_POSTER_WIDTH_CM) / (Number(state.form.height) || DEFAULT_POSTER_HEIGHT_CM);
+  const mapOffset = mapOffsetOf(getPosterLayout(state.form.posterLayout), posterAspect);
   const handleMessageMove = useCallback(
     (x: number, y: number) => {
       dispatch({ type: "SET_FIELD", name: "messageX", value: x.toFixed(4) });
@@ -242,6 +246,11 @@ export default function PreviewPanel({ sidePanel, belowPoster }: PreviewPanelPro
     : isCountryContinentView
       ? form.displayContinent || "Africa"
       : "Earth";
+
+  // Two cities: both names, countries and coordinates (the city line, whatever the zoom).
+  const twinText = sky
+    ? null
+    : twinTextFromForm(form, form.displayCity || form.location || "Casablanca", form.displayCountry || "Maroc");
 
   const handleStartEditing = useCallback(() => {
     setIsEditing(true);
@@ -449,9 +458,10 @@ export default function PreviewPanel({ sidePanel, belowPoster }: PreviewPanelPro
                 ? {
                     "--map-dx": `${(mapOffset.x * 100).toFixed(3)}%`,
                     "--map-dy": `${(mapOffset.y * 100).toFixed(3)}%`,
-                    // Keep the moved layers inside the poster's edges.
+                    // Keep the moved layers inside the poster's edges (2px more, so a
+                    // sub-pixel seam never shows a row of map above the paper).
                     "--map-clip": `inset(${[-mapOffset.y, mapOffset.x, mapOffset.y, -mapOffset.x]
-                      .map((v) => `${(Math.max(0, v) * 100).toFixed(3)}%`)
+                      .map((v) => `calc(${(Math.max(0, v) * 100).toFixed(3)}% + 2px)`)
                       .join(" ")})`,
                   }
                 : {}),
@@ -471,6 +481,16 @@ export default function PreviewPanel({ sidePanel, belowPoster }: PreviewPanelPro
             onMove={handleMove}
             onMoveEnd={handleMoveEnd}
           />
+          {!sky && getPosterLayout(form.posterLayout).twin ? (
+            <TwinMapLayer
+              layout={getPosterLayout(form.posterLayout)}
+              zoom={mapZoom}
+              minZoom={mapMinZoom}
+              maxZoom={mapMaxZoom}
+              overzoomScale={overzoomScale}
+              interactive={isEditing && !isMarkerEditorActive}
+            />
+          ) : null}
           {sky ? <SkyPreview /> : null}
           {form.showMarkers && !sky ? (
             <GradientFades color={effectiveTheme.ui.bg} fades={effectiveFades(getPosterLayout(form.posterLayout), form.mapShape)} />
@@ -506,8 +526,8 @@ export default function PreviewPanel({ sidePanel, belowPoster }: PreviewPanelPro
             />
           ) : null}
           <PosterTextOverlay
-            city={cityLabel}
-            country={countryLabel}
+            city={twinText?.city ?? cityLabel}
+            country={twinText?.country ?? countryLabel}
             lat={formLat}
             lon={formLon}
             fontFamily={form.fontFamily}
@@ -524,7 +544,7 @@ export default function PreviewPanel({ sidePanel, belowPoster }: PreviewPanelPro
             photo={form.photo}
             photoMono={form.photoMono !== false}
             photoFrame={photoFrameFromForm(form)}
-            coordsLabel={sky ? skyDetailsLabel(form, formatCoordinates(formLat, formLon), language) : undefined}
+            coordsLabel={sky ? skyDetailsLabel(form, formatCoordinates(formLat, formLon), language) : twinText?.coords}
             mapCredit={!sky}
             onMessageMove={handleMessageMove}
             moveHint={t("style.msg.dragHint")}

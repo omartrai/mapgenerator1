@@ -4305,3 +4305,132 @@ body:has(.store-page) {
 @media print {
   .whatsapp-fab { display: none; }
 }
+
+/* ── Two-cities poster: second map in the right piece of the heart ── */
+.twin-map {
+  position: absolute;
+  inset: 0;
+  pointer-events: none;
+}
+.twin-map__clip,
+.twin-map__map {
+  position: absolute;
+  inset: 0;
+}
+.twin-map__map {
+  pointer-events: auto;
+}
+.twin-map__decor {
+  position: absolute;
+  inset: 0;
+  width: 100%;
+  height: 100%;
+  overflow: visible;
+  pointer-events: none;
+}
+
+/* Second-city card (two-cities poster) */
+.twin-card {
+  position: relative;
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+  margin-top: 12px;
+  padding: 14px;
+  border: 1px solid #ecebe6;
+  border-radius: 16px;
+  background: #fff;
+}
+.twin-card__head {
+  display: flex;
+  align-items: flex-start;
+  gap: 12px;
+}
+.twin-card__icon {
+  flex: none;
+  width: 22px;
+  height: 22px;
+  margin-top: 2px;
+  color: #c8352b;
+}
+.twin-card__title {
+  margin: 0 !important;
+  font-size: 0.86rem;
+  font-weight: 700;
+}
+.twin-card__note {
+  margin: 0 !important;
+  color: var(--s-muted);
+  font-size: 0.76rem;
+  line-height: 1.4;
+}
+.twin-card__search {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  height: 42px;
+  padding: 0 12px;
+  border: 1px solid #dcdad3;
+  border-radius: 12px;
+  color: var(--s-muted);
+}
+.twin-card__search:focus-within {
+  border-color: var(--s-ink, #1f3a33);
+}
+.twin-card__search input {
+  flex: 1;
+  min-width: 0;
+  border: 0;
+  outline: none;
+  background: transparent;
+  color: var(--s-ink, #222);
+  font: inherit;
+  font-size: 0.9rem;
+}
+.twin-card__list {
+  margin: -4px 0 0;
+  padding: 4px;
+  list-style: none;
+  border: 1px solid #ecebe6;
+  border-radius: 12px;
+  background: #fff;
+  box-shadow: 0 8px 24px rgba(0, 0, 0, 0.08);
+}
+.twin-card__list button {
+  width: 100%;
+  padding: 9px 10px;
+  border: 0;
+  border-radius: 8px;
+  background: none;
+  color: var(--s-ink, #222);
+  font: inherit;
+  font-size: 0.85rem;
+  text-align: start;
+  cursor: pointer;
+}
+.twin-card__list button:hover,
+.twin-card__list button:focus-visible {
+  background: #f3f2ee;
+}
+.twin-card__empty {
+  padding: 9px 10px;
+  color: var(--s-muted);
+  font-size: 0.85rem;
+}
+.twin-card__name {
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
+  font-size: 0.78rem;
+  font-weight: 600;
+}
+/* The search box draws the border; its input stays bare (beats the studio's input rule). */
+.app-shell.app-shell.app-shell[data-store-studio] .twin-card__search input {
+  height: 100% !important;
+  min-height: 0 !important;
+  padding: 0 !important;
+  border: 0 !important;
+  border-radius: 0 !important;
+  background: transparent !important;
+  box-shadow: none !important;
+}
