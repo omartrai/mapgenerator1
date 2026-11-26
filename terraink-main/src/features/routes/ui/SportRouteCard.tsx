@@ -171,7 +171,7 @@ export default function SportRouteCard({ compact = false }: { compact?: boolean 
           <small>{t("sport.route.current")}</small>
           <strong>{route ? route.label : t("sport.route.none")}</strong>
         </span>
-        {route ? <span className="sport-source__km">{formatKm(routeLengthMeters(route), language !== "en")}</span> : null}
+        {route ? <span className="sport-source__km">{formatKm(route.stats?.distanceM || routeLengthMeters(route), language !== "en")}</span> : null}
       </div>
       {route && !compact ? <RouteStyleSection route={route} /> : null}
     </section>

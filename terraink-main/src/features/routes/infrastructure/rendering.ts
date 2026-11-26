@@ -80,8 +80,16 @@ function metresBetween(a: { lat: number; lon: number }, b: { lat: number; lon: n
 
 /** A small white dot with a dark ring every route.kmMarks km, and its number beside it. */
 function drawKmMarks(ctx: CanvasRenderingContext2D, route: Route, project: RoutePointProjector, width: number): void {
-  const step = (route.kmMarks ?? 0) * 1000;
-  if (step <= 0) return;
+  const base = (route.kmMarks ?? 0) * 1000;
+  if (base <= 0) return;
+  // A known race keeps its official distance: space the dots along the
+  // drawn line in proportion (e.g. a marathon run as two laps of one loop).
+  const official = route.stats?.distanceM ?? 0;
+  let measured = 0;
+  for (const segment of route.segments)
+    for (let i = 1; i < segment.length; i += 1) measured += metresBetween(segment[i - 1], segment[i]);
+  const ratio = official > 0 && measured > 0 ? measured / official : 1;
+  const step = base * ratio;
   const radius = Math.max(2, width * 0.95);
   const fontSize = Math.max(6, width * 2.4);
   let walked = 0;
@@ -105,7 +113,7 @@ function drawKmMarks(ctx: CanvasRenderingContext2D, route: Route, project: Route
           ctx.lineWidth = Math.max(1, width * 0.4);
           ctx.strokeStyle = "#1a1a1a";
           ctx.stroke();
-          const label = String(Math.round(next / 1000));
+          const label = String(Math.round(next / ratio / 1000));
           ctx.lineWidth = Math.max(1.5, fontSize * 0.28);
           ctx.strokeStyle = "rgba(255,255,255,0.85)";
           ctx.strokeText(label, at.x + radius * 1.6, at.y);

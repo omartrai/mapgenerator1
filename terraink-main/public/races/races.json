@@ -1,3 +1,20 @@
 {
-  "races": []
+  "races": [
+    {
+      "id": "marrakech-marathon",
+      "name": "Marathon international de Marrakech",
+      "city": "Marrakech",
+      "kind": "sport",
+      "distanceKm": 42.195,
+      "file": "marrakech-marathon.gpx"
+    },
+    {
+      "id": "marrakech-semi",
+      "name": "Semi-marathon international de Marrakech",
+      "city": "Marrakech",
+      "kind": "sport",
+      "distanceKm": 21.0975,
+      "file": "marrakech-marathon.gpx"
+    }
+  ]
 }

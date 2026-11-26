@@ -47,6 +47,8 @@ export function useSportRouteInput() {
     async (race: RaceEntry) => {
       const route = fromGpxText(await loadRaceGpx(race), race.name, race.file);
       route.label = race.name;
+      // The official race distance, not the measured length of the drawn course.
+      if (race.distanceKm && route.stats) route.stats = { ...route.stats, distanceM: race.distanceKm * 1000 };
       setSportRoute(route);
       if (race.city) dispatch({ type: "SET_FIELD", name: "displayCountry", value: race.city });
     },

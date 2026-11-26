@@ -240,7 +240,7 @@ export function drawSportDesign(
     ctx.fillStyle = fade;
     ctx.fillRect(0, fadeTop, width, height * 0.6 - fadeTop + 1);
     drawProfile({ x: 0.08, y: 0.6, w: 0.84, h: 0.045 }, ink, false);
-    text(L("ELEVATION", "ALTITUDE", "الارتفاع"), 0.08, 0.657, { size: 26, weight: 600, align: "left", color: ink, alpha: 0.6, spacing: 0.1, font: input.bodyFont });
+    if (profile.length > 1) text(L("ELEVATION", "ALTITUDE", "الارتفاع"), 0.08, 0.657, { size: 26, weight: 600, align: "left", color: ink, alpha: 0.6, spacing: 0.1, font: input.bodyFont });
     text(elevationRange(), 0.92, 0.657, { size: 26, weight: 600, align: "right", color: ink, alpha: 0.6, spacing: 0.1, font: input.bodyFont });
     text(title.toUpperCase(), 0.5, 0.715, { size: 300, weight: 800, color: ink, spacing: 0.06, maxWidth: 0.86 });
     text(date ? date.toUpperCase() : "", 0.5, 0.765, { size: 44, weight: 500, color: ink, alpha: 0.75, spacing: 0.16, font: input.bodyFont, maxWidth: 0.86 });
@@ -290,7 +290,7 @@ export function drawSportDesign(
     ctx.restore();
     text("N", 0.925, 0.225, { size: 30, weight: 700, color: ink, alpha: 0.7, font: mono });
     // Elevation profile.
-    text(L("ELEVATION", "ALTITUDE", "الارتفاع"), 0.07, 0.638, { size: 24, weight: 600, align: "left", color: ink, alpha: 0.6, spacing: 0.1, font: mono });
+    if (profile.length > 1) text(L("ELEVATION", "ALTITUDE", "الارتفاع"), 0.07, 0.638, { size: 24, weight: 600, align: "left", color: ink, alpha: 0.6, spacing: 0.1, font: mono });
     text(elevationRange(), 0.93, 0.638, { size: 24, weight: 600, align: "right", color: ink, alpha: 0.6, spacing: 0.06, font: mono });
     drawProfile({ x: 0.07, y: 0.65, w: 0.86, h: 0.05 }, ink, true);
     // Finisher and finish time.
