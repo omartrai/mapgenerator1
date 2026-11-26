@@ -28,7 +28,7 @@ import type { ResolvedTheme } from "@/features/theme/domain/types";
 import type { LayoutGroup } from "@/features/layout/domain/types";
 import { useLanguage, type TranslationKey } from "@/shared/i18n/LanguageContext";
 
-/** Layouts that belong to a ready style: the summary names the style. */
+/** Layouts that belong to a ready style (they have no layout or shape choice). */
 const READY_LAYOUTS: Record<string, string> = { duo: "photo", twin: "twin", venn: "venn" };
 
 const FALLBACK_COLOR = "#000000";
@@ -448,18 +448,20 @@ export default function MapSettingsSection({
             onThemeSelect={handleThemeSelect}
             onCustomize={handleOpenThemeEditor}
           />
-          {/* Most customers only change colours: layout and shape fold below. */}
-          {form.posterKind === "sky" || isSportLayout(form.posterLayout) || isTrailLayout(form.posterLayout) ? null : (
+          {/* Layout and shape: only for the classic and heart styles. Photo & map,
+              two cities and where & when bring their own layout. */}
+          {form.posterKind === "sky" ||
+          isSportLayout(form.posterLayout) ||
+          isTrailLayout(form.posterLayout) ||
+          READY_LAYOUTS[form.posterLayout ?? ""] ? null : (
             <details className="theme-more" open>
               <summary>
                 <span className="theme-more__title">{t("style.group.layout")}</span>
                 <span className="theme-more__value">
-                  {READY_LAYOUTS[form.posterLayout ?? ""]
-                    ? t(`style.shape.${READY_LAYOUTS[form.posterLayout ?? ""]}` as TranslationKey)
-                    : [
-                        t(`style.layout.${form.posterLayout || "classic"}` as TranslationKey),
-                        t(`style.shape.${form.mapShape || "none"}` as TranslationKey),
-                      ].join(" · ")}
+                  {[
+                    t(`style.layout.${form.posterLayout || "classic"}` as TranslationKey),
+                    t(`style.shape.${form.mapShape || "none"}` as TranslationKey),
+                  ].join(" · ")}
                 </span>
               </summary>
               <LayoutShapePicker />
