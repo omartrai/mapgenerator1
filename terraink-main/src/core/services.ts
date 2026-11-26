@@ -81,3 +81,7 @@ export {
   timeZoneAt,
 } from "@/features/sky/infrastructure/skyRenderer";
 export type { SkyCatalog, SkyChartOptions } from "@/features/sky/infrastructure/skyRenderer";
+
+/* ── Where & when poster decorations ── */
+
+export { drawVennDecor } from "@/features/poster/infrastructure/renderer/venn";

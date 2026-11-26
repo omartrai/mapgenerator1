@@ -84,7 +84,8 @@ const pct = (ratio: number) => `${ratio * 100}%`;
 function slotStyle(slot: TextSlot): CSSProperties {
   if (slot.align === "left") return { top: pct(slot.y), left: pct(slot.x), right: "auto", textAlign: "left" };
   if (slot.align === "right") return { top: pct(slot.y), right: pct(1 - slot.x), left: "auto", textAlign: "right" };
-  return { top: pct(slot.y), left: 0, right: 0, textAlign: "center" };
+  // Centred on slot.x (the print renderer does the same): shift the full-width line.
+  return { top: pct(slot.y), left: pct(slot.x - 0.5), right: pct(0.5 - slot.x), textAlign: "center" };
 }
 
 /**

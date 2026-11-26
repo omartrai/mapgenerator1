@@ -45,6 +45,9 @@ export interface ExportOptions {
   photoImage?: CanvasImageSource | null;
   /** Two-cities poster: full-poster snapshot of the second map. */
   twinMap?: CanvasImageSource | null;
+  /** Where & when poster: the sky chart (transparent around its circle) and the column text. */
+  vennSky?: CanvasImageSource | null;
+  vennText?: import("../infrastructure/renderer/venn").VennText | null;
   photoMono?: boolean;
   photoFrame?: import("./posterLayout").PhotoFrame;
   showOverlay?: boolean;

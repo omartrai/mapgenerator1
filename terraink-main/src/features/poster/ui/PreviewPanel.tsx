@@ -20,6 +20,8 @@ import GradientFades from "./GradientFades";
 import { effectiveFades, getPosterLayout } from "@/features/poster/domain/posterLayout";
 import PhotoBackdrop from "./PhotoBackdrop";
 import TwinMapLayer from "./TwinMapLayer";
+import VennLayer from "./VennLayer";
+import { vennTextFromForm } from "@/features/poster/application/vennText";
 import { twinTextFromForm } from "@/features/poster/application/twinText";
 import { activityFromForm } from "@/features/poster/domain/activityPoster";
 import { messageLookFromForm } from "@/features/poster/domain/messageStyle";
@@ -251,6 +253,10 @@ export default function PreviewPanel({ sidePanel, belowPoster }: PreviewPanelPro
   const twinText = sky
     ? null
     : twinTextFromForm(form, form.displayCity || form.location || "Casablanca", form.displayCountry || "Maroc");
+  // Where & when: names on the title line, the place under the map.
+  const vennText = sky
+    ? null
+    : vennTextFromForm(form, form.displayCity || form.location || "Casablanca", form.displayCountry || "Maroc", language);
 
   const handleStartEditing = useCallback(() => {
     setIsEditing(true);
@@ -526,8 +532,8 @@ export default function PreviewPanel({ sidePanel, belowPoster }: PreviewPanelPro
             />
           ) : null}
           <PosterTextOverlay
-            city={twinText?.city ?? cityLabel}
-            country={twinText?.country ?? countryLabel}
+            city={vennText?.city ?? twinText?.city ?? cityLabel}
+            country={vennText?.country ?? twinText?.country ?? countryLabel}
             lat={formLat}
             lon={formLon}
             fontFamily={form.fontFamily}
@@ -552,6 +558,9 @@ export default function PreviewPanel({ sidePanel, belowPoster }: PreviewPanelPro
             includeCredits={form.includeCredits && !sky}
             showOverlay={form.showMarkers}
           />
+          {!sky && getPosterLayout(form.posterLayout).venn ? (
+            <VennLayer layout={getPosterLayout(form.posterLayout)} />
+          ) : null}
 
           <div className="map-controls" aria-label={t("map.controls")}>
             {!isEditing ? (

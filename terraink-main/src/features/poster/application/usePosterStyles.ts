@@ -3,12 +3,13 @@ import { usePosterContext } from "@/features/poster/ui/PosterContext";
 import { DEFAULT_MARKER_SIZE } from "@/features/markers/domain/constants";
 import { useLanguage } from "@/shared/i18n/LanguageContext";
 import { DEFAULT_TWIN } from "@/features/poster/domain/twinCities";
+import { defaultSkyTime } from "@/features/sky/application/skyOptions";
 
 /**
  * Ready-made looks that set the layout, colours, map shape, layers and a
  * heart pin in one tap. The customer can still change any of it afterwards.
  */
-export const POSTER_STYLES = ["classic", "heart", "photo", "twin"] as const;
+export const POSTER_STYLES = ["classic", "heart", "photo", "twin", "venn"] as const;
 export type PosterStyleId = (typeof POSTER_STYLES)[number];
 
 const ALL_LAYERS = {
@@ -38,14 +39,14 @@ export function usePosterStyles() {
   const { form } = state;
 
   /** A red heart at the centre of the map, unless one is already pinned. */
-  const pinHeart = useCallback(() => {
+  const pinHeart = useCallback((scale = 1.15) => {
     if (state.markers.some((marker) => marker.iconId === "heart")) return;
     const lat = Number(form.latitude);
     const lon = Number(form.longitude);
     if (!Number.isFinite(lat) || !Number.isFinite(lon)) return;
     dispatch({
       type: "ADD_MARKER",
-      marker: { id: markerId(), lat, lon, iconId: "heart", size: Math.round(DEFAULT_MARKER_SIZE * 1.15), color: HEART_RED },
+      marker: { id: markerId(), lat, lon, iconId: "heart", size: Math.round(DEFAULT_MARKER_SIZE * scale), color: HEART_RED },
     });
   }, [dispatch, form.latitude, form.longitude, state.markers]);
 
@@ -115,6 +116,30 @@ export function usePosterStyles() {
         return;
       }
 
+      if (id === "venn") {
+        if (!form.theme?.startsWith("venn_")) dispatch({ type: "SET_THEME", themeId: "venn_cream" });
+        dispatch({
+          type: "SET_FORM_FIELDS",
+          fields: {
+            ...base,
+            ...ALL_LAYERS,
+            posterLayout: "venn",
+            mapShape: "circle",
+            posterStyle: "venn",
+            messageFont: "elegant",
+            messageSize: "l",
+            messageX: "",
+            messageY: "",
+            ...(form.skyTime ? {} : { skyTime: defaultSkyTime() }),
+            ...(form.vennNames === undefined ? { vennNames: t("venn.namesDefault") } : {}),
+            ...message(t("venn.message")),
+          },
+        });
+        // A small pin: the circle is much smaller than a full map.
+        pinHeart(0.55);
+        return;
+      }
+
       if (id === "photo") {
         dispatch({ type: "SET_THEME", themeId: "monochrome" });
         dispatch({
@@ -138,7 +163,7 @@ export function usePosterStyles() {
       }
 
     },
-    [dispatch, form.customMessage, form.photoMono, form.twinLat, form.twinLon, pinHeart, state.markers, t],
+    [dispatch, form.customMessage, form.photoMono, form.twinLat, form.twinLon, form.theme, form.skyTime, form.vennNames, pinHeart, state.markers, t],
   );
 
   /**
@@ -151,7 +176,7 @@ export function usePosterStyles() {
         dispatch({ type: "REMOVE_MARKER", markerId: marker.id });
       }
     }
-    const presetMessages = [t("style.preset.photo.message"), t("style.preset.heart.message"), t("twin.message")];
+    const presetMessages = [t("style.preset.photo.message"), t("style.preset.heart.message"), t("twin.message"), t("venn.message")];
     dispatch({
       type: "SET_FORM_FIELDS",
       fields: {

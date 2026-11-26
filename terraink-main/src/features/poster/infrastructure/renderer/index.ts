@@ -4,6 +4,7 @@ import { effectiveFades, getPosterLayout } from "@/features/poster/domain/poster
 import { drawPosterText } from "./typography";
 import { drawPhotoBackdrop } from "./sportDesigns";
 import { drawTwinDecor, drawTwinMap } from "./twin";
+import { drawVennDecor } from "./venn";
 import { drawMarkersOnCanvas } from "@/features/markers/infrastructure/rendering";
 import { drawRoutesOnCanvas } from "@/features/routes/infrastructure/rendering";
 import { routeEndpointMarkerItems } from "@/features/routes/infrastructure/helpers";
@@ -42,6 +43,8 @@ export async function compositeExport(
     starChart = false,
     photoImage = null,
     twinMap = null,
+    vennSky = null,
+    vennText = null,
     photoMono = true,
     photoFrame,
     showOverlay = true,
@@ -160,6 +163,17 @@ export async function compositeExport(
     photoMono,
     photoFrame,
   );
+
+  // Where & when: the sky circle, gold rings and heart, and the "when" column.
+  if (layout.venn) {
+    if (vennSky) ctx.drawImage(vennSky, 0, 0, width, height);
+    drawVennDecor(ctx, layout, width, height, {
+      paper: theme.ui.bg,
+      text: theme.ui.text,
+      fontFamily,
+      labels: showPosterText ? vennText : null,
+    });
+  }
 
   const size: CanvasSize = {
     width,

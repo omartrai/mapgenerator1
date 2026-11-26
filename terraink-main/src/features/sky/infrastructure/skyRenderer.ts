@@ -91,6 +91,8 @@ export interface SkyChartOptions {
   showMilkyWay: boolean;
   /** Outline of the chart (circle by default). */
   shape?: SkyShape;
+  /** Only the chart: no paper behind it and no rim (another layout draws those). */
+  bare?: boolean;
 }
 
 /**
@@ -286,8 +288,10 @@ export function drawSkyChart(
   const unit = disc.r / 400;
 
   ctx.save();
-  ctx.fillStyle = colors.paper;
-  ctx.fillRect(0, 0, width, height);
+  if (!options.bare) {
+    ctx.fillStyle = colors.paper;
+    ctx.fillRect(0, 0, width, height);
+  }
 
   if (shape === "baby") {
     // Dotted paper around the baby, with a clear margin hugging it.
@@ -400,7 +404,7 @@ export function drawSkyChart(
   ctx.restore();
 
   // A watercolour wash has no drawn rim.
-  if (shape === "watercolor") {
+  if (shape === "watercolor" || options.bare) {
     ctx.restore();
     return;
   }

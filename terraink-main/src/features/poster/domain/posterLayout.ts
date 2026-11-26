@@ -18,7 +18,7 @@ import {
 
 export const POSTER_LAYOUTS = [
   "classic", "border", "label", "band", "fade", "header", "script", "signature",
-  "activity", "duo", "twin", "nursery", "starlit", "race", "bold", "photorun", "topo", "bib", "green", "elevation", "archive", "midnight",
+  "activity", "duo", "twin", "venn", "nursery", "starlit", "race", "bold", "photorun", "topo", "bib", "green", "elevation", "archive", "midnight",
 ] as const;
 /** Sport poster designs (Sport kind), first = default. */
 export const SPORT_LAYOUTS = ["race", "bib", "elevation", "midnight", "archive", "bold", "green", "photorun", "activity"] as const;
@@ -27,7 +27,7 @@ export const TRAIL_LAYOUTS = ["topo"] as const;
 export type SportDesignId = "race" | "bold" | "photorun" | "topo" | "bib" | "green" | "elevation" | "archive" | "midnight";
 /** Layouts reached only through a ready-made style or a sport kind, not the map layout picker. */
 export const STYLE_ONLY_LAYOUTS: ReadonlySet<string> = new Set([
-  "duo", "twin", "nursery", "starlit", ...SPORT_LAYOUTS, ...TRAIL_LAYOUTS,
+  "duo", "twin", "venn", "nursery", "starlit", ...SPORT_LAYOUTS, ...TRAIL_LAYOUTS,
 ]);
 export const isSportLayout = (id: string | undefined) => (SPORT_LAYOUTS as readonly string[]).includes(id ?? "");
 export const isTrailLayout = (id: string | undefined) => (TRAIL_LAYOUTS as readonly string[]).includes(id ?? "");
@@ -113,6 +113,12 @@ export interface PosterLayoutSpec {
    * place in the left one and the second place (a second map) in the right.
    */
   twin?: boolean;
+  /**
+   * Where & when: the map in the left circle (mapWindow), the night sky of
+   * the date in the right circle (sky), gold rings and a heart where they
+   * meet, and "where" / "when" columns under each circle.
+   */
+  venn?: { sky: Rect; whereX: number; whenX: number; labelY: number; dateY: number };
   /**
    * Sport and trail designs draw all their own text (see sportDesigns.ts);
    * the city, country, coordinates and message lines are not printed.
@@ -270,6 +276,29 @@ export const POSTER_LAYOUT_SPECS: Record<PosterLayoutId, PosterLayoutSpec> = {
     message: center(0.955),
     scale: { city: 0.78, country: 0.7, coords: 0.95, message: 0.75 },
     maxWidth: 0.8,
+  },
+
+  /** Where & when: map circle and night-sky circle overlapping, gold rings. */
+  venn: {
+    ...CLASSIC,
+    fades: { top: 0, bottom: 0 },
+    mapWindow: { x: 0.105, y: 0.26, w: 0.44, h: 0.33 },
+    centreMapInWindow: true,
+    venn: {
+      sky: { x: 0.455, y: 0.26, w: 0.44, h: 0.33 },
+      whereX: 0.325,
+      whenX: 0.675,
+      labelY: 0.66,
+      dateY: 0.689,
+    },
+    cityStyle: { case: "spaced", family: null, weight: 500 },
+    message: center(0.11),
+    city: center(0.175),
+    divider: null,
+    country: { x: 0.325, y: 0.689, align: "center" },
+    coords: { x: 0.325, y: 0.714, align: "center" },
+    scale: { city: 0.55, country: 0.62, coords: 0.72, message: 1.25 },
+    maxWidth: 0.34,
   },
 
   /** Watercolour night sky: names in script, place and moment underneath. */
@@ -696,4 +725,38 @@ export function twinPieces(layout: PosterLayoutSpec, width: number, height: numb
 /** Heart pin (point at the bottom on the spot), as an SVG path. */
 export function pinPath(at: { x: number; y: number }, size: number): string {
   return shapePath("heart", { x: at.x - size / 2, y: at.y - size * 0.96, w: size, h: size });
+}
+
+/* ── Where & when: two overlapping circles ── */
+
+/** Gold of the rings and the little heart (and the column labels). */
+export const VENN_GOLD = "#B8975A";
+
+/** Centre and radius (pixels) of the circle drawn in a box. */
+function circleIn(rect: Rect, width: number, height: number) {
+  const w = rect.w * width;
+  const h = rect.h * height;
+  return { cx: (rect.x + rect.w / 2) * width, cy: (rect.y + rect.h / 2) * height, r: Math.min(w, h) / 2 };
+}
+
+/** The two circles, where they meet at the top, and the text columns, in pixels. */
+export function vennPieces(layout: PosterLayoutSpec, width: number, height: number) {
+  if (!layout.venn || !layout.mapWindow) return null;
+  const map = circleIn(layout.mapWindow, width, height);
+  const sky = circleIn(layout.venn.sky, width, height);
+  const half = (sky.cx - map.cx) / 2;
+  const rise = Math.sqrt(Math.max(0, map.r * map.r - half * half));
+  const short = Math.min(width, height);
+  return {
+    map,
+    sky,
+    /** Upper crossing point of the two rings. */
+    meet: { x: map.cx + half, y: map.cy - rise },
+    ringWidth: short * 0.0028,
+    heartSize: short * 0.034,
+    where: { x: layout.venn.whereX * width, labelY: layout.venn.labelY * height },
+    when: { x: layout.venn.whenX * width, labelY: layout.venn.labelY * height, dateY: layout.venn.dateY * height },
+    labelSize: short * 0.0165,
+    dateSize: short * 0.02,
+  };
 }

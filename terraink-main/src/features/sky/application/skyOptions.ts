@@ -1,5 +1,6 @@
 import { getPosterLayout } from "@/features/poster/domain/posterLayout";
 import { skyColors, skyDisc, toSkyShape } from "@/features/sky/domain/chart";
+import { blendHex } from "@/shared/utils/color";
 import { skyInstant, type SkyChartOptions } from "@/core/services";
 
 export interface SkyForm {
@@ -32,15 +33,22 @@ export function skyOptionsFromForm(
 ): SkyChartOptions {
   const lat = Number(form.latitude) || 0;
   const lon = Number(form.longitude) || 0;
+  const layout = getPosterLayout(form.posterLayout);
+  // Where & when: the sky sits on the map poster's paper; on dark paper it
+  // is drawn a little darker so the circle reads as night.
+  const colors = skyColors(theme);
+  if (layout.venn && colors.disc === colors.paper) colors.disc = blendHex(colors.paper, "#000000", 0.3);
   return {
     lat,
     lon,
     time: skyInstant(form.skyTime || defaultSkyTime(), lat, lon),
-    disc: skyDisc(getPosterLayout(form.posterLayout), width, height),
-    colors: skyColors(theme),
+    disc: skyDisc(layout, width, height),
+    colors,
+    // Where & when draws its own paper and gold rings.
+    bare: !!layout.venn,
     showLines: form.skyLines !== false,
     showGrid: form.skyGrid === true,
     showMilkyWay: form.skyMilkyWay !== false,
-    shape: toSkyShape(form.skyShape),
+    shape: layout.venn ? "circle" : toSkyShape(form.skyShape),
   };
 }

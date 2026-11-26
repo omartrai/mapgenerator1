@@ -4434,3 +4434,66 @@ body:has(.store-page) {
   background: transparent !important;
   box-shadow: none !important;
 }
+
+/* Where & when poster: sky circle and gold rings over the poster text layer */
+.venn-layer {
+  position: absolute;
+  inset: 0;
+  z-index: 5;
+  width: 100%;
+  height: 100%;
+  pointer-events: none;
+}
+.venn-card__icon {
+  color: #b8975a;
+}
+.venn-card__row {
+  display: grid;
+  grid-template-columns: 1fr;
+  gap: 10px;
+}
+.venn-card__colours {
+  display: flex;
+  gap: 8px;
+}
+.venn-card__colour {
+  flex: 1;
+  display: inline-flex;
+  align-items: center;
+  gap: 8px;
+  min-height: 42px;
+  padding: 6px 10px;
+  border: 1px solid #e3e2dc;
+  border-radius: 12px;
+  background: #fff;
+  color: var(--s-ink, #222);
+  font: inherit;
+  font-size: 0.85rem;
+  font-weight: 600;
+  cursor: pointer;
+}
+.venn-card__colour.is-active {
+  border-color: var(--s-ink, #1f3a33);
+  box-shadow: inset 0 0 0 1px var(--s-ink, #1f3a33);
+}
+.venn-card__swatch {
+  position: relative;
+  flex: none;
+  width: 24px;
+  height: 24px;
+  border: 1px solid;
+  border-radius: 50%;
+  overflow: hidden;
+}
+.venn-card__swatch i {
+  position: absolute;
+  inset: 0 0 0 50%;
+}
+.venn-card__row > label {
+  min-width: 0;
+}
+.app-shell.app-shell.app-shell[data-store-studio] .venn-card__row input {
+  width: 100% !important;
+  min-width: 0 !important;
+  padding-inline: 10px !important;
+}

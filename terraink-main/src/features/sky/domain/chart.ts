@@ -26,6 +26,15 @@ function textTop(layout: PosterLayoutSpec): number {
 
 /** Where the star chart sits: inside the layout's map window, above its text. */
 export function skyDisc(layout: PosterLayoutSpec, width: number, height: number): SkyDisc {
+  // Where & when: the sky fills its own circle, right of the map.
+  if (layout.venn) {
+    const box = layout.venn.sky;
+    return {
+      cx: (box.x + box.w / 2) * width,
+      cy: (box.y + box.h / 2) * height,
+      r: Math.min(box.w * width, box.h * height) / 2,
+    };
+  }
   const window = layout.mapWindow ?? { x: 0, y: 0, w: 1, h: textTop(layout) };
   const top = layout.mapWindow ? window.y : 0;
   const bottom = layout.mapWindow ? window.y + window.h : Math.min(textTop(layout), layout.band ? layout.band.top : 1);
