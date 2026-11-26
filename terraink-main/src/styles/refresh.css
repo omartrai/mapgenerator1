@@ -4240,3 +4240,14 @@ body:has(.store-page) {
   padding-left: 40px !important;
   padding-right: 38px !important;
 }
+
+/* Icônes: while one pin's settings are open, its own "Terminé" is enough. */
+.settings-panel:has(.marker-row.is-expanded) .marker-header-action-btn,
+.settings-panel:has(.marker-row__settings) .marker-header-action-btn {
+  display: none !important;
+}
+
+.app-shell[data-store-studio] .marker-row__title {
+  color: var(--s-ink) !important;
+  font-weight: 600;
+}

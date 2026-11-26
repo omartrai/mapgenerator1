@@ -184,15 +184,16 @@ export default function MarkersSection() {
       const lat = center?.lat ?? fallbackLat;
       const lon = center?.lng ?? fallbackLon;
 
-      dispatch({
-        type: "ADD_MARKER",
-        marker: createMarkerItem({
-          lat,
-          lon,
-          iconId,
-          defaults: markerDefaults,
-        }),
+      const marker = createMarkerItem({
+        lat,
+        lon,
+        iconId,
+        defaults: markerDefaults,
       });
+      dispatch({ type: "ADD_MARKER", marker });
+      // Open its settings (colour, size, position) right away.
+      dispatch({ type: "SET_MARKER_EDITOR_ACTIVE", active: true });
+      dispatch({ type: "SET_ACTIVE_MARKER", markerId: marker.id });
     },
     [dispatch, form.latitude, form.longitude, mapRef, markerDefaults],
   );
@@ -649,7 +650,7 @@ export default function MarkersSection() {
                           ({ marker, icon, markerLabel, isExpanded }) => {
                             return (
                               <article key={marker.id} className="marker-editor-card">
-                                <div className="marker-row">
+                                <div className={`marker-row${isExpanded ? " is-expanded" : ""}`}>
                                   <div className="marker-row__summary">
                                     {icon ? (
                                       <MarkerVisual
@@ -665,7 +666,8 @@ export default function MarkersSection() {
                                     <button
                                       type="button"
                                       className="marker-row__icon-btn"
-                                      onClick={() => toggleMarkerEditor(marker.id)}
+                                      // "Terminé" on the open pin goes straight back to the icon list.
+                                      onClick={() => (isExpanded ? toggleMarkerEditMode() : toggleMarkerEditor(marker.id))}
                                       title={
                                         isExpanded
                                           ? t("markers.finishEdit")
