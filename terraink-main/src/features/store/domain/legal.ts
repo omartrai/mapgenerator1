@@ -1,7 +1,9 @@
 /**
  * Legal pages (French, the reference language for these documents).
  * {{field}} is replaced with the shop details from business.ts or a shop
- * figure; [[slug|text]] links to another legal page.
+ * figure; [[slug|text]] links to another legal page. A paragraph that names
+ * a detail not filled in yet (e.g. the RC before the company exists) is left
+ * out, so the pages read correctly at every stage.
  *
  * These texts follow the usual structure for a Moroccan online shop
  * (loi 31-08 on consumer protection, loi 09-08 on personal data). Have them
@@ -24,7 +26,11 @@ export interface LegalDoc {
 
 export const LEGAL_SLUGS: LegalSlug[] = ["cgv", "confidentialite", "mentions-legales"];
 
-const UPDATED = "12 novembre 2026";
+const UPDATED = "26 novembre 2026";
+
+/** The print partner, as published on urbanart.ma/pages/mentions-legales. */
+const PARTNER =
+  "UrbanArt (société URBAN ART WALL, Hay Moulay Abdellah, Rue 280 N°41, 20480 Casablanca — RC Casablanca 556761 — urbanart.ma)";
 
 export const LEGAL_DOCS: Record<LegalSlug, LegalDoc> = {
   "mentions-legales": {
@@ -36,9 +42,12 @@ export const LEGAL_DOCS: Record<LegalSlug, LegalDoc> = {
       {
         title: "Éditeur du site",
         body: [
-          "Le site {{website}} est édité par {{legalName}}, {{legalForm}} au capital de {{capital}}, dont le siège est situé {{address}}, {{city}}, Maroc.",
+          "Le site {{website}} et la marque {{brand}} sont édités par l'équipe {{brand}}, studio de création de posters personnalisés.",
+          "Exploitant : {{legalName}}, {{legalForm}} au capital de {{capital}}, dont le siège est situé {{address}}, {{city}}, Maroc.",
           "Registre du commerce : {{rc}} — ICE : {{ice}} — Identifiant fiscal : {{taxId}}.",
-          "Contact : {{email}} — {{phone}}.",
+          "Contact : le bouton WhatsApp présent sur le site, ou la page [[../suivi|Suivi de commande]] pour une commande en cours.",
+          "E-mail : {{email}}.",
+          "Téléphone : {{phone}}.",
           "Directeur de la publication : {{publisher}}.",
         ],
       },
@@ -52,7 +61,8 @@ export const LEGAL_DOCS: Record<LegalSlug, LegalDoc> = {
       {
         title: "Impression et livraison",
         body: [
-          "Les posters sont imprimés, encadrés et livrés au Maroc par notre partenaire d'impression UrbanArt (urbanart.ma).",
+          `Les posters sont imprimés, encadrés et livrés au Maroc par notre partenaire ${PARTNER}.`,
+          "Le paiement à la livraison est encaissé par le livreur de ce partenaire, pour le compte de {{brand}}.",
         ],
       },
       {
@@ -75,7 +85,7 @@ export const LEGAL_DOCS: Record<LegalSlug, LegalDoc> = {
     title: "Conditions générales de vente",
     updated: UPDATED,
     intro:
-      "Les présentes conditions s'appliquent à toute commande passée sur {{website}} auprès de {{legalName}} ({{brand}}). En validant une commande, vous les acceptez.",
+      "Les présentes conditions s'appliquent à toute commande passée sur {{website}} auprès de {{brand}}. En validant une commande, vous les acceptez.",
     sections: [
       {
         title: "1. Produits",
@@ -103,6 +113,7 @@ export const LEGAL_DOCS: Record<LegalSlug, LegalDoc> = {
         title: "4. Paiement",
         body: [
           "Le paiement s'effectue en espèces à la livraison, auprès du livreur, pour le montant total indiqué dans la commande.",
+          `L'impression, l'encadrement, la livraison et l'encaissement sont assurés par notre partenaire ${PARTNER}, pour le compte de {{brand}}.`,
           "Le refus d'un colis commandé sans motif légitime peut entraîner le refus de commandes futures payables à la livraison.",
         ],
       },
@@ -118,7 +129,7 @@ export const LEGAL_DOCS: Record<LegalSlug, LegalDoc> = {
         body: [
           "Conformément à la loi n° 31-08 édictant des mesures de protection du consommateur, vous disposez de 7 jours à compter de la réception pour vous rétracter, sans pénalité, à l'exception des frais de retour qui restent à votre charge.",
           "Ce droit ne s'applique pas aux produits confectionnés selon vos spécifications ou nettement personnalisés, ce qui est le cas des posters créés dans le studio (lieu, textes et options choisis par vous).",
-          "Pour un poster de la Collection, informez-nous de votre rétractation par écrit ({{email}} ou WhatsApp) dans le délai ; le produit doit être retourné complet et en parfait état. Le remboursement intervient dans les 30 jours suivant la réception du retour.",
+          "Pour un poster de la Collection, informez-nous de votre rétractation par écrit (par WhatsApp) dans le délai ; le produit doit être retourné complet et en parfait état. Le remboursement intervient dans les 30 jours suivant la réception du retour.",
         ],
       },
       {
@@ -141,7 +152,8 @@ export const LEGAL_DOCS: Record<LegalSlug, LegalDoc> = {
       {
         title: "10. Réclamations et droit applicable",
         body: [
-          "Pour toute question ou réclamation : {{email}} — {{phone}}. Nous recherchons toujours une solution amiable.",
+          "Pour toute question ou réclamation, écrivez-nous par WhatsApp (bouton présent sur le site) en indiquant votre numéro de commande. Nous recherchons toujours une solution amiable.",
+          "Vous pouvez aussi nous écrire à {{email}}.",
           "Les présentes conditions sont soumises au droit marocain. À défaut d'accord amiable, le litige est porté devant les juridictions compétentes conformément à la loi n° 31-08.",
         ],
       },
@@ -158,7 +170,9 @@ export const LEGAL_DOCS: Record<LegalSlug, LegalDoc> = {
       {
         title: "Responsable du traitement",
         body: [
-          "{{legalName}}, {{address}}, {{city}} — {{email}}. Déclaration / autorisation CNDP : {{cndp}}.",
+          "{{brand}}, joignable par WhatsApp via le bouton présent sur le site.",
+          "Exploitant : {{legalName}}, {{address}}, {{city}} — {{email}}.",
+          "Déclaration / autorisation CNDP : {{cndp}}.",
         ],
       },
       {
@@ -180,7 +194,7 @@ export const LEGAL_DOCS: Record<LegalSlug, LegalDoc> = {
       {
         title: "Destinataires",
         body: [
-          "UrbanArt, notre partenaire d'impression et de livraison au Maroc, et le transporteur : nom, téléphone, ville et adresse, uniquement pour produire et livrer la commande.",
+          "UrbanArt (URBAN ART WALL, Casablanca), notre partenaire d'impression, de livraison et d'encaissement au Maroc, et son transporteur : nom, téléphone, ville et adresse, uniquement pour produire, livrer et encaisser la commande.",
           "Meta Platforms (WhatsApp Business) : votre numéro et les messages de confirmation, si la confirmation WhatsApp est utilisée.",
           "Railway Corporation (hébergement du site et du stockage des commandes).",
           "Telegram : le numéro, le nom, la ville et le contenu de chaque nouvelle commande sont envoyés à l'équipe Noria par une alerte privée, pour traiter la commande rapidement.",
@@ -207,7 +221,7 @@ export const LEGAL_DOCS: Record<LegalSlug, LegalDoc> = {
       {
         title: "Vos droits",
         body: [
-          "Vous disposez d'un droit d'accès, de rectification et d'opposition pour motifs légitimes (articles 7 à 9 de la loi n° 09-08). Pour l'exercer, écrivez-nous à {{email}} en précisant votre numéro de commande.",
+          "Vous disposez d'un droit d'accès, de rectification et d'opposition pour motifs légitimes (articles 7 à 9 de la loi n° 09-08). Pour l'exercer, écrivez-nous par WhatsApp en précisant votre numéro de commande.",
           "Vous pouvez aussi saisir la Commission nationale de contrôle de la protection des données à caractère personnel (CNDP) — www.cndp.ma.",
         ],
       },

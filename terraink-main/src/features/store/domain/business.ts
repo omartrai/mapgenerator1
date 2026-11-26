@@ -1,7 +1,7 @@
 /**
  * The shop's legal identity, shown in the legal notice, terms of sale and
- * privacy policy. Empty fields appear highlighted as "[à compléter]" on
- * those pages until they are filled in.
+ * privacy policy. A sentence that needs an empty field is left out of those
+ * pages until the field is filled in (e.g. RC and ICE once the company exists).
  */
 export const BUSINESS = {
   /** Brand shown to customers. */

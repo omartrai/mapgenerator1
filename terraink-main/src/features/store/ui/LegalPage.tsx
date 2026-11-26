@@ -12,23 +12,27 @@ const FIGURES: Record<string, string> = {
   freeFrom: formatMoney(FREE_SHIPPING_THRESHOLD, "MAD"),
 };
 
+function fieldValue(field: string): string {
+  if (field === "website") return BUSINESS.website || window.location.host;
+  return FIGURES[field] ?? (BUSINESS as Record<string, string>)[field as BusinessField] ?? "";
+}
+
+/** False when the text names a shop detail that isn't filled in yet. */
+function isComplete(text: string): boolean {
+  return [...text.matchAll(/\{\{(\w+)\}\}/g)].every(([, field]) => fieldValue(field) !== "");
+}
+
 /** Replaces {{field}} with shop details and [[slug|text]] with links. */
 function renderText(text: string): ReactNode[] {
   return text.split(/(\{\{\w+\}\}|\[\[[^\]]+\]\])/g).map((part, index) => {
     const field = /^\{\{(\w+)\}\}$/.exec(part)?.[1];
     if (field) {
-      const value = FIGURES[field] ?? (BUSINESS as Record<string, string>)[field as BusinessField] ?? "";
-      if (field === "website" && !value) return <Fragment key={index}>{window.location.host}</Fragment>;
-      return value ? (
-        <Fragment key={index}>{value}</Fragment>
-      ) : (
-        <mark key={index} className="legal-missing">[à compléter : {field}]</mark>
-      );
+      return <Fragment key={index}>{fieldValue(field)}</Fragment>;
     }
     const link = /^\[\[([^|\]]+)\|([^\]]+)\]\]$/.exec(part);
     if (link) {
       return (
-        <Link key={index} to={`/legal/${link[1]}`}>
+        <Link key={index} to={link[1].startsWith("../") ? `/${link[1].slice(3)}` : `/legal/${link[1]}`}>
           {link[2]}
         </Link>
       );
@@ -70,7 +74,7 @@ export default function LegalPage({ slug }: { slug: string }) {
             {doc.sections.map((section) => (
               <section key={section.title}>
                 <h2>{section.title}</h2>
-                {section.body.map((paragraph, index) => (
+                {section.body.filter(isComplete).map((paragraph, index) => (
                   <p key={index}>{renderText(paragraph)}</p>
                 ))}
               </section>
