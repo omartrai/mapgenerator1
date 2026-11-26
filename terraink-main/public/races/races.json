@@ -15,6 +15,22 @@
       "kind": "sport",
       "distanceKm": 21.0975,
       "file": "marrakech-marathon.gpx"
+    },
+    {
+      "id": "casablanca-marathon",
+      "name": "Marathon de Casablanca",
+      "city": "Casablanca",
+      "kind": "sport",
+      "distanceKm": 42.195,
+      "file": "casablanca-marathon.gpx"
+    },
+    {
+      "id": "casablanca-semi",
+      "name": "Semi-marathon de Casablanca",
+      "city": "Casablanca",
+      "kind": "sport",
+      "distanceKm": 21.0975,
+      "file": "casablanca-semi.gpx"
     }
   ]
 }
