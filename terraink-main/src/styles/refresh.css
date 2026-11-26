@@ -4077,3 +4077,50 @@ body:has(.store-page) {
   align-items: center;
   gap: 8px;
 }
+
+/* Known races: one dropdown. */
+.race-select {
+  position: relative;
+  display: flex;
+  align-items: center;
+}
+
+.race-select > svg:first-child {
+  position: absolute;
+  left: 14px;
+  width: 16px;
+  height: 16px;
+  color: var(--s-green);
+  pointer-events: none;
+}
+
+.race-select select {
+  width: 100%;
+  min-height: 46px;
+  padding: 10px 40px 10px 40px;
+  border: 1px solid #d9dcd6;
+  border-radius: 12px;
+  background: #fff;
+  color: var(--s-ink);
+  font: inherit;
+  font-size: 0.88rem;
+  font-weight: 600;
+  appearance: none;
+  -webkit-appearance: none;
+  cursor: pointer;
+  text-overflow: ellipsis;
+}
+
+.race-select select:focus-visible {
+  outline: 2px solid var(--s-green);
+  outline-offset: 1px;
+}
+
+.race-select__chevron {
+  position: absolute;
+  right: 14px;
+  width: 16px;
+  height: 16px;
+  color: #5d6660;
+  pointer-events: none;
+}

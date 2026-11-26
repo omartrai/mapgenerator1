@@ -1,5 +1,5 @@
 import { useEffect, useId, useRef, useState, type ChangeEvent, type DragEvent } from "react";
-import { LuFlag, LuUpload } from "react-icons/lu";
+import { LuChevronDown, LuFlag, LuUpload } from "react-icons/lu";
 import { loadRaceCatalog, type RaceEntry } from "@/core/services";
 import { usePosterContext } from "@/features/poster/ui/PosterContext";
 import { useSportRouteInput } from "@/features/routes/application/useSportRouteInput";
@@ -140,21 +140,30 @@ export default function SportRouteCard({ compact = false }: { compact?: boolean 
         ) : (
           <>
             <p className="sport-source__hint">{t("sport.route.racesHint")}</p>
-            <ul className="race-list">
-              {shownRaces.map((race) => (
-                <li key={race.id}>
-                  <button type="button" className="race-list__item" disabled={busy} onClick={() => void run(() => pickRace(race))}>
-                    <LuFlag aria-hidden="true" />
-                    <span className="race-list__name">{race.name}</span>
-                    <span className="race-list__meta">
-                      {[race.city, race.distanceKm ? formatKm(race.distanceKm * 1000, language !== "en") : ""]
-                        .filter(Boolean)
-                        .join(" · ")}
-                    </span>
-                  </button>
-                </li>
-              ))}
-            </ul>
+            <label className="race-select">
+              <LuFlag aria-hidden="true" />
+              <select
+                value={shownRaces.find((race) => race.name === route?.label)?.id ?? ""}
+                disabled={busy}
+                aria-label={t("sport.route.race")}
+                onChange={(event) => {
+                  const race = shownRaces.find((entry) => entry.id === event.target.value);
+                  if (race) void run(() => pickRace(race));
+                }}
+              >
+                <option value="" disabled>
+                  {t("sport.route.racePick")}
+                </option>
+                {shownRaces.map((race) => (
+                  <option key={race.id} value={race.id}>
+                    {[race.name, race.distanceKm ? formatKm(race.distanceKm * 1000, language !== "en") : ""]
+                      .filter(Boolean)
+                      .join(" — ")}
+                  </option>
+                ))}
+              </select>
+              <LuChevronDown className="race-select__chevron" aria-hidden="true" />
+            </label>
           </>
         )
       ) : null}
