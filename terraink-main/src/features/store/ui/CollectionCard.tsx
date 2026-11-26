@@ -2,6 +2,7 @@ import { LuArrowRight } from "react-icons/lu";
 import { Link } from "@/core/router/router";
 import type { CollectionProduct } from "../domain/collection";
 import { useStoreText } from "./storeText";
+import ThumbImage from "@/shared/ui/ThumbImage";
 
 /** One ready-made poster in a grid: photo, title and starting price. */
 export default function CollectionCard({
@@ -22,15 +23,16 @@ export default function CollectionCard({
   return (
     <Link to={`/collection/${product.id}${size ? `?size=${encodeURIComponent(size)}` : ""}`} className="collection-card">
       <div className={`collection-card__visual${hover ? " has-hover" : ""}`}>
-        <img
+        <ThumbImage
           className="collection-card__cover"
           src={cover}
+          width={300}
           alt={product.title}
           loading="lazy"
           decoding="async"
         />
         {hover ? (
-          <img className="collection-card__alt" src={hover} alt="" loading="lazy" decoding="async" aria-hidden="true" />
+          <ThumbImage className="collection-card__alt" src={hover} width={300} alt="" loading="lazy" decoding="async" aria-hidden="true" />
         ) : null}
       </div>
       <div className="collection-card__body">

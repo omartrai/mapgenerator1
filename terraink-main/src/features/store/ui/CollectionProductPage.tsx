@@ -1,4 +1,5 @@
 import { useEffect, useMemo, useState } from "react";
+import ThumbImage from "@/shared/ui/ThumbImage";
 import { LuArrowLeft, LuBanknote, LuFrame, LuShoppingBag, LuTruck } from "react-icons/lu";
 import { Link, useRouter } from "@/core/router/router";
 import { useCollectionProduct } from "../application/useCollection";
@@ -131,7 +132,7 @@ export default function CollectionProductPage({ id }: { id: number }) {
           <div className="collection-product__layout">
             <div className="collection-gallery">
               <div className="collection-gallery__main">
-                <img src={photos[photo]} alt={t("collection.alt", { title: product.title, n: photo + 1 })} />
+                <ThumbImage key={photos[photo]} src={photos[photo]} width={700} alt={t("collection.alt", { title: product.title, n: photo + 1 })} />
               </div>
               {photos.length > 1 ? (
                 <div className="collection-gallery__thumbs">
@@ -144,7 +145,7 @@ export default function CollectionProductPage({ id }: { id: number }) {
                       aria-current={index === photo}
                       onClick={() => setPhoto(index)}
                     >
-                      <img src={url} alt="" loading="lazy" decoding="async" />
+                      <ThumbImage src={url} width={90} alt="" loading="lazy" decoding="async" />
                     </button>
                   ))}
                 </div>

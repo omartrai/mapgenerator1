@@ -33,3 +33,14 @@ export async function photoFileToDataUrl(file: File, maxSide = 1800, quality = 0
   ctx.drawImage(image, 0, 0, canvas.width, canvas.height);
   return canvas.toDataURL("image/jpeg", quality);
 }
+
+/**
+ * A lighter copy of a remote image, resized and converted to WebP by the
+ * free wsrv.nl image proxy (the partner's catalogue only serves full-size
+ * files). Local images are returned unchanged.
+ */
+export function resizedImageUrl(src: string, width: number): string {
+  if (!/^https?:\/\//i.test(src)) return src;
+  const target = src.replace(/^https?:\/\//i, "");
+  return `https://wsrv.nl/?url=${encodeURIComponent(target)}&w=${Math.round(width)}&output=webp&q=78&we`;
+}

@@ -15,6 +15,7 @@ import {
   LuTruck,
 } from "react-icons/lu";
 import { Link, navigateTo } from "@/core/router/router";
+import ThumbImage from "@/shared/ui/ThumbImage";
 import BrandMark from "@/shared/ui/BrandMark";
 import { FREE_SHIPPING_THRESHOLD, PRINT_SIZES, resolveDimensions, unitPrice } from "../domain/catalog";
 import { DESIGN_PRESETS, MOROCCAN_PRESET_IDS } from "../domain/presets";
@@ -231,7 +232,7 @@ function Hero() {
         <Link to={proof.to} className="hero2__proof">
           <span className="hero2__faces" aria-hidden="true">
             {proof.images.map((src) => (
-              <img key={src} src={src} alt="" loading="lazy" decoding="async" />
+              <ThumbImage key={src} src={src} width={40} alt="" loading="lazy" decoding="async" />
             ))}
           </span>
           <span className="hero2__proof-text">
