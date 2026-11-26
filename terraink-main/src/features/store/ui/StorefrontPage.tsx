@@ -413,6 +413,11 @@ function ShopLines() {
 /** Sport and trail designs, each opening the studio on that design. */
 const SPORT_DESIGNS = [
   { id: "race", to: "/create?type=sport&design=race" },
+  { id: "bib", to: "/create?type=sport&design=bib" },
+  { id: "elevation", to: "/create?type=sport&design=elevation" },
+  { id: "midnight", to: "/create?type=sport&design=midnight" },
+  { id: "green", to: "/create?type=sport&design=green" },
+  { id: "archive", to: "/create?type=sport&design=archive" },
   { id: "bold", to: "/create?type=sport&design=bold" },
   { id: "activity", to: "/create?type=sport&design=activity" },
   { id: "topo", to: "/create?type=trail" },
@@ -420,10 +425,11 @@ const SPORT_DESIGNS = [
 
 function SportTrail() {
   const { t } = useStoreText();
+  const { ref, scroll } = useRow();
   return (
     <section className="home-block sport-trail" aria-labelledby="sport-trail-title">
-      <RowHead id="sport-trail-title" title={t("home3.sportTitle")} sub={t("home3.sportSub")} />
-      <div className="sport-trail__grid">
+      <RowHead id="sport-trail-title" title={t("home3.sportTitle")} sub={t("home3.sportSub")} onScroll={scroll} />
+      <div className="sport-trail__grid" ref={ref}>
         {SPORT_DESIGNS.map(({ id, to }) => (
           <Link key={id} to={to} className="sport-trail__card">
             <span className="sport-trail__poster">

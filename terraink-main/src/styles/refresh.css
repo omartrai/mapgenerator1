@@ -4123,3 +4123,30 @@ body:has(.store-page) {
     color: #fff !important;
   }
 }
+
+/* Sport & trail on the home page: nine designs in one swipeable row. */
+.sport-trail__grid {
+  display: grid;
+  grid-auto-flow: column;
+  grid-template-columns: none;
+  grid-auto-columns: calc((100% - 3 * 20px) / 4.3);
+  overflow-x: auto;
+  scroll-snap-type: x mandatory;
+  scrollbar-width: none;
+  padding-bottom: 6px;
+}
+
+.sport-trail__grid::-webkit-scrollbar {
+  display: none;
+}
+
+.sport-trail__card {
+  scroll-snap-align: start;
+}
+
+@media (max-width: 900px) {
+  .sport-trail__grid {
+    grid-template-columns: none;
+    grid-auto-columns: 44%;
+  }
+}
