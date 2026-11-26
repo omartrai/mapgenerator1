@@ -4124,3 +4124,119 @@ body:has(.store-page) {
   color: #5d6660;
   pointer-events: none;
 }
+
+/* Known races: searchable picker. */
+.race-search {
+  position: relative;
+}
+
+.race-search__field {
+  position: relative;
+  display: flex;
+  align-items: center;
+}
+
+.race-search__field > svg:first-child {
+  position: absolute;
+  left: 14px;
+  width: 16px;
+  height: 16px;
+  color: var(--s-green);
+  pointer-events: none;
+}
+
+.race-search__field input {
+  width: 100%;
+  min-height: 46px;
+  padding: 10px 40px;
+  border: 1px solid #d9dcd6;
+  border-radius: 12px;
+  background: #fff;
+  color: var(--s-ink);
+  font: inherit;
+  font-size: 0.88rem;
+  font-weight: 600;
+  text-overflow: ellipsis;
+}
+
+.race-search__field input::placeholder {
+  color: #8a918c;
+  font-weight: 500;
+}
+
+.race-search.is-open .race-search__field input,
+.race-search__field input:focus-visible {
+  border-color: var(--s-green);
+  outline: none;
+  box-shadow: 0 0 0 1px var(--s-green);
+}
+
+.race-search__chevron {
+  position: absolute;
+  right: 14px;
+  width: 16px;
+  height: 16px;
+  color: #5d6660;
+  pointer-events: none;
+  transition: transform 0.15s ease;
+}
+
+.race-search.is-open .race-search__chevron {
+  transform: rotate(180deg);
+}
+
+.race-search__list {
+  position: absolute;
+  z-index: 40;
+  top: calc(100% + 6px);
+  left: 0;
+  right: 0;
+  max-height: 260px;
+  margin: 0;
+  padding: 6px;
+  overflow-y: auto;
+  border: 1px solid #e3e2dc;
+  border-radius: 12px;
+  background: #fff;
+  box-shadow: 0 10px 28px rgb(20 30 25 / 0.16);
+  list-style: none;
+}
+
+.race-search__option {
+  display: flex;
+  flex-direction: column;
+  gap: 1px;
+  padding: 9px 10px;
+  border-radius: 8px;
+  cursor: pointer;
+}
+
+.race-search__option.is-active {
+  background: #f1f3f0;
+}
+
+.race-search__option.is-selected .race-search__name {
+  color: var(--s-green);
+}
+
+.race-search__name {
+  font-size: 0.86rem;
+  font-weight: 600;
+}
+
+.race-search__meta {
+  color: #66706a;
+  font-size: 0.75rem;
+}
+
+.race-search__empty {
+  padding: 10px;
+  color: #66706a;
+  font-size: 0.82rem;
+}
+
+.app-shell .race-search__field input,
+.race-search .race-search__field input {
+  padding-left: 40px !important;
+  padding-right: 38px !important;
+}
