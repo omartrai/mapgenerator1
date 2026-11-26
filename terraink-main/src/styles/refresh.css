@@ -4497,3 +4497,51 @@ body:has(.store-page) {
 .gift-styles .sport-trail__poster img {
   object-fit: cover;
 }
+
+/* ── Phones: while a settings panel is open, the poster stays in view above
+   it (the place bar, type chips and view switch step aside), so every
+   change shows live. ── */
+@media (max-width: 768px), (hover: none) and (pointer: coarse) {
+  .app-shell[data-store-studio][data-drawer-open] {
+    --drawer-free: calc(
+      100dvh - 64px - min(43dvh, 360px) - 66px - env(safe-area-inset-bottom, 0px)
+    );
+  }
+
+  .app-shell[data-store-studio][data-drawer-open] :is(
+      .mobile-location-row-wrap,
+      .mobile-view-toggle,
+      .mobile-sky-bar,
+      .map-controls
+    ) {
+    visibility: hidden !important;
+  }
+
+  .app-shell[data-store-studio][data-drawer-open] > .preview-panel .poster-viewport {
+    position: fixed !important;
+    top: 64px !important;
+    left: 0 !important;
+    right: 0 !important;
+    z-index: 201 !important;
+    display: flex !important;
+    align-items: center !important;
+    justify-content: center !important;
+    height: var(--drawer-free) !important;
+    min-height: 0 !important;
+    margin: 0 !important;
+    padding: 10px 0 !important;
+    pointer-events: none;
+  }
+
+  .app-shell[data-store-studio][data-drawer-open] > .preview-panel .poster-frame {
+    width: min(calc(100vw - 32px), calc((var(--drawer-free) - 20px) * var(--poster-aspect, 0.75))) !important;
+    min-width: 0 !important;
+    margin: 0 auto !important;
+    pointer-events: auto;
+  }
+
+  /* No dimming: the poster above the panel is the point. */
+  .app-shell[data-store-studio][data-drawer-open] .mobile-drawer-backdrop {
+    background: transparent !important;
+  }
+}

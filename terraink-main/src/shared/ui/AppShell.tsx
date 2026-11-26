@@ -313,6 +313,7 @@ export default function AppShell({
       data-od-id="noria-editor"
       data-mobile-tab={mobileTab}
       data-desktop-tab={desktopTab}
+      data-drawer-open={isMobileViewport && mobileDrawerOpen ? "true" : undefined}
       data-route-poster={isRoutePoster ? "true" : undefined}
       style={style}
       {...dataAttributes}
