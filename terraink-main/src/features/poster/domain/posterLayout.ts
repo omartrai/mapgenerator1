@@ -18,7 +18,7 @@ import {
 
 export const POSTER_LAYOUTS = [
   "classic", "border", "label", "band", "fade", "header", "script", "signature",
-  "activity", "duo", "twin", "nursery", "race", "bold", "photorun", "topo", "bib", "green", "elevation", "archive", "midnight",
+  "activity", "duo", "twin", "nursery", "starlit", "race", "bold", "photorun", "topo", "bib", "green", "elevation", "archive", "midnight",
 ] as const;
 /** Sport poster designs (Sport kind), first = default. */
 export const SPORT_LAYOUTS = ["race", "bib", "elevation", "midnight", "archive", "bold", "green", "photorun", "activity"] as const;
@@ -27,7 +27,7 @@ export const TRAIL_LAYOUTS = ["topo"] as const;
 export type SportDesignId = "race" | "bold" | "photorun" | "topo" | "bib" | "green" | "elevation" | "archive" | "midnight";
 /** Layouts reached only through a ready-made style or a sport kind, not the map layout picker. */
 export const STYLE_ONLY_LAYOUTS: ReadonlySet<string> = new Set([
-  "duo", "twin", "nursery", ...SPORT_LAYOUTS, ...TRAIL_LAYOUTS,
+  "duo", "twin", "nursery", "starlit", ...SPORT_LAYOUTS, ...TRAIL_LAYOUTS,
 ]);
 export const isSportLayout = (id: string | undefined) => (SPORT_LAYOUTS as readonly string[]).includes(id ?? "");
 export const isTrailLayout = (id: string | undefined) => (TRAIL_LAYOUTS as readonly string[]).includes(id ?? "");
@@ -270,6 +270,21 @@ export const POSTER_LAYOUT_SPECS: Record<PosterLayoutId, PosterLayoutSpec> = {
     message: center(0.955),
     scale: { city: 0.78, country: 0.7, coords: 0.95, message: 0.75 },
     maxWidth: 0.8,
+  },
+
+  /** Watercolour night sky: names in script, place and moment underneath. */
+  starlit: {
+    ...CLASSIC,
+    fades: { top: 0, bottom: 0 },
+    cityStyle: { case: "plain", family: SCRIPT_FONTS.elegant, weight: 400 },
+    countrySpaced: false,
+    city: center(0.8),
+    divider: null,
+    country: center(0.86),
+    coords: center(0.89),
+    message: center(0.95),
+    scale: { city: 0.95, country: 0.72, coords: 0.95, message: 0.75 },
+    maxWidth: 0.82,
   },
 
   /** A photo heart and a map heart side by side, script message below. */

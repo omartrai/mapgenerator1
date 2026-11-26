@@ -1,10 +1,18 @@
-import { LuBaby, LuCircle, LuHeart, LuSquare, LuStar } from "react-icons/lu";
+import { LuBaby, LuCircle, LuHeart, LuPaintbrush, LuSquare, LuStar } from "react-icons/lu";
 import { SKY_SHAPES, toSkyShape, type SkyShape } from "@/features/sky/domain/chart";
 import { useSkyPoster } from "@/features/sky/application/useSkyPoster";
 import { usePosterContext } from "@/features/poster/ui/PosterContext";
 import { useLanguage, type TranslationKey } from "@/shared/i18n/LanguageContext";
 
-const ICONS = { circle: LuCircle, heart: LuHeart, star: LuStar, square: LuSquare, baby: LuBaby } as const;
+const ICONS = { circle: LuCircle, watercolor: LuPaintbrush, heart: LuHeart, star: LuStar, square: LuSquare, baby: LuBaby } as const;
+
+/** Shapes that come with their own text layout and colours. */
+const SHAPE_LOOKS: Partial<Record<SkyShape, { layout: string; theme: string; showCountry: boolean }>> = {
+  // Baby sky: name in script, birth details, navy and gold on white.
+  baby: { layout: "nursery", theme: "starry_navy", showCountry: false },
+  // Watercolour: names in script, place and moment underneath, navy on white.
+  watercolor: { layout: "starlit", theme: "watercolor_navy", showCountry: true },
+};
 
 /** Outline of the star chart on a night-sky poster (shown in the Theme tab). */
 export default function SkyShapePicker() {
@@ -16,12 +24,12 @@ export default function SkyShapePicker() {
 
   const choose = (shape: SkyShape) => {
     set("skyShape", shape);
-    if (shape === "baby" && active !== "baby") {
-      // Baby sky: name in script, birth details, navy and gold on white.
-      set("posterLayout", "nursery");
-      set("showCountry", false);
-      dispatch({ type: "SET_THEME", themeId: "starry_navy" });
-    } else if (shape !== "baby" && active === "baby") {
+    const look = SHAPE_LOOKS[shape];
+    if (look && shape !== active) {
+      set("posterLayout", look.layout);
+      set("showCountry", look.showCountry);
+      dispatch({ type: "SET_THEME", themeId: look.theme });
+    } else if (!look && SHAPE_LOOKS[active]) {
       set("posterLayout", "classic");
       set("showCountry", true);
     }

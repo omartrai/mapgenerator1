@@ -909,6 +909,84 @@
           "outline": "#1A2236"
         }
       }
+    },
+    "watercolor_navy": {
+      "name": "Watercolour Navy",
+      "description": "White paper and deep navy ink, for watercolour night skies",
+      "ui": {
+        "bg": "#FFFFFF",
+        "text": "#23304C"
+      },
+      "map": {
+        "land": "#FBFAF7",
+        "landcover": "#F2F1EC",
+        "water": "#CFDCE6",
+        "waterway": "#CFDCE6",
+        "parks": "#ECEFE8",
+        "buildings": "#E6E4DE",
+        "aeroway": "#ECEAE4",
+        "rail": "#7D93A6",
+        "roads": {
+          "major": "#1F4A6B",
+          "minor_high": "#3F6482",
+          "minor_mid": "#6D88A0",
+          "minor_low": "#9DB0C0",
+          "path": "#B9C6D2",
+          "outline": "#FBFAF7"
+        }
+      }
+    },
+    "venn_cream": {
+      "name": "Where & When Cream",
+      "description": "Ivory paper, grey streets and a navy night sky, with gold rings",
+      "ui": {
+        "bg": "#F7F3EA",
+        "text": "#1F2A44"
+      },
+      "map": {
+        "land": "#F7F3EA",
+        "landcover": "#EFEBE2",
+        "water": "#D9DCE0",
+        "waterway": "#D9DCE0",
+        "parks": "#ECEAE2",
+        "buildings": "#E2DED6",
+        "aeroway": "#EFEBE2",
+        "rail": "#9A9A9A",
+        "roads": {
+          "major": "#8C8C8C",
+          "minor_high": "#A3A3A3",
+          "minor_mid": "#B9B9B9",
+          "minor_low": "#CFCFCF",
+          "path": "#D6D6D6",
+          "outline": "#F7F3EA"
+        }
+      }
+    },
+    "venn_navy": {
+      "name": "Where & When Navy",
+      "description": "Navy paper, pale blue streets and a navy night sky, with gold rings",
+      "ui": {
+        "bg": "#26355A",
+        "text": "#F4F0E6"
+      },
+      "map": {
+        "land": "#26355A",
+        "landcover": "#2A3A60",
+        "water": "#1C2945",
+        "waterway": "#1C2945",
+        "parks": "#2B3B61",
+        "buildings": "#2F4068",
+        "aeroway": "#2A3A60",
+        "rail": "#7F93BF",
+        "roads": {
+          "major": "#B9C7E6",
+          "minor_high": "#9AACD4",
+          "minor_mid": "#7E92BE",
+          "minor_low": "#6679A6",
+          "path": "#5A6C98",
+          "outline": "#26355A"
+        }
+      }
     }
   }
 }

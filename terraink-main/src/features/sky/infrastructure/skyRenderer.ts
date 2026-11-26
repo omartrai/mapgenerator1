@@ -166,6 +166,83 @@ function stipple(ctx: CanvasRenderingContext2D, area: { x: number; y: number; w:
 
 const BABY_STAR = "#F1D27C";
 
+/** Repeatable random numbers (the same paint strokes in the preview and the print). */
+function seeded(seed: number) {
+  let value = seed;
+  return () => {
+    value = (value * 16807) % 2147483647;
+    return value / 2147483647;
+  };
+}
+
+/**
+ * A hand-painted round edge: the radius wanders a little around the
+ * circle (a few slow waves plus small ripples). Same seed, same edge.
+ */
+function wobblyCircle(disc: SkyDisc, seed: number, spread: number): Path2D {
+  const random = seeded(seed);
+  const waves = Array.from({ length: 6 }, (_, i) => ({
+    k: i < 3 ? i + 2 : 7 + i * 2,
+    amp: (i < 3 ? 0.009 : 0.003) * spread * (0.6 + random() * 0.8),
+    phase: random() * Math.PI * 2,
+  }));
+  const path = new Path2D();
+  const steps = 180;
+  for (let i = 0; i <= steps; i += 1) {
+    const a = (i / steps) * Math.PI * 2;
+    const r = disc.r * (1 + waves.reduce((sum, w) => sum + w.amp * Math.sin(w.k * a + w.phase), 0));
+    const x = disc.cx + Math.cos(a) * r;
+    const y = disc.cy + Math.sin(a) * r;
+    if (i === 0) path.moveTo(x, y);
+    else path.lineTo(x, y);
+  }
+  path.closePath();
+  return path;
+}
+
+/**
+ * Watercolour wash: a paler bleed round the edge, then the disc painted
+ * in uneven layers, darker where the pigment pooled at the rim.
+ */
+function paintWatercolor(ctx: CanvasRenderingContext2D, disc: SkyDisc, color: string, paper: string): Path2D {
+  const outline = wobblyCircle(disc, 11, 1);
+  // Bleed: a lighter, wider and irregular halo.
+  ctx.fillStyle = withAlpha(color, 0.22);
+  ctx.fill(wobblyCircle({ ...disc, r: disc.r * 1.03 }, 23, 2.2));
+  ctx.fillStyle = withAlpha(color, 0.4);
+  ctx.fill(wobblyCircle({ ...disc, r: disc.r * 1.012 }, 37, 1.6));
+  ctx.fillStyle = color;
+  ctx.fill(outline);
+
+  ctx.save();
+  ctx.clip(outline);
+  // Uneven layers: soft light and dark patches.
+  const random = seeded(5);
+  for (let i = 0; i < 70; i += 1) {
+    const angle = random() * Math.PI * 2;
+    const dist = Math.sqrt(random()) * disc.r;
+    const x = disc.cx + Math.cos(angle) * dist;
+    const y = disc.cy + Math.sin(angle) * dist;
+    const radius = disc.r * (0.12 + random() * 0.3);
+    const light = random() < 0.55;
+    const tint = light ? paper : "#000000";
+    const alpha = light ? 0.05 + random() * 0.07 : 0.06 + random() * 0.1;
+    const patch = ctx.createRadialGradient(x, y, 0, x, y, radius);
+    patch.addColorStop(0, withAlpha(tint, alpha));
+    patch.addColorStop(1, withAlpha(tint, 0));
+    ctx.fillStyle = patch;
+    ctx.fillRect(x - radius, y - radius, radius * 2, radius * 2);
+  }
+  // Pigment pooled at the edge.
+  const rim = ctx.createRadialGradient(disc.cx, disc.cy, disc.r * 0.7, disc.cx, disc.cy, disc.r * 1.02);
+  rim.addColorStop(0, withAlpha("#000000", 0));
+  rim.addColorStop(1, withAlpha("#000000", 0.22));
+  ctx.fillStyle = rim;
+  ctx.fillRect(disc.cx - disc.r * 1.1, disc.cy - disc.r * 1.1, disc.r * 2.2, disc.r * 2.2);
+  ctx.restore();
+  return outline;
+}
+
 /** The chart outline as a canvas path, in the square around the disc. */
 function outlinePath(shape: SkyShape, disc: SkyDisc): Path2D {
   const box = { x: disc.cx - disc.r, y: disc.cy - disc.r, w: disc.r * 2, h: disc.r * 2 };
@@ -197,7 +274,7 @@ export function drawSkyChart(
   const shape = options.shape ?? "circle";
   // A baby chart wears warm gold stars, like gilded foil.
   const colors = shape === "baby" ? { ...options.colors, star: BABY_STAR } : options.colors;
-  const outline = outlinePath(shape, options.disc);
+  const outline = shape === "watercolor" ? wobblyCircle(options.disc, 11, 1) : outlinePath(shape, options.disc);
   // A square shows the whole sky down to the horizon in its corners.
   const disc = shape === "square" ? { ...options.disc, r: options.disc.r * Math.SQRT2 } : options.disc;
   const lst = localSiderealTime({ lat: options.lat, lon: options.lon, time: options.time });
@@ -226,8 +303,12 @@ export function drawSkyChart(
   }
 
   // The chart area.
-  ctx.fillStyle = colors.disc;
-  ctx.fill(outline);
+  if (shape === "watercolor") {
+    paintWatercolor(ctx, options.disc, colors.disc, colors.paper);
+  } else {
+    ctx.fillStyle = colors.disc;
+    ctx.fill(outline);
+  }
   ctx.save();
   ctx.clip(outline);
 
@@ -318,6 +399,11 @@ export function drawSkyChart(
   }
   ctx.restore();
 
+  // A watercolour wash has no drawn rim.
+  if (shape === "watercolor") {
+    ctx.restore();
+    return;
+  }
   // Rim (none around the baby: its edge is the paper margin), body lines instead.
   if (shape === "baby") {
     ctx.save();
