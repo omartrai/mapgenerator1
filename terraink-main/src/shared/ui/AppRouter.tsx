@@ -3,6 +3,7 @@ import { matchPath, useRouter } from "@/core/router/router";
 import { useScrollReveal } from "@/shared/hooks/useScrollReveal";
 import StorefrontPage from "@/features/store/ui/StorefrontPage";
 import { useStoreText, type StoreTextKey } from "@/features/store/ui/storeText";
+import WhatsAppButton from "@/features/store/ui/WhatsAppButton";
 
 const StudioPage = lazy(() => import("@/features/store/ui/StudioPage"));
 const CartPage = lazy(() => import("@/features/store/ui/CartPage"));
@@ -73,5 +74,13 @@ export default function AppRouter() {
   else if ((params = matchPath("/admin/orders/:number", path))) page = <AdminOrderPage number={params.number} />;
   else if (!HOME_PATHS.has(path)) page = <NotFoundPage />;
 
-  return <Suspense fallback={<PageFallback />}>{page}</Suspense>;
+  // The studio has its own bottom bars, and admin is internal.
+  const showWhatsApp = path !== "/create" && !path.startsWith("/admin");
+
+  return (
+    <>
+      <Suspense fallback={<PageFallback />}>{page}</Suspense>
+      {showWhatsApp ? <WhatsAppButton /> : null}
+    </>
+  );
 }

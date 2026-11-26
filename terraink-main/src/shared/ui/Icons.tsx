@@ -4,6 +4,7 @@
 export { FaGithub as GitHubIcon } from "react-icons/fa";
 export { FaStar as StarIcon } from "react-icons/fa";
 export { FaLinkedin as LinkedInIcon } from "react-icons/fa";
+export { FaWhatsapp as WhatsAppIcon } from "react-icons/fa";
 export { FaInstagram as InstagramIcon } from "react-icons/fa";
 export { FaRedditAlien as RedditIcon } from "react-icons/fa";
 export { FaYoutube as YouTubeIcon } from "react-icons/fa";

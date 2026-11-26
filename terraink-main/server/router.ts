@@ -26,6 +26,17 @@ import {
 
 type Env = Record<string, string | undefined>;
 
+/**
+ * A Moroccan number in any usual form (06…, +212 6…, 00212 6…) as the
+ * digits wa.me expects (2126…). Empty when unset or not a phone number.
+ */
+export function contactWhatsApp(env: Env): string {
+  let digits = String(env.WHATSAPP_CONTACT_NUMBER ?? "").replace(/\D/g, "");
+  if (digits.startsWith("00")) digits = digits.slice(2);
+  if (digits.startsWith("0")) digits = `212${digits.slice(1)}`;
+  return /^\d{8,15}$/.test(digits) ? digits : "";
+}
+
 export interface RouterOptions {
   env: Env;
   /** Set by the Vite dev server: allows local disk storage and a dev password. */
@@ -201,6 +212,11 @@ export function createApiHandler(options: RouterOptions) {
         storage: storage?.kind ?? "unconfigured",
         adminConfigured: !!adminPassword(),
       });
+    }
+
+    // GET /api/contact — the shop's public WhatsApp number (WHATSAPP_CONTACT_NUMBER)
+    if (head === "contact" && rest.length === 0 && method === "GET") {
+      return json(200, { whatsapp: contactWhatsApp(options.env) }, cached);
     }
 
     // GET /api/studio-prices — framed studio prices, matched to the collection

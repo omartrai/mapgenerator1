@@ -46,6 +46,12 @@ async function request<T>(path: string, init: RequestInit = {}): Promise<T> {
   return body as T;
 }
 
+/* ── Shop contact (public) ── */
+
+export const contactApi = {
+  get: () => request<{ whatsapp: string }>("/contact"),
+};
+
 /* ── Collection (ready-made posters from the print partner) ── */
 
 export const collectionApi = {

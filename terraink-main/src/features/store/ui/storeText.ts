@@ -20,6 +20,8 @@ import type { DesignPreset } from "../domain/presets";
  * Placeholders such as {amount} are filled in by t().
  */
 const en = {
+  "whatsapp.label": "Chat with us on WhatsApp",
+  "whatsapp.message": "Hello Noria, I have a question about a poster.",
   "hero.eyebrow": "City posters",
   "hero.title": "Choose|your style",
   "hero.lede": "Unique, elegant maps of the cities you love.",
@@ -511,6 +513,8 @@ export type StoreTextKey = keyof typeof en;
 type Dictionary = Record<StoreTextKey, string>;
 
 const fr: Dictionary = {
+  "whatsapp.label": "Écrivez-nous sur WhatsApp",
+  "whatsapp.message": "Bonjour Noria, j'ai une question sur un poster.",
   "hero.eyebrow": "Affiches de villes",
   "hero.title": "Choisissez|votre style",
   "hero.lede": "Des cartes uniques et élégantes de vos villes préférées.",
@@ -999,6 +1003,8 @@ const fr: Dictionary = {
 };
 
 const ar: Dictionary = {
+  "whatsapp.label": "راسلنا على واتساب",
+  "whatsapp.message": "مرحبا نوريا، عندي سؤال على بوستر.",
   "hero.eyebrow": "ملصقات المدن",
   "hero.title": "اختر|أسلوبك",
   "hero.lede": "خرائط فريدة وأنيقة لمدنك المفضلة.",

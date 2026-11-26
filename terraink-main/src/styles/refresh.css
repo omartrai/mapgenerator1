@@ -4251,3 +4251,57 @@ body:has(.store-page) {
   color: var(--s-ink) !important;
   font-weight: 600;
 }
+
+/* ── Floating WhatsApp contact button (shop pages) ── */
+.whatsapp-fab {
+  position: fixed;
+  inset-inline-end: max(16px, env(safe-area-inset-right));
+  bottom: max(16px, env(safe-area-inset-bottom));
+  z-index: 60;
+  display: inline-flex;
+  align-items: center;
+  gap: 10px;
+  height: 52px;
+  padding: 0 20px 0 16px;
+  border-radius: 999px;
+  background: #25d366;
+  color: #fff;
+  font-weight: 600;
+  font-size: 15px;
+  text-decoration: none;
+  box-shadow: 0 6px 20px rgba(0, 0, 0, 0.18);
+  transition: transform 0.15s ease, box-shadow 0.15s ease;
+}
+.whatsapp-fab:hover {
+  transform: translateY(-2px);
+  box-shadow: 0 10px 26px rgba(0, 0, 0, 0.22);
+  color: #fff;
+}
+.whatsapp-fab:focus-visible {
+  outline: 3px solid #128c4a;
+  outline-offset: 3px;
+}
+.whatsapp-fab__icon {
+  width: 26px;
+  height: 26px;
+  flex: none;
+}
+@media (max-width: 768px) {
+  .whatsapp-fab {
+    width: 54px;
+    height: 54px;
+    padding: 0;
+    justify-content: center;
+  }
+  .whatsapp-fab__label {
+    position: absolute;
+    width: 1px;
+    height: 1px;
+    overflow: hidden;
+    clip: rect(0 0 0 0);
+    white-space: nowrap;
+  }
+}
+@media print {
+  .whatsapp-fab { display: none; }
+}
