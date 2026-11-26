@@ -40,6 +40,17 @@ export default function LayoutShapePicker() {
     set("mapShape", id);
   };
 
+  // A plain layout picked over a ready style (photo, two cities, where &
+  // when) leaves that style cleanly: its shape, heart pin and preset message
+  // would otherwise stay behind on a layout that was not made for them.
+  const pickLayout = (id: string) => {
+    if (isPhoto || isTwin || isVenn) {
+      leavePhoto();
+      set("mapShape", "none");
+    }
+    set("posterLayout", id);
+  };
+
   return (
     <section className="layout-shape" aria-labelledby="layout-shape-title">
       <h3 id="layout-shape-title" className="style-presets__title">
@@ -55,7 +66,7 @@ export default function LayoutShapePicker() {
                 name={`${uid}-layout`}
                 value={id}
                 checked={layoutId === id}
-                onChange={() => set("posterLayout", id)}
+                onChange={() => pickLayout(id)}
               />
               <span className={`layout-thumb layout-thumb--${id}`} aria-hidden="true">
                 <i className="layout-thumb__map" />
