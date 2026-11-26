@@ -111,6 +111,8 @@ export interface PosterForm {
   twinCountry?: string;
   twinLat?: string;
   twinLon?: string;
+  /** Zoom of the second map (each half of the heart zooms on its own). */
+  twinZoom?: string;
   /** Where & when poster: the names printed under the title (e.g. "Emma & James"). */
   vennNames?: string;
   showRoutes: boolean;

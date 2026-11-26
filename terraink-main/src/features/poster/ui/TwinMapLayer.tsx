@@ -18,13 +18,16 @@ interface TwinMapLayerProps {
 
 /**
  * Two-cities poster: the second place's map in the right puzzle piece of
- * the heart, plus the cut line and the two heart pins. Drag the piece to
- * move the second place; zoom and rotation follow the first map.
+ * the heart, plus the cut line and the two heart pins. Drag or zoom the
+ * piece to frame the second place on its own; rotation follows the first map.
  */
 export default function TwinMapLayer({ layout, zoom, minZoom, maxZoom, overzoomScale, interactive }: TwinMapLayerProps) {
   const { state, dispatch, mapStyle, mapRef, twinMapRef } = usePosterContext();
   const place = twinPlaceFromForm(state.form);
   const center = useMemo<[number, number]>(() => [place.lon, place.lat], [place.lon, place.lat]);
+  // Its own zoom; until the customer zooms it, it starts at the first map's.
+  const ownZoom = Number(state.form.twinZoom);
+  const twinZoom = Number.isFinite(ownZoom) && ownZoom > 0 ? ownZoom : zoom;
   const boxRef = useRef<HTMLDivElement | null>(null);
   const [size, setSize] = useState({ width: 0, height: 0 });
 
@@ -38,32 +41,31 @@ export default function TwinMapLayer({ layout, zoom, minZoom, maxZoom, overzoomS
     return () => observer.disconnect();
   }, []);
 
-  // Zoom and rotation follow the first map, live.
+  // Fix the second map's zoom as soon as the style is on, so zooming the
+  // first half never moves it.
+  useEffect(() => {
+    if (!state.form.twinZoom) dispatch({ type: "SET_FIELD", name: "twinZoom", value: zoom.toFixed(3) });
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, []);
+
+  // Rotation follows the first map, live.
   useEffect(() => {
     const main = mapRef.current;
     if (!main) return;
-    const follow = () => {
-      const twin = twinMapRef.current;
-      if (!twin) return;
-      twin.jumpTo({ zoom: main.getZoom(), bearing: main.getBearing() });
-    };
-    main.on("zoom", follow);
+    const follow = () => twinMapRef.current?.setBearing(main.getBearing());
     main.on("rotate", follow);
     follow();
     return () => {
-      main.off("zoom", follow);
       main.off("rotate", follow);
     };
   }, [mapRef, twinMapRef]);
 
-  // Dragging only: zooming this piece alone would split the two scales.
+  // Drag and zoom (wheel, pinch, double tap), but no rotation of its own.
   useEffect(() => {
     const twin = twinMapRef.current;
     if (!twin) return;
-    twin.scrollZoom.disable();
-    twin.touchZoomRotate.disable();
-    twin.doubleClickZoom.disable();
     twin.dragRotate.disable();
+    twin.touchZoomRotate.disableRotation();
     twin.keyboard.disable();
   }, [interactive, twinMapRef]);
 
@@ -84,16 +86,16 @@ export default function TwinMapLayer({ layout, zoom, minZoom, maxZoom, overzoomS
                 <MapPreview
                   style={mapStyle}
                   center={center}
-                  zoom={zoom}
+                  zoom={twinZoom}
                   mapRef={twinMapRef}
                   interactive={interactive}
                   minZoom={minZoom}
                   maxZoom={maxZoom}
                   overzoomScale={overzoomScale}
-                  onMoveEnd={([lon, lat]) =>
+                  onMoveEnd={([lon, lat], nextZoom) =>
                     dispatch({
                       type: "SET_FORM_FIELDS",
-                      fields: { twinLat: lat.toFixed(6), twinLon: lon.toFixed(6) },
+                      fields: { twinLat: lat.toFixed(6), twinLon: lon.toFixed(6), twinZoom: nextZoom.toFixed(3) },
                     })
                   }
                 />
