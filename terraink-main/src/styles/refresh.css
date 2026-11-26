@@ -4545,3 +4545,82 @@ body:has(.store-page) {
     background: transparent !important;
   }
 }
+
+/* Theme step: ready styles as small pictures, first thing on a map poster */
+.ready-styles {
+  margin-bottom: 20px;
+}
+.ready-styles__row {
+  display: grid;
+  grid-template-columns: repeat(5, minmax(0, 1fr));
+  gap: 6px;
+  margin-top: 10px;
+}
+.ready-styles__opt {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 6px;
+  min-width: 0;
+  padding: 0;
+  border: 0;
+  background: none;
+  color: var(--s-ink, #222);
+  font: inherit;
+  cursor: pointer;
+}
+.ready-styles__thumb {
+  display: block;
+  width: 100%;
+  aspect-ratio: 3 / 4;
+  overflow: hidden;
+  border: 1px solid #e3e2dc;
+  border-radius: 8px;
+  background: #f3f2ee;
+  transition: border-color 0.15s, box-shadow 0.15s, transform 0.15s;
+}
+.ready-styles__thumb img {
+  display: block;
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+}
+.ready-styles__opt:hover .ready-styles__thumb {
+  border-color: var(--s-green);
+  transform: translateY(-1px);
+}
+.ready-styles__opt.is-active .ready-styles__thumb {
+  border-color: var(--s-green);
+  box-shadow: 0 0 0 2px var(--s-green);
+}
+.ready-styles__opt:focus-visible {
+  outline: none;
+}
+.ready-styles__opt:focus-visible .ready-styles__thumb {
+  box-shadow: 0 0 0 3px var(--s-green);
+}
+.ready-styles__name {
+  max-width: 100%;
+  font-size: 0.66rem;
+  font-weight: 600;
+  line-height: 1.2;
+  text-align: center;
+  /* Whole words only ("Photo & / carte"), never "Classiqu / e". */
+  overflow-wrap: normal;
+  word-break: normal;
+}
+.ready-styles__opt.is-active .ready-styles__name {
+  color: var(--s-green);
+  font-weight: 700;
+}
+/* The chosen style's card sits right under the pictures. */
+.ready-styles > :is(.photo-card, .twin-card) {
+  margin-top: 12px;
+}
+
+/* Paper behind every layer of the poster, so a sub-pixel seam between the
+   shifted map and the paper mask never shows the page through. */
+.app-shell[data-store-studio] .poster-frame {
+  background-color: var(--poster-bg, #fff);
+  background-clip: padding-box;
+}

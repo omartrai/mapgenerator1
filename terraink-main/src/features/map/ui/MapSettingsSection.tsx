@@ -1,4 +1,5 @@
 import { useEffect, useMemo, useRef, useState } from "react";
+import ReadyStyleGallery from "@/features/poster/ui/ReadyStyleGallery";
 import { onOpenSettingsTab } from "@/shared/ui/settingsTabs";
 import { createCustomLayoutOption } from "@/features/layout/infrastructure/layoutRepository";
 import {
@@ -26,6 +27,9 @@ import { CheckIcon, EditIcon } from "@/shared/ui/Icons";
 import type { ResolvedTheme } from "@/features/theme/domain/types";
 import type { LayoutGroup } from "@/features/layout/domain/types";
 import { useLanguage, type TranslationKey } from "@/shared/i18n/LanguageContext";
+
+/** Layouts that belong to a ready style: the summary names the style. */
+const READY_LAYOUTS: Record<string, string> = { duo: "photo", twin: "twin", venn: "venn" };
 
 const FALLBACK_COLOR = "#000000";
 
@@ -338,15 +342,13 @@ export default function MapSettingsSection({
     if (activeMobileTab !== "theme") {
       return;
     }
+    // Bring the selected palette into view sideways only: scrolling the
+    // whole panel would hide the step title and the ready styles above.
     const frameId = window.requestAnimationFrame(() => {
-      const selectedThemeCard = themeListRef.current?.querySelector<HTMLElement>(
-        ".theme-card.is-selected",
-      );
-      selectedThemeCard?.scrollIntoView({
-        behavior: "auto",
-        block: "nearest",
-        inline: "start",
-      });
+      const list = themeListRef.current;
+      const selectedThemeCard = list?.querySelector<HTMLElement>(".theme-card.is-selected");
+      if (!list || !selectedThemeCard || list.scrollWidth <= list.clientWidth) return;
+      list.scrollLeft = selectedThemeCard.offsetLeft - list.offsetLeft;
     });
     return () => window.cancelAnimationFrame(frameId);
   }, [activeMobileTab]);
@@ -432,6 +434,10 @@ export default function MapSettingsSection({
           <>
           <SkyShapePicker />
           {isSportLayout(form.posterLayout) ? <SportDesignPicker /> : null}
+          {/* Map posters: the ready-made styles first, as pictures. */}
+          {form.posterKind === "sky" || isSportLayout(form.posterLayout) || isTrailLayout(form.posterLayout) ? null : (
+            <ReadyStyleGallery />
+          )}
           <h3 className="style-presets__title">{t("theme.colorsTitle")}</h3>
           <p className="style-presets__hint">{t("theme.colorsHint")}</p>
           <ThemeSummarySection
@@ -448,10 +454,12 @@ export default function MapSettingsSection({
               <summary>
                 <span className="theme-more__title">{t("style.group.layout")}</span>
                 <span className="theme-more__value">
-                  {[
-                    t(`style.layout.${form.posterLayout === "duo" ? "classic" : form.posterLayout || "classic"}` as TranslationKey),
-                    t(`style.shape.${form.posterLayout === "duo" ? "photo" : form.mapShape || "none"}` as TranslationKey),
-                  ].join(" · ")}
+                  {READY_LAYOUTS[form.posterLayout ?? ""]
+                    ? t(`style.shape.${READY_LAYOUTS[form.posterLayout ?? ""]}` as TranslationKey)
+                    : [
+                        t(`style.layout.${form.posterLayout || "classic"}` as TranslationKey),
+                        t(`style.shape.${form.mapShape || "none"}` as TranslationKey),
+                      ].join(" · ")}
                 </span>
               </summary>
               <LayoutShapePicker />
