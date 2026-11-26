@@ -1,15 +1,14 @@
 import { useEffect, useId, useRef, useState, type ChangeEvent, type DragEvent } from "react";
-import { LuFlag, LuPencilLine, LuTrash2, LuUndo2, LuUpload } from "react-icons/lu";
+import { LuFlag, LuUpload } from "react-icons/lu";
 import { loadRaceCatalog, type RaceEntry } from "@/core/services";
 import { usePosterContext } from "@/features/poster/ui/PosterContext";
 import { useSportRouteInput } from "@/features/routes/application/useSportRouteInput";
-import { useDrawRouteState } from "@/features/routes/application/drawRouteStore";
 import { isTrailLayout } from "@/features/poster/domain/posterLayout";
 import { routeLengthMeters } from "@/features/routes/infrastructure/helpers";
 import RouteStyleSection from "./RouteStyleSection";
 import { useLanguage, type TranslationKey } from "@/shared/i18n/LanguageContext";
 
-type Source = "gpx" | "race" | "draw";
+type Source = "gpx" | "race";
 
 function formatKm(meters: number, comma: boolean): string {
   if (!Number.isFinite(meters) || meters <= 0) return "";
@@ -24,10 +23,9 @@ function formatKm(meters: number, comma: boolean): string {
 export default function SportRouteCard({ compact = false }: { compact?: boolean }) {
   const { t, language } = useLanguage();
   const { state } = usePosterContext();
-  const draw = useDrawRouteState();
-  const { uploadFile, pickRace, startDrawing, undoPoint, clearDrawing, finishDrawing } = useSportRouteInput();
+  const { uploadFile, pickRace } = useSportRouteInput();
   const uid = useId();
-  const [source, setSource] = useState<Source>(draw.active ? "draw" : "gpx");
+  const [source, setSource] = useState<Source>("gpx");
   const [error, setError] = useState("");
   const [busy, setBusy] = useState(false);
   const [dragging, setDragging] = useState(false);
@@ -87,7 +85,6 @@ export default function SportRouteCard({ compact = false }: { compact?: boolean 
             onClick={() => {
               setSource(tab.id);
               setError("");
-              if (tab.id !== "draw" && draw.active) finishDrawing();
             }}
           >
             {tab.label}
@@ -162,37 +159,6 @@ export default function SportRouteCard({ compact = false }: { compact?: boolean 
         )
       ) : null}
 
-      {source === "draw" ? (
-        draw.active ? (
-          <div className="draw-panel is-active">
-            <p className="sport-source__hint">{t("sport.route.drawHint")}</p>
-            <p className="draw-panel__count">
-              {draw.points.length} pts
-              {draw.points.length > 1 && route ? ` · ${formatKm(routeLengthMeters(route), language !== "en")}` : ""}
-            </p>
-            <div className="draw-panel__actions">
-              <button type="button" onClick={undoPoint} disabled={!draw.points.length}>
-                <LuUndo2 aria-hidden="true" /> {t("sport.route.drawUndo")}
-              </button>
-              <button type="button" onClick={clearDrawing} disabled={!draw.points.length}>
-                <LuTrash2 aria-hidden="true" /> {t("sport.route.drawClear")}
-              </button>
-              <button type="button" className="is-primary" onClick={finishDrawing}>
-                {t("sport.route.drawDone")}
-              </button>
-            </div>
-          </div>
-        ) : (
-          <div className="draw-panel">
-            <p className="sport-source__hint">{t("sport.route.drawHint")}</p>
-            <button type="button" className="draw-panel__start" onClick={startDrawing}>
-              <LuPencilLine aria-hidden="true" />
-              {route?.source === "manual" ? t("sport.route.drawContinue") : t("sport.route.drawStart")}
-            </button>
-          </div>
-        )
-      ) : null}
-
       {error ? (
         <p className="routes-section__error" role="alert">
           {error}
@@ -207,7 +173,7 @@ export default function SportRouteCard({ compact = false }: { compact?: boolean 
         </span>
         {route ? <span className="sport-source__km">{formatKm(routeLengthMeters(route), language !== "en")}</span> : null}
       </div>
-      {route && !compact && !draw.active ? <RouteStyleSection route={route} /> : null}
+      {route && !compact ? <RouteStyleSection route={route} /> : null}
     </section>
   );
 }

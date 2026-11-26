@@ -19,7 +19,6 @@ import RouteEndpointsOverlay from "@/features/routes/ui/RouteEndpointsOverlay";
 import GradientFades from "./GradientFades";
 import { effectiveFades, getPosterLayout } from "@/features/poster/domain/posterLayout";
 import PhotoBackdrop from "./PhotoBackdrop";
-import DrawRouteLayer from "@/features/routes/ui/DrawRouteLayer";
 import { activityFromForm } from "@/features/poster/domain/activityPoster";
 import { messageLookFromForm } from "@/features/poster/domain/messageStyle";
 import SkyPreview from "@/features/sky/ui/SkyPreview";
@@ -533,8 +532,6 @@ export default function PreviewPanel({ sidePanel, belowPoster }: PreviewPanelPro
             includeCredits={form.includeCredits && !sky}
             showOverlay={form.showMarkers}
           />
-
-          {!sky ? <DrawRouteLayer mapRef={mapRef} overzoomScale={overzoomScale} /> : null}
 
           <div className="map-controls" aria-label={t("map.controls")}>
             {!isEditing ? (

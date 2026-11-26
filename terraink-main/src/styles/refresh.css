@@ -2841,108 +2841,16 @@ body:has(.store-page) {
   font-size: 0.75rem;
 }
 
-.draw-panel {
-  display: flex;
-  flex-direction: column;
-  gap: 10px;
-}
 
-.draw-panel__start {
-  display: inline-flex;
-  align-items: center;
-  justify-content: center;
-  gap: 8px;
-  min-height: 44px;
-  border: 0;
-  border-radius: 999px;
-  background: var(--s-green);
-  color: #fff;
-  font: inherit;
-  font-weight: 600;
-  cursor: pointer;
-}
 
-.draw-panel__count {
-  margin: 0;
-  font-weight: 700;
-  font-size: 0.85rem;
-}
 
-.draw-panel__actions {
-  display: grid;
-  grid-template-columns: 1fr 1fr 1fr;
-  gap: 6px;
-}
 
-.draw-panel__actions button {
-  display: inline-flex;
-  align-items: center;
-  justify-content: center;
-  gap: 5px;
-  min-height: 38px;
-  padding: 6px;
-  border: 1px solid #e3e2dc;
-  border-radius: 10px;
-  background: #fff;
-  font: inherit;
-  font-size: 0.78rem;
-  font-weight: 600;
-  cursor: pointer;
-}
 
-.draw-panel__actions button:disabled {
-  opacity: 0.45;
-  cursor: default;
-}
 
-.draw-panel__actions button.is-primary {
-  border-color: var(--s-green);
-  background: var(--s-green);
-  color: #fff;
-}
 
-/* Click layer over the poster while drawing a route. */
-.draw-route-layer {
-  position: absolute;
-  inset: 0;
-  z-index: 40;
-  cursor: crosshair;
-  touch-action: none;
-}
 
-.draw-route-layer__dot {
-  position: absolute;
-  width: 10px;
-  height: 10px;
-  margin: -5px 0 0 -5px;
-  border: 2px solid #fff;
-  border-radius: 50%;
-  background: #d62f2f;
-  box-shadow: 0 1px 3px rgb(0 0 0 / 0.35);
-  pointer-events: none;
-}
 
-.draw-route-layer__dot.is-last {
-  width: 14px;
-  height: 14px;
-  margin: -7px 0 0 -7px;
-}
 
-.draw-route-layer__hint {
-  position: absolute;
-  left: 50%;
-  top: 10px;
-  max-width: 90%;
-  margin: 0;
-  padding: 6px 12px;
-  transform: translateX(-50%);
-  border-radius: 999px;
-  background: rgb(20 24 22 / 0.82);
-  color: #fff;
-  font-size: 0.75rem;
-  text-align: center;
-  pointer-events: none;
-}
 
 .sport-designs {
   display: grid;
