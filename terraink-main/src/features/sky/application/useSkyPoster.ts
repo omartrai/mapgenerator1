@@ -4,6 +4,15 @@ import { parseLocalDateTime } from "@/features/sky/domain/astronomy";
 import { defaultSkyTime, isSkyPoster } from "./skyOptions";
 import { useActivityPoster } from "@/features/routes/application/useActivityPoster";
 import { isSportLayout, isTrailLayout } from "@/features/poster/domain/posterLayout";
+import { toSkyShape, type SkyShape } from "@/features/sky/domain/chart";
+
+/** Chart shapes that come with their own text layout and colours. */
+const SHAPE_LOOKS: Partial<Record<SkyShape, { layout: string; theme: string; showCountry: boolean }>> = {
+  // Baby sky: name in script, birth details, navy and gold on white.
+  baby: { layout: "nursery", theme: "starry_navy", showCountry: false },
+  // Watercolour: names in script, place and moment underneath, navy on white.
+  watercolor: { layout: "starlit", theme: "watercolor_navy", showCountry: true },
+};
 
 /** "12 novembre 2026" in the site language, from "YYYY-MM-DDTHH:mm". */
 export function formatSkyDate(value: string, language: string): string {
@@ -86,5 +95,23 @@ export function useSkyPoster() {
 
   const setTime = useCallback((time: string) => set("skyTime", time), [set]);
 
-  return { isSky, kind, form, setKind, setTime, set };
+  /** Sets the chart outline, with the layout and colours some shapes bring. */
+  const chooseShape = useCallback(
+    (shape: SkyShape) => {
+      const active = toSkyShape(form.skyShape);
+      set("skyShape", shape);
+      const look = SHAPE_LOOKS[shape];
+      if (look && shape !== active) {
+        set("posterLayout", look.layout);
+        set("showCountry", look.showCountry);
+        dispatch({ type: "SET_THEME", themeId: look.theme });
+      } else if (!look && SHAPE_LOOKS[active]) {
+        set("posterLayout", "classic");
+        set("showCountry", true);
+      }
+    },
+    [dispatch, form.skyShape, set],
+  );
+
+  return { isSky, kind, form, setKind, setTime, set, chooseShape };
 }

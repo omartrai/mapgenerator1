@@ -6,34 +6,16 @@ import { useLanguage, type TranslationKey } from "@/shared/i18n/LanguageContext"
 
 const ICONS = { circle: LuCircle, watercolor: LuPaintbrush, heart: LuHeart, star: LuStar, square: LuSquare, baby: LuBaby } as const;
 
-/** Shapes that come with their own text layout and colours. */
-const SHAPE_LOOKS: Partial<Record<SkyShape, { layout: string; theme: string; showCountry: boolean }>> = {
-  // Baby sky: name in script, birth details, navy and gold on white.
-  baby: { layout: "nursery", theme: "starry_navy", showCountry: false },
-  // Watercolour: names in script, place and moment underneath, navy on white.
-  watercolor: { layout: "starlit", theme: "watercolor_navy", showCountry: true },
-};
 
 /** Outline of the star chart on a night-sky poster (shown in the Theme tab). */
 export default function SkyShapePicker() {
   const { t } = useLanguage();
   const { dispatch } = usePosterContext();
-  const { isSky, form, set } = useSkyPoster();
+  const { isSky, form, set, chooseShape } = useSkyPoster();
   if (!isSky) return null;
   const active = toSkyShape(form.skyShape);
 
-  const choose = (shape: SkyShape) => {
-    set("skyShape", shape);
-    const look = SHAPE_LOOKS[shape];
-    if (look && shape !== active) {
-      set("posterLayout", look.layout);
-      set("showCountry", look.showCountry);
-      dispatch({ type: "SET_THEME", themeId: look.theme });
-    } else if (!look && SHAPE_LOOKS[active]) {
-      set("posterLayout", "classic");
-      set("showCountry", true);
-    }
-  };
+  const choose = (shape: SkyShape) => chooseShape(shape);
 
   return (
     <div className="sky-shapes">

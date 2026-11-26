@@ -4492,3 +4492,8 @@ body:has(.store-page) {
   min-width: 0 !important;
   padding-inline: 10px !important;
 }
+
+/* Home: gift styles row (same cards as the sport row) */
+.gift-styles .sport-trail__poster img {
+  object-fit: cover;
+}

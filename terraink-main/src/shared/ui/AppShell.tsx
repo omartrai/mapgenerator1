@@ -101,6 +101,8 @@ export interface AppShellSlots {
   panelFooter?: (tab: MobileTab, setTab: (tab: MobileTab) => void) => ReactNode;
   /** Whether to open the "where is your place?" dialog on mount. */
   showStartupModal?: boolean;
+  /** Called once the start pop-up has set the place and closed. */
+  onStartupComplete?: () => void;
   initialTab?: MobileTab;
   /** Extra attributes for styling (e.g. frame colour, scene). */
   dataAttributes?: Record<string, string>;
@@ -122,6 +124,7 @@ export default function AppShell({
   mobileBarExtra,
   panelFooter,
   showStartupModal = true,
+  onStartupComplete,
   initialTab = "theme",
   dataAttributes,
   style,
@@ -315,7 +318,7 @@ export default function AppShell({
       {...dataAttributes}
     >
       {header ?? <GeneralHeader />}
-      {showStartupModal ? <StartupLocationModal /> : null}
+      {showStartupModal ? <StartupLocationModal onComplete={onStartupComplete} /> : null}
 
       <DesktopNavBar
         activeTab={desktopTab}

@@ -1,4 +1,7 @@
 import { useEffect, useState } from "react";
+import { POSTER_STYLES, usePosterStyles, type PosterStyleId } from "@/features/poster/application/usePosterStyles";
+import { SKY_SHAPES, type SkyShape } from "@/features/sky/domain/chart";
+import { usePosterContext } from "@/features/poster/ui/PosterContext";
 import AppShell from "@/shared/ui/AppShell";
 import { useRouter } from "@/core/router/router";
 import { adminApi, geocodeLocation } from "@/core/services";
@@ -49,7 +52,12 @@ export default function StudioPage() {
   const activityPoster = useActivityPoster();
   useEffect(() => {
     const type = search.get("type");
-    if (type === "sky") skyPoster.setKind("sky");
+    if (type === "sky") {
+      skyPoster.setKind("sky");
+      // ?type=sky&shape=watercolor (or another chart shape)
+      const shape = search.get("shape");
+      if (shape && (SKY_SHAPES as readonly string[]).includes(shape)) skyPoster.chooseShape(shape as SkyShape);
+    }
     if (type === "trail") activityPoster.applyDesign("topo");
     if (type === "sport") {
       const design = search.get("design");
@@ -71,6 +79,22 @@ export default function StudioPage() {
       // Sport and trail posters start from a route, not a place.
       !["sport", "trail"].includes(search.get("type") ?? ""),
   );
+
+  // /create?style=twin (heart, photo, twin, venn; &colour=navy for venn):
+  // a ready-made style, applied once the start pop-up has set the place so
+  // its heart pin lands on the chosen city.
+  const posterStyles = usePosterStyles();
+  const { dispatch: posterDispatch } = usePosterContext();
+  const [styleGo, setStyleGo] = useState(() => !showStartup);
+  useEffect(() => {
+    const style = search.get("style");
+    if (!styleGo || !style || !(POSTER_STYLES as readonly string[]).includes(style)) return;
+    posterStyles.apply(style as PosterStyleId);
+    if (style === "venn" && search.get("colour") === "navy") {
+      posterDispatch({ type: "SET_THEME", themeId: "venn_navy" });
+    }
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [styleGo]);
 
   useEffect(() => {
     store.markDesignStarted();
@@ -210,6 +234,7 @@ export default function StudioPage() {
         </>
       }
       showStartupModal={showStartup}
+      onStartupComplete={() => setStyleGo(true)}
       initialTab="location"
       locationAsTab
       dataAttributes={{

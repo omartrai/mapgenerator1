@@ -69,6 +69,7 @@ export default function StorefrontPage() {
       <main>
         <PopularDesigns />
         <ShopLines />
+        <GiftStyles />
         <SportTrail />
         <ArtPrints />
         <ReviewsSection />
@@ -406,6 +407,35 @@ function ShopLines() {
             </Link>
           );
         })}
+      </div>
+    </section>
+  );
+}
+
+/** Gift styles (couples, two places, a date), each opening the studio on that style. */
+const GIFT_STYLES = [
+  { id: "twin", to: "/create?style=twin" },
+  { id: "venn-cream", to: "/create?style=venn" },
+  { id: "venn-navy", to: "/create?style=venn&colour=navy" },
+  { id: "watercolor", to: "/create?type=sky&shape=watercolor" },
+  { id: "heart", to: "/create?style=heart" },
+] as const;
+
+function GiftStyles() {
+  const { t } = useStoreText();
+  const { ref, scroll } = useRow();
+  return (
+    <section className="home-block sport-trail gift-styles" aria-labelledby="gift-styles-title">
+      <RowHead id="gift-styles-title" title={t("home4.giftTitle")} sub={t("home4.giftSub")} onScroll={scroll} />
+      <div className="sport-trail__grid" ref={ref}>
+        {GIFT_STYLES.map(({ id, to }) => (
+          <Link key={id} to={to} className="sport-trail__card">
+            <span className="sport-trail__poster">
+              <img src={`/assets/gifts/${id}.webp`} alt="" loading="lazy" decoding="async" />
+            </span>
+            <span className="sport-trail__name">{t(`home4.style.${id}` as StoreTextKey)}</span>
+          </Link>
+        ))}
       </div>
     </section>
   );
