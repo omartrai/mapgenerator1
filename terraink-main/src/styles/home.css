@@ -4747,6 +4747,11 @@
   display: none !important;
 }
 
+/* Sport and trail posters don't use the advanced map tools. */
+.app-shell[data-route-poster] :is(.desktop-nav-tab--advanced, .mobile-nav-tab--advanced) {
+  display: none !important;
+}
+
 
 /* ── Homepage: night-sky promo ── */
 .sky-promo {

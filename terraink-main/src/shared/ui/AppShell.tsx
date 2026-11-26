@@ -260,10 +260,11 @@ export default function AppShell({
   const { kind: posterKind } = useSkyPoster();
   const isRoutePoster = posterKind === "sport" || posterKind === "trail";
 
-  // A night-sky poster hides the map-only tabs: leave them if one is open.
+  // Sky, sport and trail posters hide map-only tabs: leave them if one is open.
   useEffect(() => {
-    if (posterKind !== "sky") return;
-    const mapOnly = (tab: MobileTab) => ["layers", "markers", "routes", "advanced"].includes(tab);
+    if (posterKind === "map") return;
+    const hidden = posterKind === "sky" ? ["layers", "markers", "routes", "advanced"] : ["advanced"];
+    const mapOnly = (tab: MobileTab) => hidden.includes(tab);
     setDesktopTab((tab) => (mapOnly(tab) ? "theme" : tab));
     setMobileTab((tab) => (mapOnly(tab) ? "theme" : tab));
   }, [posterKind]);
@@ -309,6 +310,7 @@ export default function AppShell({
       data-od-id="noria-editor"
       data-mobile-tab={mobileTab}
       data-desktop-tab={desktopTab}
+      data-route-poster={isRoutePoster ? "true" : undefined}
       style={style}
       {...dataAttributes}
     >
