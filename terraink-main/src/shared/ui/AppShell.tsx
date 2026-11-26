@@ -260,6 +260,14 @@ export default function AppShell({
   const { kind: posterKind } = useSkyPoster();
   const isRoutePoster = posterKind === "sport" || posterKind === "trail";
 
+  // A night-sky poster hides the map-only tabs: leave them if one is open.
+  useEffect(() => {
+    if (posterKind !== "sky") return;
+    const mapOnly = (tab: MobileTab) => ["layers", "markers", "routes", "advanced"].includes(tab);
+    setDesktopTab((tab) => (mapOnly(tab) ? "theme" : tab));
+    setMobileTab((tab) => (mapOnly(tab) ? "theme" : tab));
+  }, [posterKind]);
+
   // Step buttons can ask to close the mobile drawer (e.g. "Order").
   useEffect(() => onCloseSettingsPanel(() => setMobileDrawerOpen(false)), []);
 

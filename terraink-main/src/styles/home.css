@@ -4736,9 +4736,12 @@
     .desktop-nav-tab--layers,
     .desktop-nav-tab--markers,
     .desktop-nav-tab--routes,
+    .desktop-nav-tab--advanced,
+    .desktop-nav-divider,
     .mobile-nav-tab--layers,
     .mobile-nav-tab--markers,
-    .mobile-nav-tab--routes
+    .mobile-nav-tab--routes,
+    .mobile-nav-tab--advanced
   ),
 .app-shell[data-poster-kind="sky"] .map-controls {
   display: none !important;
