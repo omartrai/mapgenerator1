@@ -2596,7 +2596,7 @@ body:has(.store-page) {
   font-weight: 600;
 }
 
-/* Map shape: cards with the icon and the name inside, one look for all five. */
+/* Map shape: cards with the icon and the name inside, one look for all of them. */
 .layout-shape .shape-picker__grid {
   display: grid;
   grid-template-columns: repeat(3, minmax(0, 1fr));
@@ -2617,13 +2617,6 @@ body:has(.store-page) {
   background: #fff;
   cursor: pointer;
   transition: border-color 0.15s, background-color 0.15s, box-shadow 0.15s;
-}
-
-/* The last card (Photo & carte) takes the rest of its row, icon beside the name. */
-.layout-shape .shape-picker__option:last-child {
-  grid-column: span 2;
-  flex-direction: row;
-  gap: 10px;
 }
 
 .layout-shape .shape-picker__option:hover {
@@ -2670,7 +2663,9 @@ body:has(.store-page) {
   font-weight: 600;
   line-height: 1.2;
   text-align: center;
-  white-space: nowrap;
+  /* Long names ("Photo & carte") wrap onto two lines instead of touching the edges. */
+  white-space: normal;
+  overflow-wrap: anywhere;
 }
 
 .layout-shape .shape-picker__option input:checked ~ .layout-picker__name {
