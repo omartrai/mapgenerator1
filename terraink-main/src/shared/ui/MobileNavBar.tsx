@@ -28,10 +28,11 @@ const tabs: {
   { id: "location", labelKey: "nav.location", Icon: LocationIcon },
   { id: "theme", labelKey: "nav.theme", Icon: ThemeIcon },
   { id: "style", labelKey: "nav.style", Icon: StyleIcon },
-  { id: "size", labelKey: "nav.size", Icon: LayoutIcon },
   { id: "layers", labelKey: "nav.layers", Icon: LayersIcon },
   { id: "markers", labelKey: "nav.icons", Icon: MarkersIcon },
   { id: "advanced", labelKey: "nav.advanced", Icon: AdvancedIcon },
+  // Last, and pinned to the right edge: size & frame is where the order is placed.
+  { id: "size", labelKey: "nav.size", Icon: LayoutIcon },
 ];
 
 interface MobileNavBarProps {

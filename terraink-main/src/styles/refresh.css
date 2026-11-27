@@ -4624,3 +4624,22 @@ body:has(.store-page) {
   background-color: var(--poster-bg, #fff);
   background-clip: padding-box;
 }
+
+/* Phone tab bar: "Format & cadre" comes last (the order is placed from it)
+   and stays pinned on the right while the other tabs scroll under it. */
+@media (max-width: 768px), (hover: none) and (pointer: coarse) {
+  .mobile-nav-tab--size {
+    position: sticky !important;
+    right: 0;
+    z-index: 2;
+    background: #fff !important;
+    box-shadow: -10px 0 12px -8px rgba(23, 24, 22, 0.18);
+  }
+  .mobile-nav-tab--size.is-active {
+    background: var(--s-hero-card, #e3e9e3) !important;
+  }
+  /* The pinned tab already marks the end of the bar. */
+  .mobile-nav-fade {
+    display: none !important;
+  }
+}
