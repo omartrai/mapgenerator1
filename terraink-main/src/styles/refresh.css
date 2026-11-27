@@ -4625,21 +4625,77 @@ body:has(.store-page) {
   background-clip: padding-box;
 }
 
-/* Phone tab bar: "Format & cadre" comes last (the order is placed from it)
-   and stays pinned on the right while the other tabs scroll under it. */
+
+/* ── Phones: one clean footer. The price bar sits flush on the tab bar
+   (no floating card), the current tab is simply green and bold, and
+   "Format & cadre" (where the order is placed) comes last, pinned on the
+   right behind a hairline. ── */
 @media (max-width: 768px), (hover: none) and (pointer: coarse) {
-  .mobile-nav-tab--size {
+  .app-shell.app-shell.app-shell.app-shell[data-store-studio] .studio-buy-bar {
+    left: 0 !important;
+    right: 0 !important;
+    bottom: calc(66px + env(safe-area-inset-bottom, 0px)) !important;
+    padding: 10px 16px !important;
+    border: 0 !important;
+    border-top: 1px solid #ecebe6 !important;
+    border-radius: 0 !important;
+    background: #fff !important;
+    box-shadow: none !important;
+    backdrop-filter: none !important;
+    -webkit-backdrop-filter: none !important;
+  }
+
+  .app-shell[data-store-studio] .mobile-nav {
+    border-top: 1px solid #ecebe6 !important;
+    box-shadow: none !important;
+  }
+
+  .app-shell.app-shell[data-store-studio] .mobile-nav-tab {
+    position: relative;
+    border-radius: 0 !important;
+    background: transparent !important;
+    color: #7b827d !important;
+  }
+
+  .app-shell.app-shell[data-store-studio] .mobile-nav-tab.is-active {
+    background: transparent !important;
+    color: var(--s-green) !important;
+  }
+
+  .app-shell.app-shell[data-store-studio] .mobile-nav-tab.is-active .mobile-nav-label {
+    font-weight: 700;
+  }
+
+  .app-shell.app-shell[data-store-studio] .mobile-nav-tab.is-active::after {
+    display: none !important;
+  }
+
+  .app-shell.app-shell[data-store-studio] .mobile-nav-tab--size {
     position: sticky !important;
     right: 0;
     z-index: 2;
     background: #fff !important;
-    box-shadow: -10px 0 12px -8px rgba(23, 24, 22, 0.18);
+    border-left: 1px solid #ecebe6 !important;
+    box-shadow: none !important;
   }
-  .mobile-nav-tab--size.is-active {
-    background: var(--s-hero-card, #e3e9e3) !important;
-  }
-  /* The pinned tab already marks the end of the bar. */
+
   .mobile-nav-fade {
+    display: none !important;
+  }
+}
+
+/* Home header on narrow phones: the language shows as its flag only, and
+   below 380px the "Créer un poster" pill leaves room (the page has its own). */
+@media (max-width: 440px) {
+  .store-header--site .lang-menu__trigger > :not(.lang-flag) {
+    display: none !important;
+  }
+  .store-header--site .lang-menu__trigger {
+    padding-inline: 10px !important;
+  }
+}
+@media (max-width: 380px) {
+  .store-header--site .store-nav {
     display: none !important;
   }
 }
