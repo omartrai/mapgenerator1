@@ -1,4 +1,4 @@
-import { lazy, Suspense, useCallback, useEffect, useState, type ReactNode } from "react";
+import { lazy, Suspense, useCallback, useEffect, useRef, useState, type ReactNode } from "react";
 import { onCloseSettingsPanel, onOpenSettingsTab, revealAfterTabChange } from "@/shared/ui/settingsTabs";
 import { usePosterContext } from "@/features/poster/ui/PosterContext";
 import {
@@ -14,6 +14,7 @@ import PreviewPanel from "@/features/poster/ui/PreviewPanel";
 import MobileSkyBar from "@/features/sky/ui/MobileSkyBar";
 import MobileNavBar, { type MobileTab } from "@/shared/ui/MobileNavBar";
 import { useSwipeDown } from "@/shared/hooks/useSwipeDown";
+import { usePhoneStage } from "@/shared/hooks/usePhoneStage";
 import StartupLocationModal from "@/features/location/ui/StartupLocationModal";
 import { CheckIcon } from "@/shared/ui/Icons";
 import SupportModal from "@/features/export/ui/SupportModal";
@@ -148,6 +149,8 @@ export default function AppShell({
   const [mobileLocationRowVisible, setMobileLocationRowVisible] =
     useState(initialTab === "location");
   const [isMobileViewport, setIsMobileViewport] = useState(false);
+  const shellRef = useRef<HTMLDivElement | null>(null);
+  usePhoneStage(shellRef, isMobileViewport);
 
   // Desktop state
   const [desktopTab, setDesktopTab] = useState<MobileTab>(
@@ -309,6 +312,7 @@ export default function AppShell({
 
   return (
     <div
+      ref={shellRef}
       className="app-shell"
       data-od-id="noria-editor"
       data-mobile-tab={mobileTab}

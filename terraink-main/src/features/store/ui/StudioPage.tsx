@@ -255,7 +255,7 @@ export default function StudioPage() {
         "data-scene": store.scene,
         "data-orientation": store.product.orientation,
         "data-depth": store.product.frameId === "none" ? "none" : frameDepthOf(store.product),
-        "data-poster-kind": skyPoster.isSky ? "sky" : "map",
+        "data-poster-kind": skyPoster.kind,
       }}
       style={
         {

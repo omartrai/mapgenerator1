@@ -4699,3 +4699,131 @@ body:has(.store-page) {
     display: none !important;
   }
 }
+
+/* ── Phones: a compact top. The search is shorter, the poster type is one
+   slim segmented control instead of four tiles in a floating card, and the
+   view switch is smaller, so the poster gets the room. ── */
+@media (max-width: 768px), (hover: none) and (pointer: coarse) {
+  .app-shell.app-shell[data-store-studio] .mobile-location-row-wrap .dsk-loc-bar .location-input-wrap input {
+    height: 44px !important;
+    min-height: 44px !important;
+    font-size: 0.95rem !important;
+  }
+
+  .app-shell.app-shell[data-store-studio] .mobile-location-row-wrap .dsk-loc-bar button.location-row-icon-btn {
+    width: 44px !important;
+    height: 44px !important;
+    min-width: 44px !important;
+  }
+
+  .app-shell.app-shell[data-store-studio] .mobile-sky-bar {
+    gap: 8px;
+    margin-top: 8px;
+    padding: 0;
+    border: 0;
+    border-radius: 0;
+    background: transparent;
+    box-shadow: none;
+  }
+
+  .app-shell.app-shell[data-store-studio] .mobile-sky-bar .kind-tiles {
+    display: flex !important;
+    gap: 2px !important;
+    padding: 3px !important;
+    border: 1px solid #e3e2dc;
+    border-radius: 12px;
+    background: #fff;
+  }
+
+  .app-shell.app-shell.app-shell[data-store-studio] .mobile-sky-bar .kind-tile {
+    flex: 1 1 0;
+    flex-direction: row !important;
+    gap: 5px !important;
+    min-width: 0;
+    height: 34px !important;
+    min-height: 34px !important;
+    padding: 0 6px !important;
+    border: 0 !important;
+    border-radius: 9px !important;
+    background: transparent !important;
+    box-shadow: none !important;
+    color: #4f5a53 !important;
+    font-size: 0.8rem !important;
+    font-weight: 600 !important;
+  }
+
+  .app-shell.app-shell.app-shell[data-store-studio] .mobile-sky-bar .kind-tile svg {
+    width: 15px !important;
+    height: 15px !important;
+    flex: none;
+  }
+
+  .app-shell.app-shell.app-shell[data-store-studio] .mobile-sky-bar .kind-tile.is-active {
+    background: var(--s-green) !important;
+    color: #fff !important;
+  }
+
+  /* The sky's date, time and options sit in their own light card. */
+  .app-shell.app-shell[data-store-studio] .mobile-sky-bar :is(.mobile-sky-bar__row, .mobile-sky-bar__toggles) {
+    padding: 0 2px;
+  }
+
+  .app-shell.app-shell[data-store-studio] .mobile-view-toggle {
+    margin-top: 8px !important;
+  }
+
+  .app-shell.app-shell[data-store-studio] .mobile-view-toggle .studio-view-toggle .segmented__option {
+    min-height: 30px !important;
+    padding: 0 14px !important;
+    font-size: 0.78rem !important;
+  }
+}
+
+/* Phones: the poster fills the room left between the top (place bar, poster
+   type, sky date or route card) and the price bar, measured live
+   (--stage-free, see usePhoneStage), so it always shows whole. */
+@media (max-width: 768px), (hover: none) and (pointer: coarse) {
+  .app-shell.app-shell[data-store-studio]:not([data-drawer-open]) > .preview-panel .poster-viewport {
+    padding-top: 10px !important;
+  }
+
+  .app-shell.app-shell[data-store-studio]:not([data-drawer-open]) > .preview-panel .poster-frame {
+    width: min(
+      calc(100vw - 48px),
+      max(120px, calc((var(--stage-free, 320px) - 22px) * var(--poster-aspect, 0.75)))
+    ) !important;
+  }
+}
+
+/* Phones: the map is moved and zoomed with the fingers; the lock / rotate /
+   zoom pill would only peek out from under the price bar. */
+@media (max-width: 768px), (hover: none) and (pointer: coarse) {
+  .app-shell.app-shell[data-store-studio] .poster-frame .map-controls {
+    display: none !important;
+  }
+}
+
+/* Phones, sport and trail: a slimmer route card above the poster. */
+@media (max-width: 768px), (hover: none) and (pointer: coarse) {
+  .app-shell.app-shell[data-store-studio] .sport-source.is-compact {
+    gap: 6px !important;
+    padding: 6px !important;
+  }
+  .app-shell.app-shell.app-shell[data-store-studio] .sport-source.is-compact .sport-source__tab {
+    min-height: 32px !important;
+    padding-block: 0 !important;
+    font-size: 0.8rem !important;
+  }
+  .app-shell.app-shell.app-shell[data-store-studio] .sport-source.is-compact .gpx-drop {
+    min-height: 44px !important;
+    padding: 6px 10px !important;
+  }
+  .app-shell.app-shell.app-shell[data-store-studio] .sport-source.is-compact .gpx-drop__icon {
+    width: 30px !important;
+    height: 30px !important;
+  }
+  /* "No route yet" says nothing the import button doesn't. */
+  .app-shell.app-shell[data-store-studio] .sport-source.is-compact .sport-source__current.is-empty {
+    display: none !important;
+  }
+}
