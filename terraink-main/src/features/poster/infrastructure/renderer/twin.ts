@@ -36,6 +36,7 @@ export function drawTwinDecor(
   width: number,
   height: number,
   paper: string,
+  showPins = true,
 ): void {
   const pieces = twinPieces(layout, width, height);
   if (!pieces) return;
@@ -47,6 +48,7 @@ export function drawTwinDecor(
   ctx.stroke(new Path2D(pieces.cutPath));
   ctx.restore();
 
+  if (!showPins) return;
   for (const at of [pieces.leftPin, pieces.rightPin]) {
     const pin = new Path2D(pinPath(at, pieces.pinSize));
     ctx.fillStyle = TWIN_PIN_COLOR;

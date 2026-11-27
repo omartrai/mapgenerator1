@@ -4974,3 +4974,10 @@ body:has(.store-page) {
   background: #e6efe9;
   color: var(--s-green, #1f3d33);
 }
+
+/* Two-cities card: the heart pins switch, under the name. */
+.twin-card__pins {
+  margin-top: 2px;
+  font-size: 0.82rem;
+  font-weight: 600;
+}

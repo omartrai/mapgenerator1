@@ -83,6 +83,18 @@ export default function TwinCityCard() {
           onChange={(event) => dispatch({ type: "SET_FIELD", name: "twinCity", value: event.target.value })}
         />
       </label>
+
+      <label className="toggle-field twin-card__pins">
+        <span>{t("twin.pins")}</span>
+        <span className="theme-switch">
+          <input
+            type="checkbox"
+            checked={state.form.twinPins !== false}
+            onChange={(event) => dispatch({ type: "SET_FIELD", name: "twinPins", value: event.target.checked })}
+          />
+          <span className="theme-switch-track" aria-hidden="true" />
+        </span>
+      </label>
     </div>
   );
 }

@@ -43,6 +43,7 @@ export async function compositeExport(
     starChart = false,
     photoImage = null,
     twinMap = null,
+    twinPins = true,
     vennSky = null,
     vennText = null,
     photoMono = true,
@@ -135,7 +136,7 @@ export async function compositeExport(
 
   ctx.restore();
 
-  if (layout.twin) drawTwinDecor(ctx, layout, width, height, theme.ui.bg);
+  if (layout.twin) drawTwinDecor(ctx, layout, width, height, theme.ui.bg, twinPins);
 
   // 6. Poster text
   drawPosterText(

@@ -216,6 +216,7 @@ export function useExport() {
         messageLook: messageLookFromForm(form),
         photoImage,
         twinMap,
+        twinPins: form.twinPins !== false,
         vennSky,
         vennText: vennText?.labels ?? null,
         ...(twinText ? { coordsLabel: twinText.coords } : {}),

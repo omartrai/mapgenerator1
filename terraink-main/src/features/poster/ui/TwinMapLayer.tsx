@@ -116,7 +116,7 @@ export default function TwinMapLayer({ layout, zoom, minZoom, maxZoom, overzoomS
               strokeWidth={pieces.cutWidth}
               strokeLinejoin="round"
             />
-            {[pieces.leftPin, pieces.rightPin].map((at, index) => (
+            {(state.form.twinPins === false ? [] : [pieces.leftPin, pieces.rightPin]).map((at, index) => (
               <path
                 key={index}
                 d={pinPath(at, pieces.pinSize)}
