@@ -4827,3 +4827,150 @@ body:has(.store-page) {
     display: none !important;
   }
 }
+
+/* Phones, sky poster: the moment is one slim pill, date | time, styled like
+   the search bar above it instead of a labelled form. */
+.mobile-sky-moment {
+  display: flex;
+  align-items: center;
+  height: 40px;
+  padding: 0 4px;
+  border: 1px solid #e3e2dc;
+  border-radius: 12px;
+  background: #fff;
+}
+
+.app-shell .mobile-sky-moment .mobile-sky-moment__field {
+  position: relative;
+  margin: 0;
+  display: flex;
+  flex: 1 1 0;
+  align-items: center;
+  gap: 6px;
+  min-width: 0;
+  height: 100%;
+  padding: 0 8px;
+  overflow: hidden;
+  color: var(--s-ink, #1f2a26);
+}
+
+.mobile-sky-moment__field--date {
+  flex-grow: 1.25;
+}
+
+.mobile-sky-moment__field svg {
+  flex: none;
+  width: 16px;
+  height: 16px;
+  color: var(--s-green, #1f3d33);
+}
+
+.app-shell.app-shell.app-shell[data-store-studio] .mobile-sky-moment .mobile-sky-moment__field input {
+  flex: 1 1 auto;
+  box-shadow: none;
+  border-radius: 0 !important;
+  min-height: 0 !important;
+  height: 32px !important;
+  line-height: 32px;
+  background: transparent !important;
+  border: 0 !important;
+  width: 100%;
+  min-width: 0;
+  margin: 0;
+  padding: 0;
+  outline: none;
+  background: transparent;
+  color: inherit;
+  font: inherit;
+  font-size: 0.88rem;
+  font-weight: 600;
+  -webkit-appearance: none;
+  appearance: none;
+}
+
+.app-shell.app-shell.app-shell[data-store-studio] .mobile-sky-moment .mobile-sky-moment__field input:focus {
+  border: 0;
+  box-shadow: none;
+  outline: none;
+}
+
+/* The native picker icon is replaced by ours; the whole field opens it. */
+.mobile-sky-moment__field input::-webkit-calendar-picker-indicator {
+  position: absolute;
+  inset: 0;
+  width: auto;
+  height: auto;
+  opacity: 0;
+  cursor: pointer;
+}
+
+.mobile-sky-moment__field:focus-within {
+  border-radius: 9px;
+  background: #f2f5f2;
+}
+
+.mobile-sky-moment__divider {
+  flex: none;
+  width: 1px;
+  height: 20px;
+  background: #e3e2dc;
+}
+
+.mobile-sky-moment__more {
+  display: grid;
+  flex: none;
+  place-items: center;
+  width: 32px;
+  height: 32px;
+  margin-left: 2px;
+  padding: 0;
+  border: 0;
+  border-radius: 9px;
+  background: transparent;
+  color: #4f5a53;
+}
+
+.mobile-sky-moment__more svg {
+  width: 17px;
+  height: 17px;
+}
+
+.mobile-sky-moment__more.is-open {
+  background: #e6efe9;
+  color: var(--s-green, #1f3d33);
+}
+
+/* Chart options: light chips, ticked when on, in one line. */
+.mobile-sky-options {
+  display: flex;
+  gap: 6px;
+  overflow-x: auto;
+  scrollbar-width: none;
+}
+
+.mobile-sky-options__chip {
+  display: inline-flex;
+  flex: none;
+  align-items: center;
+  gap: 4px;
+  height: 30px;
+  padding: 0 11px;
+  border: 1px solid #e3e2dc;
+  border-radius: 999px;
+  background: #fff;
+  color: #4f5a53;
+  font: inherit;
+  font-size: 0.78rem;
+  font-weight: 600;
+}
+
+.mobile-sky-options__chip svg {
+  width: 13px;
+  height: 13px;
+}
+
+.mobile-sky-options__chip.is-active {
+  border-color: #cfe0d5;
+  background: #e6efe9;
+  color: var(--s-green, #1f3d33);
+}
