@@ -1,4 +1,4 @@
-import { useEffect, useState } from "react";
+import { useEffect, useRef, useState } from "react";
 import { POSTER_STYLES, usePosterStyles, type PosterStyleId } from "@/features/poster/application/usePosterStyles";
 import { SKY_SHAPES, type SkyShape } from "@/features/sky/domain/chart";
 import { usePosterContext } from "@/features/poster/ui/PosterContext";
@@ -50,12 +50,19 @@ export default function StudioPage() {
   // /create?type=sky starts a night-sky poster; ?type=sport or ?type=trail a
   // sport or trail poster (optionally &design=bold), on the route step.
   const activityPoster = useActivityPoster();
+  // The address seen last time, to tell a click on "Créer un poster" from
+  // the studio cleaning its own address after loading a design.
+  const lastSearchRef = useRef<URLSearchParams | null>(null);
   useEffect(() => {
+    const previous = lastSearchRef.current;
+    lastSearchRef.current = search;
+    const loadedDesign = ["preset", "edit", "order", "place"].some((key) => previous?.get(key));
     const type = search.get("type");
     // A plain /create ("Créer un poster") always opens on a city map, even
-    // after a sky, sport or trail poster earlier in the visit.
+    // after a sky, sport or trail poster earlier in the visit, and even when
+    // the studio is already open (the address changes, the page stays).
     const plain = !type && !["preset", "edit", "order", "place", "style"].some((key) => search.get(key));
-    if (plain && skyPoster.kind !== "map") skyPoster.setKind("map");
+    if (plain && !loadedDesign && skyPoster.kind !== "map") skyPoster.setKind("map");
     if (type === "sky") {
       skyPoster.setKind("sky");
       // ?type=sky&shape=watercolor (or another chart shape)
@@ -70,7 +77,7 @@ export default function StudioPage() {
       );
     }
     // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, []);
+  }, [search.toString()]);
 
   const searchKey = search.toString();
   const [showStartup] = useState(
