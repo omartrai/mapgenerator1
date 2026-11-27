@@ -28,6 +28,8 @@ export const BUSINESS = {
   publisher: "",
   /** CNDP receipt / authorisation number (loi 09-08), once filed. */
   cndp: "",
+  /** Instagram profile. */
+  instagram: "https://www.instagram.com/noriaprints/",
   /** Website address. */
   website: "noriaprints.com",
 } as const;

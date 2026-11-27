@@ -1032,6 +1032,26 @@ button.store-btn--dark[type="submit"] {
   margin-top: 10px !important;
 }
 
+.store-footer__social {
+  display: flex;
+  align-items: center;
+  gap: 7px;
+  width: fit-content;
+  margin-top: 10px;
+  color: inherit;
+  font-weight: 600;
+  text-decoration: none;
+}
+
+.store-footer__social svg {
+  width: 18px;
+  height: 18px;
+}
+
+.store-footer__social:hover {
+  text-decoration: underline;
+}
+
 .store-footer__email {
   display: inline-block;
   margin-top: 12px;

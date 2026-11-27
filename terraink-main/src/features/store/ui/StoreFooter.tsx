@@ -1,3 +1,4 @@
+import { LuInstagram } from "react-icons/lu";
 import { Link } from "@/core/router/router";
 import BrandMark, { BrandWordmark } from "@/shared/ui/BrandMark";
 import { BUSINESS } from "../domain/business";
@@ -18,6 +19,17 @@ export default function StoreFooter() {
           {BUSINESS.email ? (
             <a className="store-footer__email" href={`mailto:${BUSINESS.email}`}>
               {BUSINESS.email}
+            </a>
+          ) : null}
+          {BUSINESS.instagram ? (
+            <a
+              className="store-footer__social"
+              href={BUSINESS.instagram}
+              target="_blank"
+              rel="noreferrer"
+              aria-label="Instagram @noriaprints"
+            >
+              <LuInstagram aria-hidden="true" /> @noriaprints
             </a>
           ) : null}
         </div>
