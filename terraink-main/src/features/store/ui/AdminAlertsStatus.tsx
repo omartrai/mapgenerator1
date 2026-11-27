@@ -39,7 +39,7 @@ export default function AdminAlertsStatus() {
         disabled={busy || !enabled}
         title={enabled ? "Send a test message to your Telegram" : "Set TELEGRAM_BOT_TOKEN on Railway"}
       >
-        <LuBellRing aria-hidden="true" /> {busy ? "Sending…" : "Test Telegram alert"}
+        <LuBellRing aria-hidden="true" /> {busy ? "Sending…" : <>Test<span className="admin-hide-phone"> Telegram alert</span></>}
       </button>
       <span className="admin-subtle">
         {message || (enabled ? "Telegram alerts on" : "Telegram alerts off — set TELEGRAM_BOT_TOKEN on Railway")}

@@ -1,6 +1,6 @@
 import { useMemo, useState } from "react";
 import AdminAlertsStatus from "./AdminAlertsStatus";
-import { LuFileImage, LuRefreshCw, LuSearch } from "react-icons/lu";
+import { LuChevronRight, LuFileImage, LuRefreshCw, LuSearch } from "react-icons/lu";
 import { Link } from "@/core/router/router";
 import { useAdminOrders } from "../application/useAdmin";
 import { formatMoney } from "../domain/catalog";
@@ -39,28 +39,28 @@ function OrdersList({ storage }: { storage: string }) {
         <div>
           <h1 className="page-title">Orders</h1>
           <p className="admin-subtle">
-            Storage: {storage === "blob" ? "Vercel Blob (private)" : storage === "filesystem" ? "Local disk (development)" : storage}
+            Storage: {storage === "blob" ? "Vercel Blob (private)" : storage === "filesystem" ? "Server disk (private)" : storage}
           </p>
         </div>
         <div className="admin-title-actions">
           <AdminAlertsStatus />
           <button type="button" className="store-btn store-btn--outline store-btn--sm" onClick={() => void refresh()} disabled={isLoading}>
-            <LuRefreshCw className={isLoading ? "store-spin" : ""} aria-hidden="true" /> Refresh
+            <LuRefreshCw className={isLoading ? "store-spin" : ""} aria-hidden="true" /> <span className="admin-hide-phone">Refresh</span>
           </button>
         </div>
       </div>
 
       <div className="admin-stats">
         <div className="admin-stat">
-          <span>New orders</span>
+          <span>New</span>
           <strong>{newCount}</strong>
         </div>
         <div className="admin-stat">
-          <span>All orders</span>
+          <span>All</span>
           <strong>{orders?.length ?? "—"}</strong>
         </div>
         <div className="admin-stat">
-          <span>Order value (excl. cancelled)</span>
+          <span>Value<span className="admin-hide-phone"> (excl. cancelled)</span></span>
           <strong>{formatMoney(openRevenue)}</strong>
         </div>
       </div>
@@ -99,6 +99,39 @@ function OrdersList({ storage }: { storage: string }) {
           <h2>No orders here yet</h2>
           <p>New orders appear here as soon as customers check out.</p>
         </div>
+      ) : null}
+
+      {filtered.length > 0 ? (
+        <ul className="admin-order-cards">
+          {filtered.map((order) => (
+            <li key={order.number}>
+              <Link to={`/admin/orders/${order.number}`} className="admin-order-card">
+                <span className="admin-order-card__top">
+                  <strong>{order.number}</strong>
+                  <span className={`status-chip status-chip--${order.status}`}>{statusLabel(order.status)}</span>
+                </span>
+                <span className="admin-order-card__who">
+                  {order.customerName} <span className="admin-subtle">· {order.city}</span>
+                </span>
+                <span className="admin-order-card__meta">
+                  <span>{new Date(order.createdAt).toLocaleString(undefined, { dateStyle: "medium", timeStyle: "short" })}</span>
+                  <span>
+                    {order.itemCount} poster{order.itemCount > 1 ? "s" : ""} · <strong>{formatMoney(order.total, order.currency)}</strong>
+                  </span>
+                </span>
+                <span className="admin-order-card__files">
+                  {order.hasPrintFiles ? (
+                    <span className="admin-ready"><LuFileImage aria-hidden="true" /> Print files downloaded</span>
+                  ) : (
+                    <span className="admin-subtle">Print files not downloaded</span>
+                  )}
+                  {order.confirmation ? <span className="admin-subtle">WhatsApp: {order.confirmation}</span> : null}
+                </span>
+                <LuChevronRight className="admin-order-card__go" aria-hidden="true" />
+              </Link>
+            </li>
+          ))}
+        </ul>
       ) : null}
 
       {filtered.length > 0 ? (

@@ -32,10 +32,10 @@ export default function AdminLayout({ children }: { children: (info: { storage: 
               <Link to="/admin/reviews" className="store-link">Reviews</Link>
             </>
           ) : null}
-          <Link to="/" className="store-link">View shop</Link>
+          <Link to="/" className="store-link">Shop</Link>
           {session.status === "signed-in" ? (
             <button type="button" className="store-btn store-btn--ghost store-btn--sm" onClick={session.signOut}>
-              <LuLogOut aria-hidden="true" /> Sign out
+              <LuLogOut aria-hidden="true" /> <span className="admin-hide-phone">Sign out</span>
             </button>
           ) : null}
         </div>
@@ -54,7 +54,7 @@ export default function AdminLayout({ children }: { children: (info: { storage: 
               <LuLock />
             </span>
             <h1>Order management</h1>
-            <p>Enter the admin password set in your Vercel project (ADMIN_PASSWORD).</p>
+            <p>Enter the admin password set on the server (ADMIN_PASSWORD).</p>
             <div className="field">
               <label htmlFor="admin-password">Password</label>
               <input
