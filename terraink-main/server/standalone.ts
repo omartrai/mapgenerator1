@@ -157,6 +157,12 @@ async function serveStatic(request: IncomingMessage, response: ServerResponse) {
 }
 
 createServer((request, response) => {
+  // www.noriaprints.com → noriaprints.com, so the site lives at one address.
+  const host = String(request.headers.host ?? "");
+  if (host.startsWith("www.") && (request.method === "GET" || request.method === "HEAD")) {
+    response.writeHead(301, { Location: `https://${host.slice(4)}${request.url ?? "/"}` });
+    return void response.end();
+  }
   const work = request.url?.startsWith("/api/") || request.url === "/api"
     ? serveApi(request, response)
     : request.method === "GET" || request.method === "HEAD"
