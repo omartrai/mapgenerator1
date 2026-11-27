@@ -1032,6 +1032,15 @@ button.store-btn--dark[type="submit"] {
   margin-top: 10px !important;
 }
 
+.store-footer__email {
+  display: inline-block;
+  margin-top: 12px;
+  color: inherit;
+  font-weight: 600;
+  text-decoration: underline;
+  text-underline-offset: 3px;
+}
+
 .store-footer__links {
   display: flex;
   gap: 72px;

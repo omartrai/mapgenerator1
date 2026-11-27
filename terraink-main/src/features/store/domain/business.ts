@@ -22,7 +22,7 @@ export const BUSINESS = {
   /** Identifiant fiscal. */
   taxId: "",
   /** Customer contact. */
-  email: "",
+  email: "contact@noriaprints.com",
   phone: "",
   /** Directeur de la publication (usually the manager). */
   publisher: "",

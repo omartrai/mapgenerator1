@@ -1,5 +1,6 @@
 import { Link } from "@/core/router/router";
 import BrandMark, { BrandWordmark } from "@/shared/ui/BrandMark";
+import { BUSINESS } from "../domain/business";
 import { useStoreText } from "./storeText";
 
 export default function StoreFooter() {
@@ -14,6 +15,11 @@ export default function StoreFooter() {
             <BrandWordmark />
           </span>
           <p>{t("footer.about")}</p>
+          {BUSINESS.email ? (
+            <a className="store-footer__email" href={`mailto:${BUSINESS.email}`}>
+              {BUSINESS.email}
+            </a>
+          ) : null}
         </div>
         <nav className="store-footer__links" aria-label="Footer">
           <div>
