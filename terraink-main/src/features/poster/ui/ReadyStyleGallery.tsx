@@ -26,7 +26,7 @@ export default function ReadyStyleGallery() {
   const uid = useId();
   const { form } = state;
 
-  const active: PosterStyleId | null =
+  const active: PosterStyleId =
     form.posterLayout === "duo"
       ? "photo"
       : form.posterLayout === "twin"
@@ -35,9 +35,8 @@ export default function ReadyStyleGallery() {
           ? "venn"
           : form.posterStyle === "heart" && form.mapShape === "heart"
             ? "heart"
-            : (form.posterLayout || "classic") === "classic" && (form.mapShape || "none") === "none"
-              ? "classic"
-              : null;
+            : // Any plain layout and shape (Bordure, Étiquette, circle…) is a classic poster.
+              "classic";
 
   return (
     <section className="ready-styles" aria-labelledby={`${uid}-title`}>
