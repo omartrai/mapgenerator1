@@ -1,6 +1,7 @@
 import { useId } from "react";
 import { usePosterStyles, type PosterStyleId } from "@/features/poster/application/usePosterStyles";
 import { usePosterContext } from "@/features/poster/ui/PosterContext";
+import { STYLE_ONLY_LAYOUTS } from "@/features/poster/domain/posterLayout";
 import { useLanguage, type TranslationKey } from "@/shared/i18n/LanguageContext";
 import PhotoCard from "./PhotoCard";
 import TwinCityCard from "./TwinCityCard";
@@ -26,7 +27,7 @@ export default function ReadyStyleGallery() {
   const uid = useId();
   const { form } = state;
 
-  const active: PosterStyleId =
+  const active: PosterStyleId | null =
     form.posterLayout === "duo"
       ? "photo"
       : form.posterLayout === "twin"
@@ -35,8 +36,10 @@ export default function ReadyStyleGallery() {
           ? "venn"
           : form.posterStyle === "heart" && form.mapShape === "heart"
             ? "heart"
-            : // Any plain layout and shape (Bordure, Étiquette, circle…) is a classic poster.
-              "classic";
+            : // Any plain map layout and shape (Bordure, Étiquette, circle…) is a classic poster.
+              !STYLE_ONLY_LAYOUTS.has(form.posterLayout ?? "")
+              ? "classic"
+              : null;
 
   return (
     <section className="ready-styles" aria-labelledby={`${uid}-title`}>

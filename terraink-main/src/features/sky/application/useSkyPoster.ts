@@ -6,6 +6,9 @@ import { useActivityPoster } from "@/features/routes/application/useActivityPost
 import { isSportLayout, isTrailLayout } from "@/features/poster/domain/posterLayout";
 import { toSkyShape, type SkyShape } from "@/features/sky/domain/chart";
 
+/** Layouts made for a sky chart only (see SHAPE_LOOKS). */
+const SKY_ONLY_LAYOUTS = new Set(["nursery", "starlit"]);
+
 /** Chart shapes that come with their own text layout and colours. */
 const SHAPE_LOOKS: Partial<Record<SkyShape, { layout: string; theme: string; showCountry: boolean }>> = {
   // Baby sky: name in script, birth details, navy and gold on white.
@@ -88,9 +91,15 @@ export function useSkyPoster() {
       if (next === "trail") return applyDesign("topo");
       if (kind === "sport" || kind === "trail") leaveSport();
       if (next === "sky" && !form.skyTime) set("skyTime", defaultSkyTime());
+      // Back to a map from a sky whose shape brought its own layout (baby,
+      // watercolour): start again from the classic map layout.
+      if (next === "map" && kind === "sky" && SKY_ONLY_LAYOUTS.has(form.posterLayout ?? "")) {
+        set("posterLayout", "classic");
+        set("showCountry", true);
+      }
       set("posterKind", next === "sky" ? "sky" : "map");
     },
-    [applyDesign, form.skyTime, kind, leaveSport, set],
+    [applyDesign, form.posterLayout, form.skyTime, kind, leaveSport, set],
   );
 
   const setTime = useCallback((time: string) => set("skyTime", time), [set]);

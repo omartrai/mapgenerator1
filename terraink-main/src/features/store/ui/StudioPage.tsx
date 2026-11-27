@@ -52,6 +52,10 @@ export default function StudioPage() {
   const activityPoster = useActivityPoster();
   useEffect(() => {
     const type = search.get("type");
+    // A plain /create ("Créer un poster") always opens on a city map, even
+    // after a sky, sport or trail poster earlier in the visit.
+    const plain = !type && !["preset", "edit", "order", "place", "style"].some((key) => search.get(key));
+    if (plain && skyPoster.kind !== "map") skyPoster.setKind("map");
     if (type === "sky") {
       skyPoster.setKind("sky");
       // ?type=sky&shape=watercolor (or another chart shape)
